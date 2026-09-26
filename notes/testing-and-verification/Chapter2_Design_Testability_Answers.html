@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Chapter 2: Design and Testability — Testing and Verification (3171111)</title>
+<style>
+  :root{
+    --primary:#1a3c6e; --accent:#c0392b; --bg:#f7f9fb; --card:#ffffff;
+    --border:#d8e0e8; --text:#22303c; --muted:#5c6b78;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:'Segoe UI',Calibri,Arial,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:0;line-height:1.55;}
+  .wrap{max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+  header.doc-head{background:linear-gradient(135deg,var(--primary),#274d85);color:#fff;padding:28px 24px;border-radius:10px;margin-bottom:26px;}
+  header.doc-head h1{margin:0 0 6px;font-size:1.6em;}
+  header.doc-head p{margin:2px 0;font-size:0.95em;opacity:0.92;}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:28px;}
+  nav.toc h2{margin-top:0;font-size:1.1em;color:var(--primary);}
+  nav.toc ol{columns:2;-webkit-columns:2;-moz-columns:2;padding-left:18px;}
+  nav.toc li{margin-bottom:4px;font-size:0.9em;}
+  nav.toc a{color:var(--text);text-decoration:none;}
+  nav.toc a:hover{color:var(--accent);text-decoration:underline;}
+  .q-block{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 22px 20px;margin-bottom:22px;scroll-margin-top:12px;}
+  .q-title{font-weight:600;color:#fff;background:var(--primary);padding:10px 14px;border-radius:7px;margin:-18px -22px 16px;font-size:1.0em;}
+  .q-title .qnum{background:var(--accent);padding:2px 9px;border-radius:5px;margin-right:8px;font-size:0.85em;}
+  h3.sub{color:var(--primary);font-size:0.98em;margin:14px 0 6px;border-left:4px solid var(--accent);padding-left:8px;}
+  table{border-collapse:collapse;width:100%;margin:10px 0;font-size:0.9em;}
+  th,td{border:1px solid var(--border);padding:6px 10px;text-align:left;vertical-align:top;}
+  th{background:#eaf0f7;color:var(--primary);}
+  tr:nth-child(even) td{background:#fafcfe;}
+  ul,ol{margin:6px 0;padding-left:22px;}
+  li{margin-bottom:4px;}
+  .diagram{background:#fbfcfe;border:1px dashed #9db2c6;border-radius:8px;padding:10px;text-align:center;margin:12px 0;}
+  .diagram svg{max-width:100%;height:auto;}
+  .diagram .cap{font-size:0.82em;color:var(--muted);margin-top:6px;font-style:italic;}
+  .marks-tag{float:right;background:#e8f4ea;color:#1e7a34;border:1px solid #b7dcc0;font-size:0.75em;padding:2px 8px;border-radius:12px;font-weight:600;}
+  .formula{background:#fff8e6;border-left:4px solid #e0a800;padding:8px 12px;margin:8px 0;font-family:'Cambria Math',Cambria,serif;font-size:0.92em;}
+  .note{background:#eef5ff;border-left:4px solid #3a7bd5;padding:8px 12px;margin:8px 0;font-size:0.88em;}
+  .xref{background:#f3eefc;border-left:4px solid #7b52c9;padding:6px 12px;margin:8px 0;font-size:0.88em;}
+  footer{text-align:center;color:var(--muted);font-size:0.8em;margin-top:30px;}
+  @media print{body{background:#fff;} .q-block{break-inside:avoid;border:1px solid #ccc;} nav.toc{break-after:page;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="doc-head">
+  <h1>Testing and Verification (3171111)</h1>
+  <p>L. D. College of Engineering, Ahmedabad — Electronics &amp; Communication Engineering Department</p>
+  <p><strong>Chapter 2: Design and Testability</strong> — Model Answers (structured for 5-mark examination questions)</p>
+</header>
+
+<nav class="toc">
+  <h2>Contents — Chapter 2</h2>
+  <ol>
+    <li><a href="#q1">Design for Testability — meaning</a></li>
+    <li><a href="#q2">Goal &amp; three approaches of DFT</a></li>
+    <li><a href="#q3">Testability analysis techniques</a></li>
+    <li><a href="#q4">Verification plan — meaning &amp; importance</a></li>
+    <li><a href="#q5">Grey box vs White box verification</a></li>
+    <li><a href="#q6">Key terms (Controllability, Scan Synthesis, LSSD etc.)</a></li>
+    <li><a href="#q7">Ad Hoc approach for testability</a></li>
+    <li><a href="#q8">Typical Scan Design Flow</a></li>
+    <li><a href="#q9">Scan cell designs: Muxed-D, Clocked, LSSD</a></li>
+    <li><a href="#q10">Compare Muxed-D, Clocked, LSSD scan cells</a></li>
+    <li><a href="#q11">Muxed-D full-scan design architecture</a></li>
+    <li><a href="#q12">Mux-D scan cell — level sensitive design</a></li>
+    <li><a href="#q13">Partial-scan design</a></li>
+    <li><a href="#q15">LSSD scan cell with waveforms</a></li>
+    <li><a href="#q16">Clocked scan cell (cross-ref)</a></li>
+    <li><a href="#q17">Enhanced Scan Architecture</a></li>
+    <li><a href="#q18">Full/Partial/Random-Access Scan</a></li>
+    <li><a href="#q19">Special-purpose scan architectures</a></li>
+    <li><a href="#q20">Scan Design Rules</a></li>
+    <li><a href="#q21">Control point insertion</a></li>
+    <li><a href="#q22">Scan rule for derived-clock style</a></li>
+    <li><a href="#q23">Design style / rule / solution table</a></li>
+    <li><a href="#q24">Scan design flow (diagram)</a></li>
+    <li><a href="#q25">Scan stitching</a></li>
+    <li><a href="#q27">Scan configuration &amp; importance</a></li>
+    <li><a href="#q29">Combinational feedback loop</a></li>
+    <li><a href="#q30">SCOAP for 5-input NAND</a></li>
+    <li><a href="#q31">SCOAP for Half Adder</a></li>
+    <li><a href="#q33">RTL testability repair flow</a></li>
+    <li><a href="#q34">Why DFT? Controllability/Observability</a></li>
+    <li><a href="#q36">Testability &amp; testability analysis</a></li>
+    <li><a href="#q37">SCOAP for 1-bit Full Adder</a></li>
+    <li><a href="#q39">SCOAP for given circuit (A,B,C)</a></li>
+    <li><a href="#q41">Probability-based C/O rules</a></li>
+    <li><a href="#q42">Probability measures — 3-input OR</a></li>
+    <li><a href="#q43">2-input AND — SCOAP &amp; probability</a></li>
+    <li><a href="#q44">Ad-hoc DFT techniques list</a></li>
+    <li><a href="#q45">D-FF circuit — C/O equations</a></li>
+  </ol>
+</nav>
+
+<!-- Q1 -->
+<div class="q-block" id="q1">
+  <div class="q-title"><span class="qnum">Q1</span>What do you mean by Design for Testability?<span class="marks-tag">5 Marks</span></div>
+  <p><strong>Design for Testability (DFT)</strong> refers to a set of design techniques that add extra hardware/logic circuitry (and associated test methodology) to a chip during the design phase itself, with the specific goal of making the manufacturing test process easier, faster, and more effective at achieving high fault coverage.</p>
+  <ul>
+    <li>DFT increases <strong>controllability</strong> (ease of setting internal nodes to desired values) and <strong>observability</strong> (ease of observing internal node values at outputs).</li>
+    <li>Adds structures like scan chains, test points, built-in self-test (BIST), and boundary scan.</li>
+    <li>Trades a small area/performance overhead for large reduction in test generation effort, test time, and test cost.</li>
+    <li>Essential because purely functional/ad-hoc testing of highly sequential VLSI circuits cannot achieve acceptable fault coverage within reasonable time.</li>
+  </ul>
+</div>
+
+<!-- Q2 -->
+<div class="q-block" id="q2">
+  <div class="q-title"><span class="qnum">Q2</span>What is the goal of design for testability (DFT) and enlist three basic approaches of DFT?<span class="marks-tag">5 Marks</span></div>
+  <h3 class="sub">Goal</h3>
+  <p>The goal of DFT is to improve the controllability and observability of internal circuit nodes so that manufacturing defects can be detected with high fault coverage using a minimum number of test vectors and minimum test application time/cost — while incurring acceptable area, power, and performance overhead.</p>
+  <h3 class="sub">Three Basic Approaches</h3>
+  <table>
+    <tr><th>Approach</th><th>Description</th></tr>
+    <tr><td>Ad-hoc DFT</td><td>Application of general good-design practices and local circuit modifications (test points, partitioning) without a fixed, structured methodology</td></tr>
+    <tr><td>Structured DFT (Scan design)</td><td>Systematic conversion of flip-flops into scan cells connected in shift-register chains, giving direct access to internal states</td></tr>
+    <tr><td>Built-In Self-Test (BIST)</td><td>On-chip test pattern generation (e.g., LFSR) and response analysis (e.g., MISR) circuitry, allowing the chip to test itself with minimal external ATE dependency</td></tr>
+  </table>
+</div>
+
+<!-- Q3 -->
+<div class="q-block" id="q3">
+  <div class="q-title"><span class="qnum">Q3</span>Enlist testability analysis techniques.<span class="marks-tag">5 Marks</span></div>
+  <ul>
+    <li><strong>SCOAP (Sandia Controllability/Observability Analysis Program):</strong> Computes numerical combinational and sequential controllability/observability measures for each circuit node.</li>
+    <li><strong>Probability-based (Statistical) testability analysis:</strong> Uses signal probability propagation (Parker-McCluskey method) to estimate controllability/observability.</li>
+    <li><strong>COP (Controllability/Observability Program):</strong> Similar probability-based technique estimating testability from 0 to 1.</li>
+    <li><strong>Information-theoretic measures:</strong> Uses entropy concepts to quantify testability.</li>
+    <li><strong>Simulation-based (fault simulation) testability analysis:</strong> Runs fault simulation to empirically estimate detectability of nodes.</li>
+    <li><strong>Structural analysis (topological methods):</strong> Identifies redundant logic, reconvergent fanout, and feedback loops that hurt testability.</li>
+  </ul>
+  <p>These techniques help identify hard-to-control/observe nodes early in the design cycle so that test points or DFT structures can be inserted at those locations.</p>
+</div>
+
+<!-- Q4 -->
+<div class="q-block" id="q4">
+  <div class="q-title"><span class="qnum">Q4</span>What is meant by verification plan? Discuss its importance in verification.<span class="marks-tag">5 Marks</span></div>
+  <p>A <strong>verification plan</strong> is a formal document prepared before verification begins, which defines the scope, strategy, features to be verified, testbench architecture, coverage goals, verification environment, and sign-off criteria for a design.</p>
+  <h3 class="sub">Contents of a Verification Plan</h3>
+  <ul>
+    <li>List of design features/functions to be verified</li>
+    <li>Verification approach/methodology (simulation, formal, emulation)</li>
+    <li>Testbench architecture and required verification IP</li>
+    <li>Coverage metrics (code coverage, functional coverage) and target goals</li>
+    <li>Resource, schedule, and sign-off/exit criteria</li>
+  </ul>
+  <h3 class="sub">Importance</h3>
+  <ul>
+    <li>Provides a structured roadmap, avoiding ad-hoc/incomplete verification.</li>
+    <li>Ensures all critical design features are tracked and verified systematically.</li>
+    <li>Enables measurable, objective sign-off criteria (coverage closure).</li>
+    <li>Facilitates communication and review among design/verification teams.</li>
+    <li>Helps estimate schedule/resources and track verification progress.</li>
+  </ul>
+</div>
+
+<!-- Q5 -->
+<div class="q-block" id="q5">
+  <div class="q-title"><span class="qnum">Q5</span>Explain Grey box verification and White box verification.<span class="marks-tag">5 Marks</span></div>
+  <table>
+    <tr><th>Aspect</th><th>White Box Verification</th><th>Grey Box Verification</th></tr>
+    <tr><td>Visibility</td><td>Full internal visibility — internal signals, registers, and micro-architecture are fully accessible to the verification environment</td><td>Partial internal visibility — some internal signals are exposed (e.g., for coverage/debug) without full structural knowledge</td></tr>
+    <tr><td>Basis of test</td><td>Tests derived directly from internal implementation details</td><td>Tests derived mainly from specification, supplemented by limited internal knowledge for better controllability/observability</td></tr>
+    <tr><td>Reusability</td><td>Low — tightly coupled to a specific implementation; breaks if internals change</td><td>Moderate — more robust to implementation changes than white box</td></tr>
+    <tr><td>Typical use</td><td>Unit-level/block-level verification, internal assertions</td><td>Block/sub-system verification with monitors on internal buses</td></tr>
+  </table>
+  <p>(Contrast with <strong>Black box verification</strong>, which uses no internal visibility at all — tests are based purely on the external specification/interface.)</p>
+</div>
+
+<!-- Q6 -->
+<div class="q-block" id="q6">
+  <div class="q-title"><span class="qnum">Q6</span>Describe following terms: Controllability &amp; Observability, Scan Synthesis, Scan Replacement, Scan Stitching, Scan Verification, LSSD Scan Cell, Scan Configuration, Scan Reordering, Scan Extraction, Single-event upsets<span class="marks-tag">5 Marks</span></div>
+  <table>
+    <tr><th>Term</th><th>Description</th></tr>
+    <tr><td><strong>Controllability</strong></td><td>Ease/difficulty of setting a specific logic value at an internal circuit node from the primary inputs</td></tr>
+    <tr><td><strong>Observability</strong></td><td>Ease/difficulty of observing the logic value of an internal node at a primary output</td></tr>
+    <tr><td><strong>Scan Synthesis</strong></td><td>The overall automated process of converting a non-scan (functional) design into a scan design, encompassing configuration, replacement, and stitching</td></tr>
+    <tr><td><strong>Scan Replacement</strong></td><td>Substituting the original functional flip-flops in the netlist with scan-equivalent flip-flop cells (Muxed-D, LSSD, etc.)</td></tr>
+    <tr><td><strong>Scan Stitching</strong></td><td>Connecting individual scan cells together (scan-out of one to scan-in of next) to form a complete scan chain</td></tr>
+    <tr><td><strong>Scan Verification</strong></td><td>Verifying that the inserted scan logic operates correctly (chain integrity, no shift corruption) without altering functional behaviour</td></tr>
+    <tr><td><strong>LSSD Scan Cell</strong></td><td>Level-Sensitive Scan Design cell — a scan flip-flop built from two clocked latches (L1, L2) using non-overlapping clocks, insensitive to timing hazards</td></tr>
+    <tr><td><strong>Scan Configuration</strong></td><td>The planning stage deciding scan architecture, number of chains, chain balancing, before scan insertion</td></tr>
+    <tr><td><strong>Scan Reordering</strong></td><td>Rearranging the order of scan cells within a chain (post-placement) to minimize interconnect/routing overhead</td></tr>
+    <tr><td><strong>Scan Extraction</strong></td><td>Process of identifying/extracting the scan chain order from a synthesized/placed netlist for ATPG and verification purposes</td></tr>
+    <tr><td><strong>Single-event upsets (SEU)</strong></td><td>A transient change of state in a memory element (e.g., bit flip) caused by ionizing radiation (cosmic rays, alpha particles) striking a sensitive circuit node</td></tr>
+  </table>
+</div>
+
+<!-- Q7 -->
+<div class="q-block" id="q7">
+  <div class="q-title"><span class="qnum">Q7</span>Describe Ad Hoc Approach for testability improvement.<span class="marks-tag">5 Marks</span></div>
+  <p>The <strong>Ad Hoc approach</strong> uses a collection of general design guidelines and localized circuit modifications to improve testability, without following any fixed/structured methodology (unlike scan design). It is typically applied where full structured DFT is too costly or unnecessary.</p>
+  <h3 class="sub">Common Ad Hoc Techniques</h3>
+  <ul>
+    <li><strong>Partitioning large circuits</strong> into smaller, independently testable blocks using test points/multiplexers.</li>
+    <li><strong>Adding test points:</strong> Control points (to improve controllability) and observation points (to improve observability) at critical nodes.</li>
+    <li><strong>Bus-oriented test:</strong> Adding multiplexers to break long counter/register chains, allowing direct load/observe access.</li>
+    <li><strong>Avoiding asynchronous logic/redundant logic and feedback loops</strong> that are inherently hard to test.</li>
+    <li><strong>Initializing counters/registers</strong> with a reset signal for easy state initialization.</li>
+    <li><strong>Breaking global feedback paths</strong> to convert into simpler, more testable structures.</li>
+  </ul>
+  <h3 class="sub">Limitations</h3>
+  <p>Ad-hoc methods are not systematic, are difficult to automate, require experienced designers, and do not guarantee a fault-coverage target — this is why structured approaches (scan, BIST) are preferred for large VLSI designs.</p>
+</div>
+
+<!-- Q8 -->
+<div class="q-block" id="q8">
+  <div class="q-title"><span class="qnum">Q8</span>Explain typical Scan Design Flow in detail.<span class="marks-tag">5 Marks</span></div>
+  <div class="diagram">
+    <svg viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1a3c6e"/></marker></defs>
+      <g font-family="Segoe UI,Arial" font-size="11" fill="#22303c">
+        <rect x="10" y="35" width="105" height="50" rx="6" fill="#eaf0f7" stroke="#1a3c6e"/><text x="62" y="64" text-anchor="middle">Scan Rule Check</text>
+        <line x1="115" y1="60" x2="140" y2="60" stroke="#1a3c6e" stroke-width="2" marker-end="url(#a1)"/>
+        <rect x="140" y="35" width="105" height="50" rx="6" fill="#eaf0f7" stroke="#1a3c6e"/><text x="192" y="64" text-anchor="middle">Scan Configuration</text>
+        <line x1="245" y1="60" x2="270" y2="60" stroke="#1a3c6e" stroke-width="2" marker-end="url(#a1)"/>
+        <rect x="270" y="35" width="105" height="50" rx="6" fill="#eaf0f7" stroke="#1a3c6e"/><text x="322" y="64" text-anchor="middle">Scan Replacement</text>
+        <line x1="375" y1="60" x2="400" y2="60" stroke="#1a3c6e" stroke-width="2" marker-end="url(#a1)"/>
+        <rect x="400" y="35" width="105" height="50" rx="6" fill="#eaf0f7" stroke="#1a3c6e"/><text x="452" y="64" text-anchor="middle">Scan Stitching</text>
+        <line x1="505" y1="60" x2="530" y2="60" stroke="#1a3c6e" stroke-width="2" marker-end="url(#a1)"/>
+        <rect x="530" y="35" width="160" height="50" rx="6" fill="#eaf0f7" stroke="#1a3c6e"/><text x="610" y="58" text-anchor="middle">Scan/ATPG</text><text x="610" y="72" text-anchor="middle">Verification</text>
+      </g>
+    </svg>
+    <div class="cap">Fig: Typical scan design flow</div>
+  </div>
+  <ol>
+    <li><strong>Scan (Design) Rule Check:</strong> Verify RTL/gate-level design conforms to scan-compatible design rules (no combinational feedback, controllable clocks, etc.).</li>
+    <li><strong>Scan Configuration:</strong> Decide scan architecture, number/length of chains, scan cell type.</li>
+    <li><strong>Scan Replacement:</strong> Replace functional flip-flops with scan flip-flops in the netlist.</li>
+    <li><strong>Scan Stitching:</strong> Connect scan cells serially to form complete scan chain(s), typically during/after placement for routing efficiency.</li>
+    <li><strong>Scan/ATPG Verification:</strong> Verify chain integrity (shift test) and generate/verify ATPG test patterns for high fault coverage.</li>
+  </ol>
+</div>
+
+<!-- Q9 -->
+<div class="q-block" id="q9">
+  <div class="q-title"><span class="qnum">Q9</span>Explain following Scan Cell Designs: Muxed-D Scan Cell, Clocked-Scan Cell, LSSD Scan Cell<span class="marks-tag">5 Marks</span></div>
+  <div class="diagram">
+    <svg viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="Segoe UI,Arial" font-size="10" fill="#22303c" stroke="#1a3c6e" stroke-width="1.4">
+        <text x="100" y="16" text-anchor="middle" font-weight="bold" stroke="none">Muxed-D Scan Cell</text>
+        <path d="M40,40 L40,80 L75,70 L75,50 Z" fill="none"/>
+        <text x="15" y="50" stroke="none">SI</text><line x1="20" y1="49" x2="40" y2="49"/>
+        <text x="15" y="74" stroke="none">D</text><line x1="20" y1="73" x2="40" y2="73"/>
+        <text x="55" y="95" stroke="none">SE</text><line x1="55" y1="90" x2="55" y2="78"/>
+        <rect x="90" y="45" width="45" height="30" fill="#eaf0f7"/><text x="112" y="64" text-anchor="middle" stroke="none">DFF</text>
+        <line x1="75" y1="60" x2="90" y2="60"/><line x1="135" y1="60" x2="165" y2="60"/><text x="180" y="64" stroke="none">Q</text>
+        <text x="112" y="95" stroke="none" font-size="9">CK</text>
+
+        <text x="350" y="16" text-anchor="middle" font-weight="bold" stroke="none">Clocked Scan Cell</text>
+        <text x="290" y="50" stroke="none">SI</text><line x1="300" y1="49" x2="330" y2="49"/>
+        <text x="290" y="74" stroke="none">D</text><line x1="300" y1="73" x2="330" y2="73"/>
+        <rect x="330" y="40" width="45" height="40" fill="#eaf0f7"/><text x="352" y="63" text-anchor="middle" stroke="none" font-size="9">Master</text>
+        <rect x="385" y="40" width="45" height="40" fill="#eaf0f7"/><text x="407" y="63" text-anchor="middle" stroke="none" font-size="9">Slave</text>
+        <line x1="375" y1="60" x2="385" y2="60"/><line x1="430" y1="60" x2="460" y2="60"/><text x="475" y="64" stroke="none">Q</text>
+        <text x="352" y="95" stroke="none" font-size="9">SCK-A</text><text x="407" y="95" stroke="none" font-size="9">SCK-B</text>
+
+        <text x="600" y="16" text-anchor="middle" font-weight="bold" stroke="none">LSSD Scan Cell</text>
+        <text x="540" y="50" stroke="none">SI</text><line x1="550" y1="49" x2="580" y2="49"/>
+        <text x="540" y="74" stroke="none">D</text><line x1="550" y1="73" x2="580" y2="73"/>
+        <rect x="580" y="40" width="40" height="40" fill="#eaf0f7"/><text x="600" y="63" text-anchor="middle" stroke="none" font-size="9">L1</text>
+        <rect x="630" y="40" width="40" height="40" fill="#eaf0f7"/><text x="650" y="63" text-anchor="middle" stroke="none" font-size="9">L2</text>
+        <line x1="620" y1="60" x2="630" y2="60"/><line x1="670" y1="60" x2="695" y2="60"/>
+        <text x="600" y="95" stroke="none" font-size="9">C1/A</text><text x="650" y="95" stroke="none" font-size="9">C2/B</text>
+      </g>
+    </svg>
+    <div class="cap">Fig: Structures of Muxed-D, Clocked-scan, and LSSD scan cells</div>
+  </div>
+  <ul>
+    <li><strong>Muxed-D Scan Cell:</strong> A standard D-flip-flop with a 2:1 multiplexer added at its D input; Scan Enable (SE) selects between functional data (D) and scan data (SI). Simplest and most widely used since it needs no extra clock.</li>
+    <li><strong>Clocked-Scan Cell:</strong> Uses separate scan clocks (instead of a mux) to load scan data through master-slave latches, avoiding the mux delay penalty on the functional path but needing extra non-overlapping clock signals.</li>
+    <li><strong>LSSD Scan Cell:</strong> Built from two level-sensitive, non-overlapping-clocked latches (L1 master, L2 slave); insensitive to clock skew/timing hazards, providing very robust, race-free operation, at the cost of extra clock signal routing (typically requires 2–4 clocks: A, B, C).</li>
+  </ul>
+</div>
+
+<!-- Q10 -->
+<div class="q-block" id="q10">
+  <div class="q-title"><span class="qnum">Q10</span>Compare Muxed D, Clocked and LSSD scan cells.<span class="marks-tag">5 Marks</span></div>
+  <table>
+    <tr><th>Parameter</th><th>Muxed-D</th><th>Clocked-Scan</th><th>LSSD</th></tr>
+    <tr><td>Extra hardware</td><td>One 2:1 MUX per FF</td><td>Master-slave latches + extra clocks</td><td>Two latches (L1, L2) + non-overlapping clocks</td></tr>
+    <tr><td>Extra clock signals needed</td><td>None (uses SE control signal)</td><td>2 extra scan clocks</td><td>2–3 extra clocks (A, B, C)</td></tr>
+    <tr><td>Speed impact on functional path</td><td>Small mux delay added</td><td>No mux delay</td><td>No mux delay</td></tr>
+    <tr><td>Race/hazard immunity</td><td>Depends on standard flip-flop design</td><td>Good, if clocks are non-overlapping</td><td>Excellent — inherently race-free (level sensitive)</td></tr>
+    <tr><td>Design complexity</td><td>Low — easiest to implement/automate</td><td>Moderate</td><td>High — most complex clocking scheme</td></tr>
+    <tr><td>Industry usage</td><td>Most widely used (default in most EDA tools)</td><td>Less common</td><td>Used in IBM-style mainframe/robust designs</td></tr>
+  </table>
+</div>
+
+<!-- Q11 -->
+<div class="q-block" id="q11">
+  <div class="q-title"><span class="qnum">Q11</span>Explain Muxed-D full-scan design architecture in detail.<span class="marks-tag">5 Marks</span></div>
+  <p>In <strong>Muxed-D full-scan design</strong>, every flip-flop in the design is replaced by a Muxed-D scan flip-flop, and all scan flip-flops are connected together into one or more serial shift-register chains (scan-in → scan-out).</p>
+  <ul>
+    <li>Each scan cell has a 2:1 mux at its D-input controlled by Scan Enable (SE): SE=1 selects scan-in data (SI) from previous cell; SE=0 selects normal functional data (D).</li>
+    <li><strong>Operation modes:</strong>
+      <ul>
+        <li><em>Shift mode</em> (SE=1): Test data is serially shifted into all flip-flops through the scan chain.</li>
+        <li><em>Capture/functional mode</em> (SE=0): Combinational logic responses are captured into the flip-flops in one clock pulse.</li>
+      </ul>
+    </li>
+    <li>Since all flip-flops are part of the scan chain, this is called <strong>full-scan</strong> — it gives complete controllability and observability of every state element, converting the sequential ATPG problem entirely into a combinational one.</li>
+    <li><strong>Advantages:</strong> High fault coverage, simple/automatable test generation, easy scan insertion using standard EDA tools.</li>
+    <li><strong>Disadvantages:</strong> Area overhead (extra mux per FF), small timing penalty on functional path, increased scan test time proportional to chain length.</li>
+  </ul>
+</div>
+
+<!-- Q12 -->
+<div class="q-block" id="q12">
+  <div class="q-title"><span class="qnum">Q12</span>What is Mux-D scan cell design? Explain with advantages/disadvantages and draw the level-sensitive Muxed-D scan cell.<span class="marks-tag">5 Marks</span></div>
+  <div class="diagram">
+    <svg viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="Segoe UI,Arial" font-size="11" fill="#22303c" stroke="#1a3c6e" stroke-width="1.5">
+        <text x="160" y="16" text-anchor="middle" font-weight="bold" stroke="none">Level-Sensitive Muxed-D Scan Cell</text>
+        <path d="M60,40 L60,100 L110,85 L110,55 Z" fill="none"/>
+        <text x="20" y="60" stroke="none">D (functional)</text><line x1="30" y1="56" x2="60" y2="56"/>
+        <text x="20" y="90" stroke="none">SI (scan-in)</text><line x1="30" y1="86" x2="60" y2="86"/>
+        <text x="85" y="120" stroke="none">SE</text><line x1="85" y1="115" x2="85" y2="102"/>
+        <rect x="130" y="55" width="60" height="35" fill="#eaf0f7"/><text x="160" y="76" text-anchor="middle" stroke="none">D Latch/FF</text>
+        <line x1="110" y1="70" x2="130" y2="70"/>
+        <line x1="190" y1="70" x2="230" y2="70"/><text x="245" y="74" stroke="none">Q (scan-out)</text>
+        <text x="160" y="105" stroke="none" font-size="10">CK</text><line x1="160" y1="100" x2="160" y2="90"/>
+      </g>
+    </svg>
+    <div class="cap">Fig: Level-sensitive Muxed-D scan cell (mux + single-clock D flip-flop)</div>
+  </div>
+  <p>The <strong>Mux-D scan cell</strong> places a 2:1 multiplexer before the D-input of a standard (level-sensitive) D flip-flop. SE=0 passes functional data D; SE=1 passes scan-in data SI, enabling serial shifting using the single system clock CK.</p>
+  <table>
+    <tr><th>Advantages</th><th>Disadvantages</th></tr>
+    <tr><td>Simple, uses existing flip-flop + one mux — minimal design change</td><td>Extra mux adds delay to critical (functional) data path</td></tr>
+    <tr><td>No extra clock signals required</td><td>Extra area overhead per flip-flop</td></tr>
+    <tr><td>Easy to automate insertion in standard EDA flow</td><td>Not immune to certain clock skew/race issues (relies on flip-flop's own edge-triggered design)</td></tr>
+    <tr><td>Compatible with standard synchronous design methodology</td><td>Scan shift adds test time (serial access)</td></tr>
+  </table>
+</div>
+
+<!-- Q13 -->
+<div class="q-block" id="q13">
+  <div class="q-title"><span class="qnum">Q13</span>Explain partial-scan design. Mention merits and demerits compared to full scan.<span class="marks-tag">5 Marks</span></div>
+  <p><strong>Partial-scan design</strong> converts only a selected subset of flip-flops in the circuit into scan cells (rather than all of them, as in full-scan), based on criteria such as breaking critical feedback loops or targeting flip-flops that most improve testability.</p>
+  <table>
+    <tr><th>Aspect</th><th>Full-Scan</th><th>Partial-Scan</th></tr>
+    <tr><td>Flip-flops scanned</td><td>All flip-flops</td><td>Only a selected subset</td></tr>
+    <tr><td>Area/timing overhead</td><td>Higher (mux at every FF)</td><td>Lower (fewer FFs modified)</td></tr>
+    <tr><td>Fault coverage achievable</td><td>Very high (near 100%), combinational ATPG suffices</td><td>Lower than full-scan; needs sequential ATPG for non-scanned logic</td></tr>
+    <tr><td>ATPG complexity</td><td>Low (combinational)</td><td>Higher (residual sequential circuit still needs sequential test generation)</td></tr>
+    <tr><td>Scan chain length / test time</td><td>Longer chain, more shift time</td><td>Shorter chain, less shift time</td></tr>
+    <tr><td>Use case</td><td>Preferred when area/timing overhead is acceptable</td><td>Preferred in area/speed-critical designs where full-scan overhead is unacceptable</td></tr>
+  </table>
+</div>
+
+<!-- Q15 -->
+<div class="q-block" id="q15">
+  <div class="q-title"><span class="qnum">Q15</span>Draw and explain LSSD scan cell design with necessary waveforms.<span class="marks-tag">5 Marks</span></div>
+  <div class="diagram">
+    <svg viewBox="0 0 400 190" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="Segoe UI,Arial" font-size="10" fill="#22303c" stroke="#1a3c6e" stroke-width="1.4">
+        <text x="200" y="14" text-anchor="middle" font-weight="bold" stroke="none">LSSD Scan Cell (L1–L2 Shift Register Latch)</text>
+        <text x="20" y="55" stroke="none">D</text><line x1="30" y1="52" x2="60" y2="52"/>
+        <text x="20" y="80" stroke="none">SI</text><line x1="30" y1="77" x2="60" y2="77"/>
+        <rect x="60" y="40" width="70" height="45" fill="#eaf0f7"/><text x="95" y="66" text-anchor="middle" stroke="none">L1 Latch</text>
+        <text x="80" y="100" stroke="none" font-size="9">C1(A)</text><text x="105" y="100" stroke="none" font-size="9">C2(B)</text>
+        <line x1="130" y1="62" x2="160" y2="62"/>
+        <rect x="160" y="40" width="70" height="45" fill="#eaf0f7"/><text x="195" y="66" text-anchor="middle" stroke="none">L2 Latch</text>
+        <text x="195" y="100" stroke="none" font-size="9">C3(B)</text>
+        <line x1="230" y1="62" x2="270" y2="62"/><text x="285" y="66" stroke="none">Q</text>
+      </g>
+    </svg>
+  </div>
+  <div class="diagram">
+    <svg viewBox="0 0 380 140" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="Segoe UI,Arial" font-size="10" fill="#22303c" stroke="#1a3c6e" stroke-width="1.4">
+        <text x="10" y="30" stroke="none">C1 (A)</text><path d="M60,25 L100,25 L100,15 L140,15 L140,25 L300,25" fill="none"/>
+        <text x="10" y="65" stroke="none">C2 (B)</text><path d="M60,60 L150,60 L150,50 L190,50 L190,60 L300,60" fill="none"/>
+        <text x="10" y="100" stroke="none">C3 (B)</text><path d="M60,95 L155,95 L155,85 L195,85 L195,95 L300,95" fill="none"/>
+        <text x="20" y="125" stroke="none" font-size="9" fill="#5c6b78">Non-overlapping clocks — L1 captures/shifts on A/B, L2 shifts on B and holds output on C</text>
+      </g>
+    </svg>
+    <div class="cap">Fig: Non-overlapping clock scheme for LSSD (A, B, C phases)</div>
+  </div>
+  <p><strong>L1 (master latch)</strong> is clocked by system clock (C1) in functional mode, or shift clock A during scan-shift; <strong>L2 (slave latch)</strong> is clocked by shift clock B (or C2/C3), holding the output stable. Because both latches are level-sensitive (not edge-triggered) and clocked by strictly non-overlapping pulses, the design is inherently free from clock-skew-induced races — data can never "race through" both latches in the same clock phase, making LSSD extremely robust for scan shifting regardless of interconnect delay variations.</p>
+</div>
+
+<!-- Q16 -->
+<div class="q-block" id="q16">
+  <div class="q-title"><span class="qnum">Q16</span>Explain Clocked scan cell with necessary waveform.<span class="marks-tag">5 Marks</span></div>
+  <div class="xref">See Chapter 1, Q13 for the full explanation and waveform of the Clocked Scan Cell (uses non-overlapping SCK-A/SCK-B clocks for shifting through master-slave latches, without a mux in the data path).</div>
+</div>
+
+<!-- Q17 -->
+<div class="q-block" id="q17">
+  <div class="q-title"><span class="qnum">Q17</span>Draw and explain Enhanced Scan Architecture.<span class="marks-tag">5 Marks</span></div>
+  <div class="diagram">
+    <svg viewBox="0 0 380 140" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="Segoe UI,Arial" font-size="10" fill="#22303c" stroke="#1a3c6e" stroke-width="1.4">
+        <text x="190" y="14" text-anchor="middle" font-weight="bold" stroke="none">Enhanced Scan Cell</text>
+        <text x="20" y="55" stroke="none">D</text><line x1="30" y1="52" x2="55" y2="52"/>
+        <text x="20" y="80" stroke="none">SI</text><line x1="30" y1="77" x2="55" y2="77"/>
+        <path d="M55,40 L55,90 L95,80 L95,50 Z" fill="none"/>
+        <rect x="110" y="45" width="55" height="35" fill="#eaf0f7"/><text x="137" y="66" text-anchor="middle" stroke="none" font-size="9">Scan FF</text>
+        <rect x="175" y="45" width="55" height="35" fill="#fdf1ec" stroke="#c0392b"/><text x="202" y="66" text-anchor="middle" stroke="none" font-size="9" fill="#c0392b">Hold Latch</text>
+        <line x1="95" y1="65" x2="110" y2="65"/><line x1="165" y1="65" x2="175" y2="65"/>
+        <line x1="230" y1="65" x2="270" y2="65"/><text x="285" y="69" stroke="none">Q</text>
+      </g>
+    </svg>
+    <div class="cap">Fig: Enhanced scan cell — additional hold latch stores current state during two-pattern delay/at-speed test</div>
+  </div>
+  <p><strong>Enhanced scan architecture</strong> adds an extra hold-latch to each standard scan cell, which can store the current (first) test-pattern value while the scan chain shifts in the next pattern in the background. This allows generation of the two-vector sequences needed for delay/transition fault testing without needing an extra full shift cycle between the two vectors, enabling faster, more efficient at-speed delay testing than standard scan (which must shift completely between the two vectors of a delay test).</p>
+</div>
+
+<!-- Q18 -->
+<div class="q-block" id="q18">
+  <div class="q-title"><span class="qnum">Q18</span>Explain following Scan Architectures: Full-Scan Design, Partial-Scan Design, Random-Access Scan Design<span class="marks-tag">5 Marks</span></div>
+  <table>
+    <tr><th>Architecture</th><th>Description</th><th>Key trait</th></tr>
+    <tr><td>Full-Scan Design</td><td>All flip-flops converted to scan cells, connected in one or more shift-register chains</td><td>Highest fault coverage, highest area/timing overhead</td></tr>
+    <tr><td>Partial-Scan Design</td><td>Only selected flip-flops (chosen to break critical loops/improve testability most) are scanned</td><td>Lower overhead, but needs sequential ATPG for un-scanned logic</td></tr>
+    <tr><td>Random-Access Scan Design</td><td>Each flip-flop is individually addressable (like a memory) via row/column address decoding rather than a serial shift chain</td><td>Any flip-flop can be directly read/written without shifting through others — much faster access, but requires extra addressing/decoding hardware</td></tr>
+  </table>
+  <p>Random-access scan trades serial shift-chain simplicity for direct addressability, which drastically reduces test application time (no need to shift through the whole chain to reach one cell) at the cost of more complex control/decode circuitry.</p>
+</div>
+
+<!-- Q19 -->
+<div class="q-block" id="q19">
+  <div class="q-title"><span class="qnum">Q19</span>Explain following Special-Purpose Scan Architectures: Enhanced Scan, Snapshot Scan, Error-Resilient Scan<span class="marks-tag">5 Marks</span></div>
+  <table>
+    <tr><th>Architecture</th><th>Purpose / Description</th></tr>
+    <tr><td>Enhanced Scan</td><td>Adds a hold-latch per scan cell to support fast two-pattern (delay/transition) test generation without an extra shift cycle between the pair of test vectors (see Q17)</td></tr>
+    <tr><td>Snapshot Scan</td><td>Allows a functional-mode "snapshot" of the internal state to be captured into the scan chain at-speed during normal operation, then shifted out for analysis — useful for at-speed debug/diagnosis without disturbing functional timing</td></tr>
+    <tr><td>Error-Resilient Scan</td><td>Adds redundancy/error-detection features to the scan chain itself (e.g., parity, duplicate latches) so that soft errors/upsets occurring during scan shift can be detected, ensuring scan data integrity in radiation-prone or safety-critical applications</td></tr>
+  </table>
+</div>
+
+<!-- Q20 -->
+<div class="q-block" id="q20">
+  <div class="q-title"><span class="qnum">Q20</span>What do you mean by Scan Design Rules?<span class="marks-tag">5 Marks</span></div>
+  <p><strong>Scan design rules</strong> are a set of RTL/gate-level coding and structural restrictions that a design must satisfy before scan insertion, ensuring that scan chains shift correctly and that ATPG can generate high-coverage tests.</p>
+  <ul>
+    <li>All flip-flops must be clocked by controllable clock signals (no internally-generated/gated clocks reaching flip-flops directly without control).</li>
+    <li>No combinational feedback loops (they prevent proper level-sensitizing and can cause oscillation during shift/capture).</li>
+    <li>Set/Reset (asynchronous) signals must be controllable from primary inputs and must be inactive during scan shift, to avoid corrupting scan data.</li>
+    <li>Tri-state buses must not be allowed to float or contend during scan test (bus contention rules).</li>
+    <li>Derived/gated clocks must be handled specially (see Q22) to avoid clock-skew or double-clocking issues during shift.</li>
+    <li>Every scan flip-flop must be reachable and controllable through the defined scan-in/scan-out ports.</li>
+  </ul>
+</div>
+
+<!-- Q21 -->
+<div class="q-block" id="q21">
+  <div class="q-title"><span class="qnum">Q21</span>Explain Control point insertion.<span class="marks-tag">5 Marks</span></div>
+  <div class="diagram">
+    <svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="Segoe UI,Arial" font-size="10" fill="#22303c" stroke="#1a3c6e" stroke-width="1.4">
+        <text x="150" y="14" text-anchor="middle" font-weight="bold" stroke="none">Control Point Insertion</text>
+        <text x="20" y="50" stroke="none">Original line</text><line x1="20" y1="55" x2="90" y2="55"/>
+        <line x1="90" y1="55" x2="250" y2="55" stroke-dasharray="3,3"/>
+        <path d="M110,35 L130,55 L110,75 L90,55 Z" fill="#fdf1ec" stroke="#c0392b"/><text x="110" y="95" text-anchor="middle" stroke="none" fill="#c0392b" font-size="9">MUX (control pt)</text>
+        <text x="110" y="25" text-anchor="middle" stroke="none" font-size="9">TC (test control)</text>
+      </g>
+    </svg>
+    <div class="cap">Fig: Multiplexer-based control point forcing a node to a known test value</div>
+  </div>
+  <p><strong>Control point insertion</strong> is an ad-hoc DFT technique where a multiplexer (or gating logic) is inserted on a hard-to-control internal signal line, allowing an external Test Control (TC) signal to directly force the line to a known 0 or 1 value during test mode, bypassing its normal driving logic.</p>
+  <ul>
+    <li>Improves controllability of nodes that are otherwise deeply embedded and difficult to set from primary inputs.</li>
+    <li>Commonly used at reset lines, enable lines, or nodes feeding hard-to-reach fan-in cones.</li>
+    <li>Adds small area/delay overhead (mux in the signal path) but significantly reduces test generation difficulty and improves fault coverage for that region of logic.</li>
+  </ul>
+</div>
+
+<!-- Q22 -->
+<div class="q-block" id="q22">
+  <div class="q-title"><span class="qnum">Q22</span>What is the scan-design rule for derived-clock style? Give recommended solution with an example.<span class="marks-tag">5 Marks</span></div>
+  <p>A <strong>derived clock</strong> is a clock signal generated internally by combinational logic (e.g., gated clock = CK AND Enable, or a clock divider) rather than coming directly from a primary clock pin. Scan design rule: <em>flip-flops should not be clocked directly by an internally-derived/gated clock during scan shift</em>, because uncontrolled glitches on the derived clock during shift can cause unintended, uncontrolled clocking of the flip-flop (double-clocking or missed-clocking), corrupting the scan chain.</p>
+  <h3 class="sub">Recommended Solution</h3>
+  <ul>
+    <li>Bypass the clock-gating logic during scan (test) mode using a test-mode multiplexer/OR-gate, so the flip-flop is driven directly by the primary/global clock when Scan Enable is active.</li>
+    <li>Example: For a gated clock GCK = CK AND EN, insert: GCK_test = CK AND (EN OR Test_Mode) — ensuring the gate is always transparent during scan shift regardless of the functional Enable value.</li>
+  </ul>
+</div>
+
+<!-- Q23 -->
+<div class="q-block" id="q23">
+  <div class="q-title"><span class="qnum">Q23</span>Prepare a table showing design style, its scan design rule and recommended solution.<span class="marks-tag">5 Marks</span></div>
+  <table>
+    <tr><th>Design Style</th><th>Scan Design Rule (issue)</th><th>Recommended Solution</th></tr>
+    <tr><td>Gated/Derived clocks</td><td>Uncontrolled glitches during shift can cause double/missed clocking</td><td>Bypass clock-gating logic in test mode (force clock enable active during shift)</td></tr>
+    <tr><td>Asynchronous set/reset</td><td>Uncontrolled reset assertion during shift corrupts scan data</td><td>Make set/reset controllable and force inactive during scan shift via test-mode logic</td></tr>
+    <tr><td>Combinational feedback loops</td><td>Can cause oscillation/instability that prevents deterministic sensitization</td><td>Break the loop by inserting a scan flip-flop or a test-mode multiplexer within the loop</td></tr>
+    <tr><td>Tri-state buses</td><td>Bus contention/floating bus during test can produce indeterminate values</td><td>Add bus-keeper/pull logic and ensure only one driver enabled at a time in test mode</td></tr>
+    <tr><td>Multiple uncontrolled clock domains</td><td>Difficult to synchronize shift/capture across domains</td><td>Route all domains through a single controllable test clock or use domain-specific scan chains with proper synchronization</td></tr>
+  </table>
+</div>
+
+<!-- Q24 -->
+<div class="q-block" id="q24">
+  <div class="q-title"><span class="qnum">Q24</span>Draw and explain scan design flow.<span class="marks-tag">5 Marks</span></div>
+  <div class="xref">See Q8 above for the full scan design flow diagram and step-by-step explanation: Scan Rule Check → Scan Configuration → Scan Replacement → Scan Stitching → Scan/ATPG Verification.</div>
+</div>
+
+<!-- Q25 -->
+<div class="q-block" id="q25">
+  <div class="q-title"><span class="qnum">Q25</span>Explain scan stitching.<span class="marks-tag">5 Marks</span></div>
+  <p><strong>Scan stitching</strong> is the process of connecting the scan-out (SO) pin of one scan cell to the scan-in (SI) pin of the next scan cell, in the order determined during scan configuration, to form one continuous serial shift-register chain (or multiple parallel chains) from the chip's scan-in port to its scan-out port.</p>
+  <ul>
+    <li>Typically performed after (or during) physical placement, so cells physically close together are stitched together — minimizing scan-chain routing length/congestion.</li>
+    <li>The order of stitching may differ from the logical/RTL declaration order (see Scan Reordering) to optimize layout.</li>
+    <li>Correct stitching must be verified (scan chain integrity/shift test) to ensure no cell is skipped, duplicated, or mis-ordered.</li>
+    <li>Automated by Place-and-Route/DFT tools using the scan configuration file generated earlier in the flow.</li>
+  </ul>
+</div>
+
+<!-- Q27 -->
+<div class="q-block" id="q27">
+  <div class="q-title"><span class="qnum">Q27</span>Discuss scan configuration and its importance in scan design flow. (Also: Explain the Role of Scan Configuration in the scan design flow.)<span class="marks-tag">5 Marks</span></div>
+  <p><strong>Scan configuration</strong> is the planning stage of the scan design flow where the overall scan architecture and its parameters are decided before any physical scan insertion takes place (see Chapter 1, Q15 for the detailed list of decisions: architecture type, cell type, number/length/balancing of chains, clock/reset handling, and pin allocation).</p>
+  <h3 class="sub">Importance</h3>
+  <ul>
+    <li>Determines the trade-off between test time (chain length), pin/routing overhead (number of chains), and achievable fault coverage.</li>
+    <li>Poor configuration (e.g., unbalanced chain lengths) increases test application time unnecessarily.</li>
+    <li>Correct handling of clock/reset domains at this stage avoids costly re-design later in the flow.</li>
+    <li>Provides the configuration data needed by later stages (replacement, stitching) to automate scan insertion correctly.</li>
+    <li>Directly impacts ATPG efficiency and the final test pattern count/fault coverage achieved.</li>
+  </ul>
+</div>
+
+<!-- Q29 -->
+<div class="q-block" id="q29">
+  <div class="q-title"><span class="qnum">Q29</span>What is a combinational feedback loop? How is it avoided in scan design?<span class="marks-tag">5 Marks</span></div>
+  <p>A <strong>combinational feedback loop</strong> is a closed cycle of purely combinational gates (no flip-flop in the loop) where the output of a gate eventually feeds back, through other combinational gates, to one of its own inputs.</p>
+  <div class="diagram">
+    <svg viewBox="0 0 260 110" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="Segoe UI,Arial" font-size="10" fill="#22303c" stroke="#1a3c6e" stroke-width="1.4">
+        <rect x="30" y="30" width="60" height="30" fill="#eaf0f7"/><text x="60" y="49" text-anchor="middle" stroke="none">G1</text>
+        <rect x="140" y="30" width="60" height="30" fill="#eaf0f7"/><text x="170" y="49" text-anchor="middle" stroke="none">G2</text>
+        <line x1="90" y1="45" x2="140" y2="45" stroke-width="1.6"/>
+        <path d="M200,45 L230,45 L230,90 L60,90 L60,60" fill="none" stroke="#c0392b" stroke-dasharray="4,2"/>
+        <text x="140" y="105" fill="#c0392b" stroke="none" font-size="9" text-anchor="middle">feedback path (no FF in loop)</text>
+      </g>
+    </svg>
+    <div class="cap">Fig: Combinational feedback loop between gates G1–G2</div>
+  </div>
+  <h3 class="sub">Problems Caused</h3>
+  <ul>
+    <li>Makes the circuit behave like an unintended latch/oscillator, with unpredictable/unstable logic values.</li>
+    <li>Prevents deterministic sensitization needed for D-algorithm/ATPG-based test generation.</li>
+    <li>Standard SCOAP/topological analysis assumes an acyclic combinational structure — a loop breaks this assumption.</li>
+  </ul>
+  <h3 class="sub">Avoidance in Scan Design</h3>
+  <ul>
+    <li>Identify feedback loops during scan rule checking (structural/topological analysis).</li>
+    <li>Break the loop by inserting a scan flip-flop, or a test-mode multiplexer that opens the loop during test mode, converting it into an acyclic (properly testable) structure.</li>
+    <li>Redesign the RTL to avoid latches/combinational loops from the outset, following synchronous design guidelines.</li>
+  </ul>
+</div>
+
+<!-- Q30 -->
+<div class="q-block" id="q30">
+  <div class="q-title"><span class="qnum">Q30</span>Find out SCOAP and Probability based testability measures for 5-input NAND gate.<span class="marks-tag">5 Marks</span></div>
+  <p>Assume all 5 inputs (i1...i5) are primary inputs: CC1 = CC0 = 1 for each.</p>
+  <h3 class="sub">SCOAP Combinational Controllability</h3>
+  <div class="formula">
+    NAND rule: CC0(y) = CC1(i1)+CC1(i2)+CC1(i3)+CC1(i4)+CC1(i5) + 1 = 5(1) + 1 = 6<br>
+    CC1(y) = min[CC0(i1),...,CC0(i5)] + 1 = 1 + 1 = 2
+  </div>
+  <p>Observability (assuming y is a primary output, CO(y) = 0): CO(i<sub>k</sub>) = CO(y) + Σ<sub>j≠k</sub> CC1(i<sub>j</sub>) + 1 = 0 + 4(1) + 1 = <strong>5</strong> for each input.</p>
+  <h3 class="sub">Probability-Based (Signal Probability) Measure</h3>
+  <p>Assuming each input has signal probability P1 = 0.5:</p>
+  <div class="formula">
+    P1(y) = 1 − (P1(i1)·P1(i2)·P1(i3)·P1(i4)·P1(i5)) = 1 − (0.5)<sup>5</sup> = 1 − 1/32 = 31/32 = 0.969<br>
+    P0(y) = 1 − P1(y) = 1/32 = 0.031
+  </div>
+  <p>Observability probability for each input (needs all other 4 inputs = 1 to sensitize): PO(i<sub>k</sub>) = PO(y) × (0.5)<sup>4</sup> = 1 × 1/16 = <strong>0.0625</strong> (assuming y directly observable, PO(y)=1).</p>
+</div>
+
+<!-- Q31 -->
+<div class="q-block" id="q31">
+  <div class="q-title"><span class="qnum">Q31</span>Write SCOAP combinational controllability and observability calculation rules of different logic gates. Find combinational controllability and observability of Half Adder logic circuit using SCOAP.<span class="marks-tag">5 Marks</span></div>
+  <h3 class="sub">SCOAP Rules</h3>
+  <table>
+    <tr><th>Gate</th><th>CC1(y)</th><th>CC0(y)</th></tr>
+    <tr><td>AND</td><td>CC1(a)+CC1(b)+1</td><td>min[CC0(a),CC0(b)]+1</td></tr>
+    <tr><td>OR</td><td>min[CC1(a),CC1(b)]+1</td><td>CC0(a)+CC0(b)+1</td></tr>
+    <tr><td>NAND</td><td>min[CC0(a),CC0(b)]+1</td><td>CC1(a)+CC1(b)+1</td></tr>
+    <tr><td>NOR</td><td>CC0(a)+CC0(b)+1</td><td>min[CC1(a),CC1(b)]+1</td></tr>
+    <tr><td>NOT</td><td>CC0(a)+1</td><td>CC1(a)+1</td></tr>
+    <tr><td>XOR</td><td>min[CC0(a)+CC0(b), CC1(a)+CC1(b)]+1</td><td>min[CC0(a)+CC1(b), CC1(a)+CC0(b)]+1</td></tr>
+  </table>
+  <p>Observability rule (input i<sub>k</sub> of gate with output y and other inputs i<sub>j</sub>): CO(i<sub>k</sub>) = CO(y) + Σ<sub>j≠k</sub>CC<sub>x</sub>(i<sub>j</sub>) + 1, where CC<sub>x</sub> is the controllability of the gate's non-controlling value for that input (CC1 for AND/NAND, CC0 for OR/NOR).</p>
+  <h3 class="sub">Half Adder (S = A ⊕ B, C = A·B)</h3>
+  <p>Primary inputs: CC1(A)=CC0(A)=CC1(B)=CC0(B)=1</p>
+  <div class="formula">
+    CC1(Carry) = CC1(A)+CC1(B)+1 = 1+1+1 = 3<br>
+    CC0(Carry) = min[CC0(A),CC0(B)]+1 = 1+1 = 2<br>
+    CC1(Sum) = min[CC0(A)+CC0(B), CC1(A)+CC1(B)]+1 = min[2,2]+1 = 3<br>
+    CC0(Sum) = min[CC0(A)+CC1(B), CC1(A)+CC0(B)]+1 = min[2,2]+1 = 3
+  </div>
+  <p>Assuming Sum and Carry are both primary outputs (CO=0):</p>
+  <div class="formula">
+    CO(A) via AND(Carry) = 0+CC1(B)+1 = 2; via XOR(Sum) = 0+min[CC0(B),CC1(B)]+1 = 2 → CO(A) = min(2,2) = <strong>2</strong><br>
+    CO(B) via AND = 0+CC1(A)+1 = 2; via XOR = 0+min[CC0(A),CC1(A)]+1 = 2 → CO(B) = <strong>2</strong>
+  </div>
+</div>
+
+<!-- Q33 -->
+<div class="q-block" id="q33">
+  <div class="q-title"><span class="qnum">Q33</span>Draw and Explain RTL testability repair design flow.<span class="marks-tag">5 Marks</span></div>
+  <div class="diagram">
+    <svg viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1a3c6e"/></marker></defs>
+      <g font-family="Segoe UI,Arial" font-size="10" fill="#22303c">
+        <rect x="10" y="35" width="115" height="55" rx="6" fill="#eaf0f7" stroke="#1a3c6e"/><text x="67" y="58" text-anchor="middle">RTL Design</text><text x="67" y="74" text-anchor="middle">(input)</text>
+        <line x1="125" y1="62" x2="150" y2="62" stroke="#1a3c6e" stroke-width="2" marker-end="url(#a2)"/>
+        <rect x="150" y="35" width="115" height="55" rx="6" fill="#eaf0f7" stroke="#1a3c6e"/><text x="207" y="58" text-anchor="middle">Testability</text><text x="207" y="74" text-anchor="middle">Analysis (SCOAP)</text>
+        <line x1="265" y1="62" x2="290" y2="62" stroke="#1a3c6e" stroke-width="2" marker-end="url(#a2)"/>
+        <rect x="290" y="35" width="115" height="55" rx="6" fill="#eaf0f7" stroke="#1a3c6e"/><text x="347" y="58" text-anchor="middle">Identify Hard-</text><text x="347" y="74" text-anchor="middle">to-Test Nodes</text>
+        <line x1="405" y1="62" x2="430" y2="62" stroke="#1a3c6e" stroke-width="2" marker-end="url(#a2)"/>
+        <rect x="430" y="35" width="115" height="55" rx="6" fill="#eaf0f7" stroke="#1a3c6e"/><text x="487" y="58" text-anchor="middle">Insert Repair</text><text x="487" y="74" text-anchor="middle">(test points)</text>
+        <line x1="545" y1="62" x2="570" y2="62" stroke="#1a3c6e" stroke-width="2" marker-end="url(#a2)"/>
+        <rect x="570" y="35" width="120" height="55" rx="6" fill="#eaf0f7" stroke="#1a3c6e"/><text x="630" y="58" text-anchor="middle">Re-analyze /</text><text x="630" y="74" text-anchor="middle">Verify Repair</text>
+      </g>
+    </svg>
+    <div class="cap">Fig: RTL testability repair flow</div>
+  </div>
+  <ol>
+    <li><strong>RTL Design input:</strong> Start with the synthesizable RTL description of the circuit.</li>
+    <li><strong>Testability Analysis:</strong> Run SCOAP or probability-based analysis on the RTL/gate-level netlist to compute controllability/observability of every node.</li>
+    <li><strong>Identify hard-to-test nodes:</strong> Flag nodes with poor (high) CC/CO values exceeding a threshold.</li>
+    <li><strong>Insert repair (test points):</strong> Add control points and/or observation points at the identified nodes to improve their testability.</li>
+    <li><strong>Re-analyze/verify:</strong> Re-run testability analysis to confirm improvement, iterating until acceptable testability is achieved without excessive area/performance overhead.</li>
+  </ol>
+</div>
+
+<!-- Q34 -->
+<div class="q-block" id="q34">
+  <div class="q-title"><span class="qnum">Q34</span>Why do we need DFT techniques? Define Controllability and Observability.<span class="marks-tag">5 Marks</span></div>
+  <h3 class="sub">Need for DFT</h3>
+  <ul>
+    <li>Modern VLSI chips have billions of gates/transistors — exhaustive functional testing is computationally infeasible.</li>
+    <li>Sequential circuits have poor natural controllability/observability of internal states (see Chapter 1, Q14).</li>
+    <li>DFT reduces test generation time, test application time, and improves achievable fault coverage at reasonable cost.</li>
+    <li>Enables automated, high-quality test pattern generation using standard ATPG tools.</li>
+  </ul>
+  <h3 class="sub">Definitions</h3>
+  <p><strong>Controllability:</strong> The degree of difficulty/ease of setting a specific node in the circuit to a required logic value (0 or 1) by applying signals at the primary inputs.</p>
+  <p><strong>Observability:</strong> The degree of difficulty/ease of observing the logic value at a specific internal node by propagating it to a primary output.</p>
+</div>
+
+<!-- Q36 -->
+<div class="q-block" id="q36">
+  <div class="q-title"><span class="qnum">Q36</span>What is meant by Testability? Explain Testability Analysis. (Also: Define Controllability, Observability, Testability and list testability analysis techniques.)<span class="marks-tag">5 Marks</span></div>
+  <p><strong>Testability</strong> is a measure of how easy or difficult it is to test a circuit for the presence of manufacturing faults — a circuit with high controllability and high observability at all its internal nodes is said to have high testability, meaning fewer/simpler test patterns are needed to achieve high fault coverage.</p>
+  <p><strong>Testability Analysis</strong> is the process of computing numerical (or probabilistic) controllability and observability values for every node in a circuit, without actually generating test patterns, in order to quickly and cheaply predict which parts of the circuit will be difficult to test — guiding designers to apply DFT (test points, scan) at those specific locations early in the design cycle, well before ATPG is run.</p>
+  <div class="xref">See Q3 above for the list of testability analysis techniques (SCOAP, probability-based/COP, information-theoretic, simulation-based, structural analysis).</div>
+</div>
+
+<!-- Q37 -->
+<div class="q-block" id="q37">
+  <div class="q-title"><span class="qnum">Q37</span>Write SCOAP (combinational) controllability &amp; observability rules for logic gates and apply to a 1-bit full adder.<span class="marks-tag">5 Marks</span></div>
+  <div class="xref">SCOAP rules table is given in Q31 above.</div>
+  <p>1-bit Full Adder: Sum = A ⊕ B ⊕ Cin; Cout = A·B + Cin·(A ⊕ B). Implemented using 2 XOR gates, 2 AND gates, 1 OR gate: Let X1 = A⊕B, Sum = X1⊕Cin, P1=A·B, P2=X1·Cin, Cout=P1+P2.</p>
+  <p>With CC1(A)=CC0(A)=CC1(B)=CC0(B)=CC1(Cin)=CC0(Cin)=1:</p>
+  <div class="formula">
+    CC1(X1) = min[CC0(A)+CC0(B), CC1(A)+CC1(B)]+1 = min[2,2]+1 = 3<br>
+    CC0(X1) = min[CC0(A)+CC1(B), CC1(A)+CC0(B)]+1 = min[2,2]+1 = 3<br>
+    CC1(Sum) = min[CC0(X1)+CC0(Cin), CC1(X1)+CC1(Cin)]+1 = min[4,4]+1 = 5<br>
+    CC0(Sum) = min[CC0(X1)+CC1(Cin), CC1(X1)+CC0(Cin)]+1 = min[4,4]+1 = 5<br>
+    CC1(P1) = CC1(A)+CC1(B)+1 = 3; CC0(P1) = min[CC0(A),CC0(B)]+1 = 2<br>
+    CC1(P2) = CC1(X1)+CC1(Cin)+1 = 5; CC0(P2) = min[CC0(X1),CC0(Cin)]+1 = 2<br>
+    CC1(Cout) = min[CC1(P1),CC1(P2)]+1 = min[3,5]+1 = 4<br>
+    CC0(Cout) = CC0(P1)+CC0(P2)+1 = 2+2+1 = 5
+  </div>
+  <p>Observability of A, B, Cin is obtained by propagating through both the Sum path (via XOR gates) and the Cout path (via AND/OR gates) and taking the minimum of the two path values, using the observability rule stated in Q31 (this multi-path tracing is characteristic of full-adder testability calculation, reflecting its reconvergent structure).</p>
+</div>
+
+<!-- Q38 handled implicitly, see below -->
+<div class="q-block" id="q38b" style="display:none"></div>
+
+<!-- Q39 -->
+<div class="q-block" id="q39">
+  <div class="q-title"><span class="qnum">Q39</span>Calculate the combinational controllability and observability of the given circuit using SCOAP testability analysis.<span class="marks-tag">5 Marks</span></div>
+  <div class="diagram">
+    <svg viewBox="0 0 380 170" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="Segoe UI,Arial" font-size="10" fill="#22303c" stroke="#1a3c6e" stroke-width="1.4">
+        <text x="20" y="35" stroke="none">A</text><line x1="30" y1="32" x2="70" y2="32"/>
+        <text x="20" y="70" stroke="none">B</text><line x1="30" y1="67" x2="70" y2="67"/><circle cx="45" cy="67" r="2" fill="#c0392b" stroke="none"/>
+        <text x="20" y="105" stroke="none">C</text><line x1="30" y1="102" x2="70" y2="102"/><circle cx="45" cy="102" r="2" fill="#c0392b" stroke="none"/>
+        <path d="M70,20 L70,45 L110,45 L110,20 Z" fill="none"/><text x="90" y="36" text-anchor="middle" stroke="none" font-size="8">AND (G1)</text>
+        <line x1="30" y1="32" x2="70" y2="32"/><line x1="45" y1="67" x2="45" y2="32"/><line x1="45" y1="32" x2="70" y2="32"/>
+        <path d="M70,80 L70,105 L110,105 L110,80 Z" fill="none"/><text x="90" y="96" text-anchor="middle" stroke="none" font-size="8">OR (G2)</text>
+        <line x1="45" y1="67" x2="70" y2="80"/><line x1="45" y1="102" x2="70" y2="98"/>
+        <path d="M120,55 L120,80 L155,80 L155,55 Z" fill="none"/><text x="137" y="71" text-anchor="middle" stroke="none" font-size="8">AND (G3)</text>
+        <line x1="110" y1="32" x2="120" y2="60" stroke-dasharray="2,2"/>
+        <line x1="110" y1="92" x2="120" y2="75"/>
+        <path d="M165,25 L165,60 L200,60 L200,25 Z" fill="none"/><text x="182" y="46" text-anchor="middle" stroke="none" font-size="8">OR (Q)</text>
+        <line x1="110" y1="32" x2="165" y2="32"/>
+        <line x1="155" y1="67" x2="165" y2="53"/>
+        <line x1="200" y1="42" x2="240" y2="42"/><text x="255" y="46" stroke="none">Q</text>
+      </g>
+    </svg>
+    <div class="cap">Fig: Reconvergent circuit — Q = (A·B) OR [(B OR C)·C] (structure as given in the question paper diagram)</div>
+  </div>
+  <p>With primary inputs CC1(A)=CC0(A)=CC1(B)=CC0(B)=CC1(C)=CC0(C)=1, apply the gate rules from Q31 successively, level by level, for each internal gate (G1=AND(A,B), G2=OR(B,C), G3=AND(G2,C), output Q=OR(G1,G3)):</p>
+  <div class="formula">
+    CC1(G1)=CC1(A)+CC1(B)+1=3; CC0(G1)=min[CC0(A),CC0(B)]+1=2<br>
+    CC1(G2)=min[CC1(B),CC1(C)]+1=2; CC0(G2)=CC0(B)+CC0(C)+1=3<br>
+    CC1(G3)=CC1(G2)+CC1(C)+1=2+1+1=4; CC0(G3)=min[CC0(G2),CC0(C)]+1=min[3,1]+1=2<br>
+    CC1(Q)=min[CC1(G1),CC1(G3)]+1=min[3,4]+1=4; CC0(Q)=CC0(G1)+CC0(G3)+1=2+2+1=5
+  </div>
+  <p>Observability (Q primary output, CO(Q)=0): CO(G1)=CO(Q)+CC1(G3)+1=0+4+1=5; CO(G3)=CO(Q)+CC1(G1)+1=0+3+1=4; then propagate CO back through G1, G2 to A, B, C using the AND/OR observability rule, taking the minimum over both reconvergent paths for signal B (since B fans out to both G1 and G2), reflecting the added difficulty of testing reconvergent-fanout structures.</p>
+</div>
+
+<!-- Q40 -->
+<div class="q-block" id="q40">
+  <div class="q-title"><span class="qnum">Q40</span>Enlist three different scan-design architectures of DFT and explain Muxed-D full scan.<span class="marks-tag">5 Marks</span></div>
+  <p>Three scan-design architectures: <strong>(1) Full-Scan, (2) Partial-Scan, (3) Random-Access Scan</strong> — see Q18 for full descriptions and comparison table.</p>
+  <div class="xref">Muxed-D full-scan design is explained in detail in Q11 above.</div>
+</div>
+
+<!-- Q41 -->
+<div class="q-block" id="q41">
+  <div class="q-title"><span class="qnum">Q41</span>Write probability-based controllability &amp; observability calculation rules for logic gates.<span class="marks-tag">5 Marks</span></div>
+  <p>The probability-based (Parker-McCluskey) model represents controllability as the <strong>signal probability</strong> P1 (probability the line is at logic 1) and P0 = 1−P1.</p>
+  <table>
+    <tr><th>Gate</th><th>P1(y)</th></tr>
+    <tr><td>AND</td><td>P1(a) × P1(b)</td></tr>
+    <tr><td>OR</td><td>1 − [(1−P1(a))(1−P1(b))]</td></tr>
+    <tr><td>NAND</td><td>1 − [P1(a) × P1(b)]</td></tr>
+    <tr><td>NOR</td><td>(1−P1(a))(1−P1(b))</td></tr>
+    <tr><td>NOT</td><td>1 − P1(a)</td></tr>
+    <tr><td>XOR</td><td>P1(a)+P1(b) − 2·P1(a)·P1(b)</td></tr>
+  </table>
+  <h3 class="sub">Observability Probability (PO)</h3>
+  <p>PO(input) = PO(output) × P(other inputs set to their non-controlling value):</p>
+  <ul>
+    <li>AND/NAND: PO(a) = PO(y) × P1(b) (other input must be 1)</li>
+    <li>OR/NOR: PO(a) = PO(y) × P0(b) (other input must be 0)</li>
+  </ul>
+</div>
+
+<!-- Q42 -->
+<div class="q-block" id="q42">
+  <div class="q-title"><span class="qnum">Q42</span>Calculate probability-based measures for a 3-input OR gate.<span class="marks-tag">5 Marks</span></div>
+  <p>Assume each input has P1 = 0.5 (equally likely 0/1).</p>
+  <div class="formula">
+    P1(y) = 1 − (1−0.5)(1−0.5)(1−0.5) = 1 − (0.5)<sup>3</sup> = 1 − 0.125 = <strong>0.875</strong><br>
+    P0(y) = 1 − 0.875 = <strong>0.125</strong>
+  </div>
+  <p>Observability of each input (needs other two inputs = 0 to sensitize, non-controlling value for OR is 0): assuming y is directly observed (PO(y)=1):</p>
+  <div class="formula">
+    PO(input) = PO(y) × P0(other1) × P0(other2) = 1 × 0.5 × 0.5 = <strong>0.25</strong>
+  </div>
+</div>
+
+<!-- Q43 -->
+<div class="q-block" id="q43">
+  <div class="q-title"><span class="qnum">Q43</span>Obtain Controllability &amp; Observability for signals of a 2-input AND gate using SCOAP and probability methods.<span class="marks-tag">5 Marks</span></div>
+  <h3 class="sub">SCOAP Method</h3>
+  <p>Primary inputs: CC1(a)=CC0(a)=CC1(b)=CC0(b)=1</p>
+  <div class="formula">
+    CC1(y) = CC1(a)+CC1(b)+1 = 1+1+1 = 3<br>
+    CC0(y) = min[CC0(a),CC0(b)]+1 = 1+1 = 2<br>
+    CO(a) = CO(y)+CC1(b)+1 = 0+1+1 = 2 &nbsp; (assuming y is primary output)<br>
+    CO(b) = CO(y)+CC1(a)+1 = 0+1+1 = 2
+  </div>
+  <h3 class="sub">Probability Method</h3>
+  <p>Assume P1(a)=P1(b)=0.5</p>
+  <div class="formula">
+    P1(y) = P1(a) × P1(b) = 0.5 × 0.5 = 0.25; &nbsp; P0(y) = 0.75<br>
+    PO(a) = PO(y) × P1(b) = 1 × 0.5 = 0.5<br>
+    PO(b) = PO(y) × P1(a) = 1 × 0.5 = 0.5
+  </div>
+  <p>Both methods show line "y" is easier to control to 0 than 1 (fewer AND inputs need to align for 1), and both inputs are symmetric in observability due to the gate's symmetric structure.</p>
+</div>
+
+<!-- Q44 -->
+<div class="q-block" id="q44">
+  <div class="q-title"><span class="qnum">Q44</span>List names of typical ad-hoc DFT techniques.<span class="marks-tag">5 Marks</span></div>
+  <ul>
+    <li>Control point insertion</li>
+    <li>Observation point insertion</li>
+    <li>Circuit partitioning (using test multiplexers/bus access)</li>
+    <li>Initializable counters/registers (via reset)</li>
+    <li>Avoiding/breaking asynchronous feedback loops</li>
+    <li>Avoiding redundant logic</li>
+    <li>Bus-oriented test point insertion (test bus architecture)</li>
+    <li>Adding test-only multiplexers to break long shift-register/counter chains for direct load/observe access</li>
+  </ul>
+</div>
+
+<!-- Q45 -->
+<div class="q-block" id="q45">
+  <div class="q-title"><span class="qnum">Q45</span>Derive combinational &amp; sequential controllability/observability equations for sites a, b, d, r, CK, q in the given D-FF circuit.<span class="marks-tag">5 Marks</span></div>
+  <div class="diagram">
+    <svg viewBox="0 0 320 190" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="Segoe UI,Arial" font-size="11" fill="#22303c" stroke="#1a3c6e" stroke-width="1.5">
+        <text x="20" y="65" stroke="none">a</text><line x1="30" y1="62" x2="70" y2="62"/>
+        <text x="20" y="90" stroke="none">b</text><line x1="30" y1="87" x2="70" y2="87"/>
+        <path d="M70,50 L70,100 L100,88 L100,62 Z" fill="none"/><text x="112" y="78" stroke="none">d</text>
+        <line x1="100" y1="75" x2="150" y2="75"/>
+        <rect x="150" y="45" width="70" height="65" fill="#eaf0f7"/><text x="185" y="30" text-anchor="middle" stroke="none">r (Reset)</text>
+        <text x="185" y="70" text-anchor="middle" stroke="none">D</text><text x="185" y="95" text-anchor="middle" stroke="none">Q</text>
+        <line x1="185" y1="35" x2="185" y2="45"/>
+        <line x1="185" y1="140" x2="185" y2="110"/><text x="185" y="155" text-anchor="middle" stroke="none">CK</text>
+        <line x1="220" y1="80" x2="260" y2="80"/><text x="275" y="84" stroke="none">q</text>
+      </g>
+    </svg>
+    <div class="cap">Fig: d = a·AND·b; D-FF with reset r, clock CK, output q</div>
+  </div>
+  <p>Assume a, b, r, CK are primary inputs: CC1(a)=CC0(a)=CC1(b)=CC0(b)=CC1(r)=CC0(r)=CC1(CK)=CC0(CK)=1.</p>
+  <h3 class="sub">Combinational Controllability (site d)</h3>
+  <div class="formula">
+    CC1(d) = CC1(a)+CC1(b)+1 = 1+1+1 = 3<br>
+    CC0(d) = min[CC0(a),CC0(b)]+1 = 1+1 = 2
+  </div>
+  <h3 class="sub">Sequential Controllability (site q)</h3>
+  <p>To set q=1, D must be set to 1 (via a=b=1) and one clock pulse applied; to set q=0, either D=0 with a clock pulse, or the (faster) reset path r can be asserted directly:</p>
+  <div class="formula">
+    SC1(q) = CC1(d) + CC1(CK) + 1 = 3+1+1 = 5<br>
+    SC0(q) = min[ CC0(d)+CC1(CK)+1 , CC1(r)+1 ] = min[2+1+1, 1+1] = min[4,2] = <strong>2</strong> (via reset — the faster path)
+  </div>
+  <h3 class="sub">Observability (assume q is primary output, CO(q)=0)</h3>
+  <div class="formula">
+    CO(d) = CO(q) + CC1(CK) + 1 = 0+1+1 = 2<br>
+    CO(a) = CO(d) + CC1(b) + 1 = 2+1+1 = 4<br>
+    CO(b) = CO(d) + CC1(a) + 1 = 2+1+1 = 4<br>
+    CO(r) = CO(q) + 1 = 0+1 = 1 &nbsp;(reset directly forces/is observed at q)<br>
+    CO(CK) is implicit — its correct value/edge is a precondition for capturing d into q, rather than a propagated data value
+  </div>
+  <p>This shows the reset path r gives the fastest (lowest-cost) way to control q to 0, and that a, b are the "deepest" (least controllable/observable) nodes since they must pass through both the AND gate and the flip-flop's clocked capture to reach the observable output q.</p>
+</div>
+
+</div>
+<footer>Prepared for TESTING AND VERIFICATION (3171111) — Chapter 2 Question Bank Answers</footer>
+</body>
+</html>

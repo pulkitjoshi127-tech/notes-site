@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Chapter 4: Verification — Testing and Verification (3171111)</title>
+<style>
+  :root{
+    --primary:#1a3c6e; --accent:#c0392b; --bg:#f7f9fb; --card:#ffffff;
+    --border:#d8e0e8; --text:#22303c; --muted:#5c6b78;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:'Segoe UI',Calibri,Arial,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:0;line-height:1.55;}
+  .wrap{max-width:900px;margin:0 auto;padding:24px 20px 60px;}
+  header.doc-head{background:linear-gradient(135deg,var(--primary),#274d85);color:#fff;padding:28px 24px;border-radius:10px;margin-bottom:26px;}
+  header.doc-head h1{margin:0 0 6px;font-size:1.6em;}
+  header.doc-head p{margin:2px 0;font-size:0.95em;opacity:0.92;}
+  nav.toc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:28px;}
+  nav.toc h2{margin-top:0;font-size:1.1em;color:var(--primary);}
+  nav.toc ol{columns:2;-webkit-columns:2;-moz-columns:2;padding-left:18px;}
+  nav.toc li{margin-bottom:4px;font-size:0.92em;}
+  nav.toc a{color:var(--text);text-decoration:none;}
+  nav.toc a:hover{color:var(--accent);text-decoration:underline;}
+  .q-block{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 22px 20px;margin-bottom:22px;scroll-margin-top:12px;}
+  .q-title{font-weight:600;color:#fff;background:var(--primary);padding:10px 14px;border-radius:7px;margin:-18px -22px 16px;font-size:1.02em;}
+  .q-title .qnum{background:var(--accent);padding:2px 9px;border-radius:5px;margin-right:8px;font-size:0.85em;}
+  h3.sub{color:var(--primary);font-size:0.98em;margin:14px 0 6px;border-left:4px solid var(--accent);padding-left:8px;}
+  table{border-collapse:collapse;width:100%;margin:10px 0;font-size:0.92em;}
+  th,td{border:1px solid var(--border);padding:6px 10px;text-align:left;vertical-align:top;}
+  th{background:#eaf0f7;color:var(--primary);}
+  tr:nth-child(even) td{background:#fafcfe;}
+  ul,ol{margin:6px 0;padding-left:22px;}
+  li{margin-bottom:4px;}
+  .diagram{background:#fbfcfe;border:1px dashed #9db2c6;border-radius:8px;padding:10px;text-align:center;margin:12px 0;}
+  .diagram svg{max-width:100%;height:auto;}
+  .diagram .cap{font-size:0.82em;color:var(--muted);margin-top:6px;font-style:italic;}
+  .marks-tag{float:right;background:#e8f4ea;color:#1e7a34;border:1px solid #b7dcc0;font-size:0.75em;padding:2px 8px;border-radius:12px;font-weight:600;}
+  .formula{background:#fff8e6;border-left:4px solid #e0a800;padding:8px 12px;margin:8px 0;font-family:'Cambria Math',Cambria,serif;font-size:0.92em;}
+  .note{background:#eef5ff;border-left:4px solid #3a7bd5;padding:8px 12px;margin:8px 0;font-size:0.88em;}
+  .xref{background:#f3eefc;border-left:4px solid #7b52c9;padding:6px 12px;margin:8px 0;font-size:0.88em;}
+  footer{text-align:center;color:var(--muted);font-size:0.8em;margin-top:30px;}
+  @media print{body{background:#fff;} .q-block{break-inside:avoid;border:1px solid #ccc;} nav.toc{break-after:page;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="doc-head">
+  <h1>Testing and Verification (3171111)</h1>
+  <p>L. D. College of Engineering, Ahmedabad — Electronics &amp; Communication Engineering Department</p>
+  <p><strong>Chapter 4: Verification</strong> — Model Answers (structured for 5-mark examination questions)</p>
+</header>
+
+<nav class="toc">
+  <h2>Contents — Chapter 4</h2>
+  <ol>
+    <li><a href="#q1">Testbench &amp; importance of verification</a></li>
+    <li><a href="#q2">Testbench; Testing vs Verification</a></li>
+    <li><a href="#q3">Code coverage &amp; 100% coverage meaning</a></li>
+    <li><a href="#q4">The Reconvergence Model</a></li>
+    <li><a href="#q5">Different Verification Approaches</a></li>
+    <li><a href="#q6">Logic simulation flow chart</a></li>
+    <li><a href="#q7">Functional Verification approaches</a></li>
+    <li><a href="#q8">Type I and Type II mistakes</a></li>
+    <li><a href="#q9">Key terms (Automation, Poka-Yoke, etc.)</a></li>
+    <li><a href="#q10">Testing versus Verification</a></li>
+    <li><a href="#q11">Role of Verification Plan</a></li>
+    <li><a href="#q12">Criteria for Verification Plan</a></li>
+    <li><a href="#q13">Levels of Verification</a></li>
+    <li><a href="#q14">Verification Strategies</a></li>
+    <li><a href="#q15">Verification Languages</a></li>
+  </ol>
+</nav>
+
+<!-- Q1 -->
+<div class="q-block" id="q1">
+  <div class="q-title"><span class="qnum">Q1</span>What is a Testbench? Explain the Importance of Verification.<span class="marks-tag">5 Marks</span></div>
+  <h3 class="sub">Testbench</h3>
+  <p>A <strong>testbench</strong> is a piece of code (HDL/HVL) written around the Design Under Verification (DUV/DUT) that is not synthesized into hardware, but is used purely to verify the design's functional correctness in simulation. It generates stimulus, applies it to the DUT, monitors the DUT's responses, and checks them against expected behaviour.</p>
+  <div class="diagram">
+    <svg viewBox="0 0 380 150" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="Segoe UI,Arial" font-size="10" fill="#22303c" stroke="#1a3c6e" stroke-width="1.4">
+        <text x="190" y="16" text-anchor="middle" font-weight="bold" stroke="none">Basic Testbench Structure</text>
+        <rect x="15" y="35" width="90" height="40" rx="5" fill="#eaf0f7"/><text x="60" y="59" text-anchor="middle" stroke="none">Stimulus</text>
+        <rect x="15" y="95" width="90" height="40" rx="5" fill="#eaf0f7"/><text x="60" y="119" text-anchor="middle" stroke="none">Generator</text>
+        <rect x="150" y="60" width="100" height="45" rx="5" fill="#fdf1ec" stroke="#c0392b"/><text x="200" y="86" text-anchor="middle" stroke="none" fill="#c0392b">DUT</text>
+        <rect x="290" y="35" width="80" height="40" rx="5" fill="#eaf0f7"/><text x="330" y="59" text-anchor="middle" stroke="none">Monitor</text>
+        <rect x="290" y="95" width="80" height="40" rx="5" fill="#eaf0f7"/><text x="330" y="119" text-anchor="middle" stroke="none">Checker/Scoreboard</text>
+        <line x1="105" y1="55" x2="150" y2="70"/><line x1="105" y1="115" x2="150" y2="95"/>
+        <line x1="250" y1="75" x2="290" y2="55"/><line x1="330" y1="75" x2="330" y2="95"/>
+      </g>
+    </svg>
+    <div class="cap">Fig: Testbench applies stimulus to DUT and checks responses via monitor/scoreboard</div>
+  </div>
+  <h3 class="sub">Importance of Verification</h3>
+  <ul>
+    <li>Modern SoC designs are extremely complex — a single unverified bug can cause costly silicon re-spins (millions of dollars, months of delay).</li>
+    <li>Verification typically consumes 60–70% of the total design cycle time/effort, reflecting its critical role.</li>
+    <li>Ensures the design meets its functional specification before committing to fabrication.</li>
+    <li>Early bug detection is far cheaper than post-silicon debug (analogous to the Rule of Ten in testing).</li>
+    <li>Builds confidence for tape-out sign-off through measurable coverage closure.</li>
+  </ul>
+</div>
+
+<!-- Q2 -->
+<div class="q-block" id="q2">
+  <div class="q-title"><span class="qnum">Q2</span>What is test bench? Differentiate: Testing and Verification<span class="marks-tag">5 Marks</span></div>
+  <div class="xref">See Q1 above for the definition and structure of a testbench.</div>
+  <table>
+    <tr><th>Aspect</th><th>Verification</th><th>Testing</th></tr>
+    <tr><td>Purpose</td><td>Confirms the <em>design</em> (RTL/gate-level model) correctly implements the intended specification</td><td>Confirms the <em>manufactured chip</em> is free from physical/fabrication defects</td></tr>
+    <tr><td>When performed</td><td>Pre-silicon, during the design phase (simulation, formal, emulation)</td><td>Post-silicon, during/after manufacturing (wafer probe, final test)</td></tr>
+    <tr><td>What is checked against</td><td>Functional specification / design intent</td><td>Golden fault-free response of the already-verified design</td></tr>
+    <tr><td>Target defects/bugs</td><td>Logical/design bugs (incorrect RTL, spec misinterpretation)</td><td>Physical manufacturing defects (opens, shorts, bridging)</td></tr>
+    <tr><td>Tools used</td><td>Simulators, formal verification tools, testbenches, emulators</td><td>ATE, ATPG-generated test vectors, DFT structures (scan, BIST)</td></tr>
+    <tr><td>Performed once or repeatedly</td><td>Once per design (before tape-out)</td><td>Repeated on every manufactured chip</td></tr>
+  </table>
+</div>
+
+<!-- Q3 -->
+<div class="q-block" id="q3">
+  <div class="q-title"><span class="qnum">Q3</span>What is code coverage? Explain it in detail. What does 100% code coverage mean?<span class="marks-tag">5 Marks</span></div>
+  <p><strong>Code coverage</strong> is a structural (implementation-based) metric that measures how much of the RTL source code has been exercised by the simulation testbench, helping identify unverified/untested parts of the design.</p>
+  <table>
+    <tr><th>Type</th><th>Description</th></tr>
+    <tr><td>Statement (Line) coverage</td><td>Percentage of executable RTL statements/lines executed at least once</td></tr>
+    <tr><td>Branch (Decision) coverage</td><td>Percentage of all branches (if-else, case arms) taken in both/all directions</td></tr>
+    <tr><td>Condition (Expression) coverage</td><td>Percentage of boolean sub-expressions within a condition that have evaluated to both true and false</td></tr>
+    <tr><td>Toggle coverage</td><td>Percentage of signals/registers that have toggled from 0→1 and 1→0 at least once</td></tr>
+    <tr><td>FSM (State) coverage</td><td>Percentage of states and state transitions of a finite state machine that have been exercised</td></tr>
+    <tr><td>Path coverage</td><td>Percentage of all possible control-flow paths through the code that have been executed</td></tr>
+  </table>
+  <h3 class="sub">Meaning of 100% Code Coverage</h3>
+  <p>100% code coverage means every line, branch, condition, and toggle in the RTL source code has been exercised at least once by the test suite. <strong>However, 100% code coverage does not imply 100% functional correctness</strong> — it only confirms that the code was executed, not that its output was checked against the correct expected behaviour for every meaningful scenario, and it says nothing about un-coded (missing) functionality. Hence code coverage must always be supplemented with functional coverage and checkers/assertions for meaningful verification sign-off.</p>
+</div>
+
+<!-- Q4 -->
+<div class="q-block" id="q4">
+  <div class="q-title"><span class="qnum">Q4</span>Describe: The Reconvergence Model.<span class="marks-tag">5 Marks</span></div>
+  <p>The <strong>Reconvergence Model</strong> describes verification as a process where two independently-derived representations of the same design intent — one from the <em>specification</em> side and one from the <em>implementation</em> side — must be shown to "reconverge" (match/agree) through verification.</p>
+  <div class="diagram">
+    <svg viewBox="0 0 380 150" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="Segoe UI,Arial" font-size="10" fill="#22303c" stroke="#1a3c6e" stroke-width="1.4">
+        <text x="190" y="16" text-anchor="middle" font-weight="bold" stroke="none">Reconvergence Model</text>
+        <rect x="20" y="35" width="120" height="40" rx="5" fill="#eaf0f7"/><text x="80" y="59" text-anchor="middle" stroke="none">Specification</text>
+        <rect x="20" y="95" width="120" height="40" rx="5" fill="#eaf0f7"/><text x="80" y="119" text-anchor="middle" stroke="none">Implementation (RTL)</text>
+        <path d="M140,55 C 220,55 220,95 260,95" fill="none"/>
+        <path d="M140,115 C 220,115 220,95 260,95" fill="none"/>
+        <circle cx="270" cy="95" r="20" fill="#fdf1ec" stroke="#c0392b"/><text x="270" y="99" text-anchor="middle" stroke="none" fill="#c0392b" font-size="9">Compare</text>
+        <line x1="290" y1="95" x2="340" y2="95"/><text x="355" y="99" stroke="none" font-size="9">Match?</text>
+      </g>
+    </svg>
+    <div class="cap">Fig: Two independently generated views reconverge and are compared for equivalence</div>
+  </div>
+  <ul>
+    <li>One path derives expected behaviour directly from the specification (e.g., a reference/golden model, testbench predictor).</li>
+    <li>The other path is the actual DUT/RTL implementation's behaviour, observed in simulation.</li>
+    <li>Verification compares the two independently-derived results; if they reconverge (agree) for a wide variety of stimuli, confidence in design correctness increases.</li>
+    <li>If they diverge, a bug exists in either the implementation, the reference model, or the specification interpretation.</li>
+    <li>This principle underlies checker/scoreboard-based testbenches, formal equivalence checking, and golden-reference-model comparison.</li>
+  </ul>
+</div>
+
+<!-- Q5 -->
+<div class="q-block" id="q5">
+  <div class="q-title"><span class="qnum">Q5</span>Explain different Verification Approaches.<span class="marks-tag">5 Marks</span></div>
+  <table>
+    <tr><th>Approach</th><th>Description</th></tr>
+    <tr><td>Dynamic (Simulation-based) verification</td><td>Applies stimulus to the design in a simulator and checks the resulting output responses; most widely used, but coverage is limited to stimulus applied</td></tr>
+    <tr><td>Static (Formal) verification</td><td>Mathematically proves properties of the design (using model checking, equivalence checking) without applying any stimulus — exhaustive for the properties checked</td></tr>
+    <tr><td>Hardware-assisted verification (Emulation/FPGA prototyping)</td><td>Maps the design onto emulator/FPGA hardware to run at near real-time speeds, enabling verification of software/firmware and long test sequences impractical in simulation</td></tr>
+    <tr><td>Hybrid verification</td><td>Combines simulation with formal methods (e.g., assertion-based verification) to leverage strengths of both</td></tr>
+  </table>
+  <p>Each approach trades off exhaustiveness, speed, capacity, and debug visibility differently, and large SoC verification typically uses a combination of all of them.</p>
+</div>
+
+<!-- Q6 -->
+<div class="q-block" id="q6">
+  <div class="q-title"><span class="qnum">Q6</span>Draw a flow chart of logic simulation for digital circuit design verification.<span class="marks-tag">5 Marks</span></div>
+  <div class="diagram">
+    <svg viewBox="0 0 300 340" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1a3c6e"/></marker></defs>
+      <g font-family="Segoe UI,Arial" font-size="10" fill="#22303c">
+        <rect x="70" y="10" width="160" height="35" rx="6" fill="#eaf0f7" stroke="#1a3c6e"/><text x="150" y="32" text-anchor="middle">Read Design + Testbench</text>
+        <line x1="150" y1="45" x2="150" y2="65" stroke="#1a3c6e" stroke-width="2" marker-end="url(#a3)"/>
+        <rect x="70" y="65" width="160" height="35" rx="6" fill="#eaf0f7" stroke="#1a3c6e"/><text x="150" y="87" text-anchor="middle">Compile / Elaborate</text>
+        <line x1="150" y1="100" x2="150" y2="120" stroke="#1a3c6e" stroke-width="2" marker-end="url(#a3)"/>
+        <rect x="70" y="120" width="160" height="35" rx="6" fill="#eaf0f7" stroke="#1a3c6e"/><text x="150" y="142" text-anchor="middle">Apply Stimulus (Event)</text>
+        <line x1="150" y1="155" x2="150" y2="175" stroke="#1a3c6e" stroke-width="2" marker-end="url(#a3)"/>
+        <rect x="70" y="175" width="160" height="35" rx="6" fill="#eaf0f7" stroke="#1a3c6e"/><text x="150" y="197" text-anchor="middle">Evaluate Gates (Levelize)</text>
+        <line x1="150" y1="210" x2="150" y2="230" stroke="#1a3c6e" stroke-width="2" marker-end="url(#a3)"/>
+        <rect x="70" y="230" width="160" height="35" rx="6" fill="#eaf0f7" stroke="#1a3c6e"/><text x="150" y="252" text-anchor="middle">Update Signal Values</text>
+        <line x1="150" y1="265" x2="150" y2="285" stroke="#1a3c6e" stroke-width="2" marker-end="url(#a3)"/>
+        <path d="M150,285 L100,300 L150,315 L200,300 Z" fill="#fdf1ec" stroke="#c0392b"/><text x="150" y="304" text-anchor="middle" stroke="none" fill="#c0392b" font-size="9">More events?</text>
+        <path d="M100,300 C 40,300 40,140 70,140" fill="none" stroke="#c0392b" marker-end="url(#a3)"/><text x="20" y="220" stroke="none" fill="#c0392b" font-size="9">Yes</text>
+        <line x1="150" y1="315" x2="150" y2="330"/><text x="150" y="335" text-anchor="middle" font-size="9">No → End / Report Results</text>
+      </g>
+    </svg>
+    <div class="cap">Fig: Event-driven logic simulation flow chart</div>
+  </div>
+  <ol>
+    <li>Read the design (RTL/gate-level netlist) and the testbench.</li>
+    <li>Compile and elaborate the design hierarchy.</li>
+    <li>Apply input stimulus, generating events (signal changes) on the event queue.</li>
+    <li>Levelize and evaluate all gates/processes affected by the current event.</li>
+    <li>Update signal values and schedule new events resulting from the change (event-driven simulation).</li>
+    <li>Repeat until the event queue is empty (or simulation time limit reached); then report results/coverage.</li>
+  </ol>
+</div>
+
+<!-- Q7 -->
+<div class="q-block" id="q7">
+  <div class="q-title"><span class="qnum">Q7</span>Explain Functional Verification approaches in detail.<span class="marks-tag">5 Marks</span></div>
+  <table>
+    <tr><th>Approach</th><th>Description</th></tr>
+    <tr><td>Directed Testing</td><td>Testbench engineer manually writes specific test cases targeting known functional scenarios; simple but does not scale for complex designs and may miss corner cases</td></tr>
+    <tr><td>Constrained-Random Verification (CRV)</td><td>Testbench generates random stimulus constrained to legal/valid input space, automatically exploring a much larger scenario space; combined with functional coverage to measure what has been exercised</td></tr>
+    <tr><td>Assertion-Based Verification (ABV)</td><td>Embeds formal properties/assertions (e.g., SystemVerilog Assertions) directly in the design/testbench to continuously check design behaviour during simulation and enable localized bug detection</td></tr>
+    <tr><td>Coverage-Driven Verification (CDV)</td><td>Combines constrained-random stimulus with coverage models (functional + code coverage) to drive verification closure — test generation is refined/steered based on coverage gaps</td></tr>
+    <tr><td>Formal (Model Checking) Verification</td><td>Mathematically and exhaustively proves that specified properties hold for all possible input sequences, without simulation</td></tr>
+  </table>
+  <p>Modern SoC verification typically layers these approaches — using CRV+CDV as the primary methodology, supplemented with ABV for local checks and formal methods for critical control logic.</p>
+</div>
+
+<!-- Q8 -->
+<div class="q-block" id="q8">
+  <div class="q-title"><span class="qnum">Q8</span>Explain Type I and Type II mistakes during verification.<span class="marks-tag">5 Marks</span></div>
+  <p>Verification decisions (declaring a design "correct" or "faulty") can go wrong in two distinct ways, analogous to statistical hypothesis-testing errors:</p>
+  <table>
+    <tr><th>Error Type</th><th>Description</th><th>Consequence</th></tr>
+    <tr><td>Type I mistake (False Positive / False Alarm)</td><td>The verification process incorrectly flags a <em>correct</em> design as faulty (e.g., testbench bug, wrong reference model, incorrect assertion)</td><td>Wastes engineering time chasing a non-existent bug; delays schedule unnecessarily</td></tr>
+    <tr><td>Type II mistake (False Negative / Missed Bug)</td><td>The verification process fails to detect a real bug in the design — the design is incorrectly declared "verified"</td><td>Bug escapes to silicon, potentially causing costly re-spins or field failures — far more serious than a Type I error</td></tr>
+  </table>
+  <p>Verification methodology aims to minimize both errors, but Type II mistakes (missed bugs) are considered more dangerous, since a Type I error only costs debug time, whereas a Type II error can cause a functional failure that reaches the customer.</p>
+</div>
+
+<!-- Q9 -->
+<div class="q-block" id="q9">
+  <div class="q-title"><span class="qnum">Q9</span>Explain following terms with respect to verification: Automation, Poka-Yoke, Redundancy, Equivalence Checking, Model Checking, Design for Verification, Verification Reuse<span class="marks-tag">5 Marks</span></div>
+  <table>
+    <tr><th>Term</th><th>Description</th></tr>
+    <tr><td><strong>Automation</strong></td><td>Use of scripts/tools/regression frameworks to automatically run tests, collect coverage, and report results without manual intervention, improving verification throughput and consistency</td></tr>
+    <tr><td><strong>Poka-Yoke</strong> (mistake-proofing)</td><td>A design/process technique borrowed from manufacturing that prevents errors by design (e.g., coding guidelines, lint rules, naming conventions) so that certain classes of bugs cannot be introduced in the first place</td></tr>
+    <tr><td><strong>Redundancy</strong></td><td>Deliberately duplicating logic/checks (e.g., independent reference model plus RTL) so that an error in one is caught by comparison with the other</td></tr>
+    <tr><td><strong>Equivalence Checking</strong></td><td>A formal technique that mathematically proves two representations of a design (e.g., RTL vs. gate-level netlist after synthesis) are functionally identical, without simulation</td></tr>
+    <tr><td><strong>Model Checking</strong></td><td>A formal verification technique that exhaustively explores the entire reachable state space of a design to prove or disprove that specified properties/assertions always hold</td></tr>
+    <tr><td><strong>Design for Verification (DFV)</strong></td><td>Analogous to DFT — designing the RTL with verification in mind from the start (e.g., adding debug/observability hooks, modular partitioning) to make verification easier and faster</td></tr>
+    <tr><td><strong>Verification Reuse</strong></td><td>Reusing testbenches, verification IP (VIP), assertions, and coverage models across multiple projects/design revisions to reduce redundant verification effort</td></tr>
+  </table>
+</div>
+
+<!-- Q10 -->
+<div class="q-block" id="q10">
+  <div class="q-title"><span class="qnum">Q10</span>Discuss: Testing versus Verification.<span class="marks-tag">5 Marks</span></div>
+  <div class="xref">See Q2 above for the detailed comparison table between Testing and Verification.</div>
+  <p>In brief: <strong>Verification</strong> asks "Did we build the right design?" (i.e., does the RTL/model correctly implement the intended specification), while <strong>Testing</strong> asks "Did we build the chip correctly?" (i.e., is the manufactured silicon free of physical defects). Verification is a pre-silicon, one-time design-correctness activity; testing is a post-silicon, per-unit manufacturing-quality activity. Both are essential and complementary — a perfectly tested (defect-free) chip built from an unverified (buggy) design will still fail in the field, and a perfectly verified design fabricated with defects will also fail without proper testing.</p>
+</div>
+
+<!-- Q11 -->
+<div class="q-block" id="q11">
+  <div class="q-title"><span class="qnum">Q11</span>Explain the Role of Verification Plan.<span class="marks-tag">5 Marks</span></div>
+  <p>The verification plan acts as the master roadmap that drives the entire verification effort, playing the following key roles:</p>
+  <ul>
+    <li><strong>Scope definition:</strong> Clearly enumerates every feature, mode, and corner case of the design that must be verified, preventing gaps in coverage.</li>
+    <li><strong>Strategy selection:</strong> Specifies which verification approach (simulation, formal, emulation) and methodology (CRV, ABV, etc.) will be used for each feature.</li>
+    <li><strong>Resource &amp; schedule planning:</strong> Enables accurate estimation of engineering effort, tool licenses, and timeline for verification closure.</li>
+    <li><strong>Traceability:</strong> Maps specification requirements to test cases/checks, ensuring every requirement is verified and providing an audit trail.</li>
+    <li><strong>Sign-off criteria:</strong> Defines measurable coverage goals (code + functional coverage, bug rate trends) that determine when verification is considered complete.</li>
+    <li><strong>Communication:</strong> Serves as a common reference document reviewed by design, verification, and architecture teams to align expectations.</li>
+  </ul>
+</div>
+
+<!-- Q12 -->
+<div class="q-block" id="q12">
+  <div class="q-title"><span class="qnum">Q12</span>List different criteria for Verification Plan.<span class="marks-tag">5 Marks</span></div>
+  <ul>
+    <li><strong>Feature list:</strong> Complete list of design features/functions requiring verification, derived from the specification.</li>
+    <li><strong>Verification environment architecture:</strong> Testbench structure, required Verification IP (VIP), interfaces/protocols to support.</li>
+    <li><strong>Test/stimulus strategy:</strong> Directed vs. constrained-random test approach for each feature.</li>
+    <li><strong>Coverage model:</strong> Code coverage and functional coverage points/goals to be tracked.</li>
+    <li><strong>Checking strategy:</strong> Assertions, scoreboards, reference models used to check correctness.</li>
+    <li><strong>Regression &amp; automation strategy:</strong> How tests are run, tracked, and re-run on every design change.</li>
+    <li><strong>Bug tracking &amp; triage process:</strong> How discovered bugs are logged, prioritized, and closed.</li>
+    <li><strong>Sign-off/exit criteria:</strong> Target coverage percentage, acceptable open-bug severity, and schedule milestones for declaring verification complete.</li>
+  </ul>
+</div>
+
+<!-- Q13 -->
+<div class="q-block" id="q13">
+  <div class="q-title"><span class="qnum">Q13</span>Explain different Levels of Verification.<span class="marks-tag">5 Marks</span></div>
+  <div class="diagram">
+    <svg viewBox="0 0 380 160" xmlns="http://www.w3.org/2000/svg">
+      <g font-family="Segoe UI,Arial" font-size="10" fill="#22303c" stroke="#1a3c6e" stroke-width="1.4">
+        <text x="190" y="16" text-anchor="middle" font-weight="bold" stroke="none">Levels of Verification (bottom-up)</text>
+        <rect x="130" y="30" width="120" height="26" fill="#eaf0f7"/><text x="190" y="47" text-anchor="middle" stroke="none">System / Chip Level</text>
+        <rect x="110" y="65" width="160" height="26" fill="#eaf0f7"/><text x="190" y="82" text-anchor="middle" stroke="none">Sub-system Level</text>
+        <rect x="90" y="100" width="200" height="26" fill="#eaf0f7"/><text x="190" y="117" text-anchor="middle" stroke="none">Block / IP Level</text>
+        <rect x="70" y="135" width="240" height="26" fill="#eaf0f7"/><text x="190" y="152" text-anchor="middle" stroke="none">Unit / Module Level</text>
+      </g>
+    </svg>
+    <div class="cap">Fig: Verification is carried out at increasing levels of integration</div>
+  </div>
+  <table>
+    <tr><th>Level</th><th>Description</th></tr>
+    <tr><td>Unit / Module Level</td><td>Verifies a single small RTL module in isolation with a dedicated testbench — earliest, fastest, highest controllability/observability</td></tr>
+    <tr><td>Block / IP Level</td><td>Verifies a functional IP block (e.g., a UART, cache controller) composed of multiple modules, including its interfaces</td></tr>
+    <tr><td>Sub-system Level</td><td>Verifies interaction between multiple IP blocks connected together (e.g., a bus fabric with several masters/slaves)</td></tr>
+    <tr><td>System / Chip (SoC) Level</td><td>Verifies the complete integrated chip, including software/firmware interaction, power management, and full-chip use-case scenarios</td></tr>
+  </table>
+  <p>Bugs are progressively cheaper and easier to find and fix at lower levels (unit/block), motivating a "verify early, verify often, bottom-up" strategy before full system-level integration.</p>
+</div>
+
+<!-- Q14 -->
+<div class="q-block" id="q14">
+  <div class="q-title"><span class="qnum">Q14</span>Describe Verification Strategies.<span class="marks-tag">5 Marks</span></div>
+  <ul>
+    <li><strong>Bottom-up strategy:</strong> Verify individual modules/blocks first, then progressively integrate and verify at sub-system and system level — catches bugs early and cheaply.</li>
+    <li><strong>Top-down strategy:</strong> Begin verification at the system level using behavioural/abstract models before detailed RTL is ready, useful for early architecture validation.</li>
+    <li><strong>Coverage-driven strategy:</strong> Define coverage goals up front and drive constrained-random stimulus generation to systematically close coverage gaps.</li>
+    <li><strong>Regression-based strategy:</strong> Maintain a growing suite of automated regression tests re-run on every RTL change to catch regressions (newly introduced bugs) immediately.</li>
+    <li><strong>Layered/reuse strategy:</strong> Build modular, reusable verification environments (VIP, testbenches) that can be reused/scaled from block to system level, minimizing duplicated effort.</li>
+    <li><strong>Formal-assisted strategy:</strong> Apply formal methods (model checking, equivalence checking) selectively to control-dominated or safety-critical logic, complementing simulation-based verification.</li>
+  </ul>
+  <p>A well-planned verification effort typically combines several of these strategies, guided by the verification plan, to balance thoroughness, schedule, and resource constraints.</p>
+</div>
+
+<!-- Q15 -->
+<div class="q-block" id="q15">
+  <div class="q-title"><span class="qnum">Q15</span>List different Verification Languages with their features.<span class="marks-tag">5 Marks</span></div>
+  <table>
+    <tr><th>Language</th><th>Key Features</th></tr>
+    <tr><td>Verilog / VHDL</td><td>Traditional HDLs; can write basic testbenches but lack advanced verification constructs (constrained-random, native OOP)</td></tr>
+    <tr><td>SystemVerilog</td><td>Industry-standard Hardware Verification Language (HVL); adds object-oriented programming, constrained-random stimulus, functional coverage, SystemVerilog Assertions (SVA), and the class-based UVM methodology</td></tr>
+    <tr><td>e language</td><td>Aspect-oriented verification language (originally by Verisity/Cadence) supporting constrained-random generation and coverage; predecessor influence on modern methodologies</td></tr>
+    <tr><td>OpenVera</td><td>Verification language (Synopsys) providing constrained-random test generation and OOP features, precursor to SystemVerilog verification features</td></tr>
+    <tr><td>PSL (Property Specification Language)</td><td>Language dedicated to writing formal properties/assertions, usable with multiple HDLs (Verilog, VHDL)</td></tr>
+    <tr><td>SVA (SystemVerilog Assertions)</td><td>Sub-language within SystemVerilog for writing temporal assertions/properties for both simulation and formal verification</td></tr>
+    <tr><td>C/C++ (with SystemC)</td><td>Used for high-level modeling, reference/golden models, and transaction-level modeling (TLM) in verification environments</td></tr>
+  </table>
+  <p>SystemVerilog (together with the UVM library built on it) has become the dominant industry-standard verification language due to its comprehensive feature set combining design and verification constructs in a single language.</p>
+</div>
+
+</div>
+<footer>Prepared for TESTING AND VERIFICATION (3171111) — Chapter 4 Question Bank Answers</footer>
+</body>
+</html>
