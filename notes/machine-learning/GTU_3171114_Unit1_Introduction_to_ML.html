@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTU 3171114 | Unit 1: Introduction to Machine Learning</title>
+<style>
+  :root{
+    --primary:#1e3a5f;
+    --primary-light:#2c5282;
+    --accent:#0d9488;
+    --accent-light:#e6fffa;
+    --warn:#b45309;
+    --warn-light:#fef3c7;
+    --danger:#b91c1c;
+    --danger-light:#fee2e2;
+    --purple:#6b21a8;
+    --purple-light:#f3e8ff;
+    --grey-bg:#f4f6f8;
+    --border:#d1d9e0;
+    --text:#1f2937;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    background: var(--grey-bg);
+    color: var(--text);
+    margin:0;
+    line-height:1.6;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:24px 20px 80px;}
+  header.main{
+    background: linear-gradient(135deg,var(--primary),var(--primary-light));
+    color:#fff;
+    padding:32px 24px;
+    border-radius:12px;
+    margin-bottom:24px;
+  }
+  header.main h1{margin:0 0 6px;font-size:1.6em;}
+  header.main p{margin:2px 0;opacity:0.92;font-size:0.95em;}
+  .badges{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;}
+  .badge{background:rgba(255,255,255,0.18);padding:6px 12px;border-radius:20px;font-size:0.8em;}
+
+  h2{
+    color:var(--primary);
+    border-bottom:3px solid var(--accent);
+    padding-bottom:8px;
+    margin-top:48px;
+    font-size:1.4em;
+  }
+  h3{color:var(--primary-light);margin-top:28px;font-size:1.15em;}
+  h4{color:var(--purple);margin-top:20px;font-size:1em;}
+
+  nav.toc{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:20px 24px;
+    margin-bottom:32px;
+  }
+  nav.toc h2{margin-top:0;}
+  nav.toc ol{margin:0;padding-left:22px;}
+  nav.toc li{margin:6px 0;}
+  nav.toc a{color:var(--primary-light);text-decoration:none;font-weight:500;}
+  nav.toc a:hover{text-decoration:underline;}
+  nav.toc .pg{color:#888;font-size:0.85em;float:right;}
+  nav.toc ol ol{margin-top:4px;padding-left:20px;}
+  nav.toc ol ol li{font-weight:400;font-size:0.93em;}
+
+  .box{
+    border-radius:8px;
+    padding:14px 18px;
+    margin:14px 0;
+    border-left:5px solid;
+  }
+  .definition{background:#eef4fb;border-color:var(--primary);}
+  .definition .label{color:var(--primary);font-weight:700;text-transform:uppercase;font-size:0.78em;letter-spacing:0.5px;margin-bottom:4px;}
+  .keypoint{background:var(--accent-light);border-color:var(--accent);}
+  .keypoint .label{color:var(--accent);font-weight:700;text-transform:uppercase;font-size:0.78em;letter-spacing:0.5px;margin-bottom:4px;}
+  .example{background:#fff7ed;border-color:#c2691d;}
+  .example .label{color:#c2691d;font-weight:700;text-transform:uppercase;font-size:0.78em;letter-spacing:0.5px;margin-bottom:4px;}
+  .numerical{background:#f0f4ff;border-color:#4338ca;}
+  .numerical .label{color:#4338ca;font-weight:700;text-transform:uppercase;font-size:0.78em;letter-spacing:0.5px;margin-bottom:4px;}
+  .check{background:var(--warn-light);border-color:var(--warn);}
+  .check .label{color:var(--warn);font-weight:700;text-transform:uppercase;font-size:0.78em;letter-spacing:0.5px;margin-bottom:4px;}
+  .activity{background:var(--purple-light);border-color:var(--purple);}
+  .activity .label{color:var(--purple);font-weight:700;text-transform:uppercase;font-size:0.78em;letter-spacing:0.5px;margin-bottom:4px;}
+  .box p:first-of-type{margin-top:0;}
+  .box p:last-child{margin-bottom:0;}
+
+  details.answer{margin-top:8px;}
+  details.answer summary{cursor:pointer;color:var(--danger);font-weight:600;font-size:0.9em;}
+  details.answer .ans-body{margin-top:6px;padding:8px 12px;background:#fff;border:1px dashed var(--danger);border-radius:6px;}
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:14px 0;
+    background:#fff;
+    font-size:0.93em;
+  }
+  table caption{font-weight:600;text-align:left;margin-bottom:6px;color:var(--primary);}
+  th,td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top;}
+  th{background:var(--primary);color:#fff;font-weight:600;}
+  tr:nth-child(even) td{background:#f8fafc;}
+
+  .outcomes ul{padding-left:22px;}
+  .outcomes li{margin:6px 0;}
+
+  .top-link{display:inline-block;margin-top:6px;font-size:0.8em;}
+  .top-link a{color:var(--accent);text-decoration:none;}
+
+  .revision-table td:first-child{font-weight:600;color:var(--primary);width:28%;}
+
+  .qbank .q{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px 18px;
+    margin:14px 0;
+  }
+  .qbank .q h4{margin-top:0;}
+  .marks-tag{
+    display:inline-block;
+    background:var(--accent);
+    color:#fff;
+    font-size:0.75em;
+    padding:2px 9px;
+    border-radius:12px;
+    margin-left:8px;
+  }
+
+  .conclusion{
+    background:linear-gradient(135deg,#eef4fb,#f3e8ff);
+    border-radius:10px;
+    padding:20px 24px;
+    border:1px solid var(--border);
+  }
+
+  footer{
+    text-align:center;
+    color:#888;
+    font-size:0.8em;
+    margin-top:50px;
+    padding-top:20px;
+    border-top:1px solid var(--border);
+  }
+
+  code{background:#eef1f4;padding:1px 6px;border-radius:4px;font-size:0.92em;}
+  ul,ol{padding-left:24px;}
+  section{scroll-margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="main">
+  <h1>Gujarat Technological University</h1>
+  <p><strong>Subject Code:</strong> 3171114 — Introduction to Machine Learning</p>
+  <p><strong>B.E. Semester VII</strong></p>
+  <p><strong>Unit 1: Introduction of Machine Learning</strong></p>
+  <div class="badges">
+    <span class="badge">⏱ Teaching Hours: 3</span>
+    <span class="badge">📘 Topics: 5</span>
+    <span class="badge">🎯 Exam-ready notes</span>
+  </div>
+</header>
+
+<!-- ============ INDEX ============ -->
+<nav class="toc" id="top">
+  <h2>📑 Interactive Index</h2>
+  <ol>
+    <li><a href="#overview">Chapter Overview &amp; Learning Outcomes</a><span class="pg">Pg. 1</span></li>
+    <li><a href="#intro">1. Introduction to Machine Learning</a><span class="pg">Pg. 2</span>
+      <ol>
+        <li><a href="#intro-def">1.1 What is Machine Learning?</a></li>
+        <li><a href="#intro-why">1.2 Why Machine Learning?</a></li>
+        <li><a href="#intro-vs">1.3 ML vs Traditional Programming</a></li>
+      </ol>
+    </li>
+    <li><a href="#types">2. Different Types of Learning</a><span class="pg">Pg. 3</span>
+      <ol>
+        <li><a href="#supervised">2.1 Supervised Learning</a></li>
+        <li><a href="#unsupervised">2.2 Unsupervised Learning</a></li>
+        <li><a href="#semi">2.3 Semi-Supervised Learning</a></li>
+        <li><a href="#reinforcement">2.4 Reinforcement Learning</a></li>
+      </ol>
+    </li>
+    <li><a href="#hspace">3. Hypothesis Space</a><span class="pg">Pg. 4</span></li>
+    <li><a href="#ibias">4. Inductive Bias</a><span class="pg">Pg. 5</span></li>
+    <li><a href="#eval">5. Evaluation and Cross Validation</a><span class="pg">Pg. 6</span></li>
+    <li><a href="#confused">Frequently Confused Concepts</a><span class="pg">Pg. 7</span></li>
+    <li><a href="#revision">Quick Revision Sheet</a><span class="pg">Pg. 7</span></li>
+    <li><a href="#qbank">Question Bank (with Answers)</a><span class="pg">Pg. 8</span></li>
+    <li><a href="#conclusion">Exam-Oriented Conclusion &amp; References</a><span class="pg">Pg. 10</span></li>
+  </ol>
+</nav>
+
+<!-- ============ OVERVIEW ============ -->
+<section id="overview">
+<h2>🔎 Chapter Overview &amp; Learning Outcomes</h2>
+<p>This unit lays the <strong>conceptual foundation</strong> of Machine Learning before any algorithm is studied. Instead of memorizing formulas, focus on understanding <em>why</em> ML exists, <em>how</em> it differs from traditional programming, and the <em>vocabulary</em> (hypothesis space, inductive bias, cross validation) that every later unit will reuse.</p>
+<div class="box keypoint outcomes">
+  <div class="label">By the end of this unit you should be able to</div>
+  <ul>
+    <li>Define Machine Learning and explain why it is needed.</li>
+    <li>Classify a given real-world problem into Supervised / Unsupervised / Semi-Supervised / Reinforcement learning.</li>
+    <li>Explain hypothesis space and identify it for a simple learning problem.</li>
+    <li>Explain inductive bias and why it is necessary for generalization.</li>
+    <li>Explain evaluation metrics and different cross-validation strategies, and justify when to use which.</li>
+  </ul>
+</div>
+</section>
+
+<!-- ============ 1. INTRODUCTION ============ -->
+<section id="intro">
+<h2>1. Introduction to Machine Learning</h2>
+
+<h3 id="intro-def">1.1 What is Machine Learning?</h3>
+<div class="box definition">
+  <div class="label">Definition</div>
+  <p>Machine Learning (ML) is a field of study that gives computers the ability to <strong>learn from data and past experience</strong> to improve their performance on a task, <strong>without being explicitly programmed</strong> with fixed rules for every situation.</p>
+</div>
+
+<div class="box keypoint">
+  <div class="label">Remember — Mitchell's Formal Definition</div>
+  <p>"A computer program is said to <strong>learn</strong> from experience <strong>E</strong> with respect to task <strong>T</strong> and performance measure <strong>P</strong>, if its performance at T, measured by P, improves with experience E."</p>
+  <p>Quick memory trick: <strong>T‑E‑P</strong> → Task, Experience, Performance.</p>
+</div>
+
+<div class="box example">
+  <div class="label">Real-world example</div>
+  <p><strong>Task (T):</strong> Classifying an email as spam or not spam.<br>
+  <strong>Experience (E):</strong> A large set of emails already labelled "spam"/"not spam".<br>
+  <strong>Performance (P):</strong> Percentage of emails correctly classified.<br>
+  As the system sees more labelled emails, its spam-detection accuracy (P) improves — this is learning.</p>
+</div>
+
+<h3 id="intro-why">1.2 Why Machine Learning?</h3>
+<ul>
+  <li>Some tasks are too complex to hand-code rules for (e.g., face recognition, speech recognition).</li>
+  <li>The environment/data keeps changing, so a fixed program becomes outdated (e.g., fraud patterns).</li>
+  <li>Large volumes of data are available today, which ML can exploit to find hidden patterns.</li>
+  <li>ML personalizes decisions (e.g., movie/product recommendations) which is impossible with static rule sets.</li>
+</ul>
+
+<h3 id="intro-vs">1.3 Machine Learning vs Traditional Programming</h3>
+<table>
+<caption>Comparison: Traditional Programming vs Machine Learning</caption>
+<tr><th>Aspect</th><th>Traditional Programming</th><th>Machine Learning</th></tr>
+<tr><td>Input to system</td><td>Data + explicit Rules → Output</td><td>Data + Output → Program (Model) learns the rules</td></tr>
+<tr><td>Logic source</td><td>Written manually by programmer</td><td>Learned automatically from data</td></tr>
+<tr><td>Adaptability</td><td>Fixed; needs re-coding for change</td><td>Can adapt/retrain with new data</td></tr>
+<tr><td>Best suited for</td><td>Well-defined, rule-based problems</td><td>Complex, pattern-based, data-rich problems</td></tr>
+<tr><td>Example</td><td>Calculating income tax using fixed slabs</td><td>Predicting whether a loan applicant will default</td></tr>
+</table>
+
+<div class="box check">
+  <div class="label">Concept Check</div>
+  <p>True or False: "Machine Learning always requires explicit if-else rules written by a human for every possible case."</p>
+  <details class="answer"><summary>Show Answer</summary><div class="ans-body"><strong>False.</strong> ML infers the rules/patterns itself from data (experience); the programmer only defines the task, model structure and performance measure.</div></details>
+</div>
+
+<div class="box activity">
+  <div class="label">Interactive Activity — Fill in the Blanks</div>
+  <p>1. In Mitchell's definition, the three components are Task, ______, and Performance measure.<br>
+  2. In traditional programming we write the ______, while in ML the machine learns the ______ from data.</p>
+  <details class="answer"><summary>Show Answer</summary><div class="ans-body">1. Experience &nbsp; 2. Rules/logic ; Rules/logic (pattern)</div></details>
+</div>
+</section>
+
+<!-- ============ 2. TYPES OF LEARNING ============ -->
+<section id="types">
+<h2>2. Different Types of Learning</h2>
+<p>Based on the kind of "experience" (data) available, learning is broadly divided into four categories.</p>
+
+<h3 id="supervised">2.1 Supervised Learning</h3>
+<div class="box definition">
+  <div class="label">Definition</div>
+  <p>Learning from a dataset where every input is paired with a <strong>known, correct output (label)</strong>. The model learns a mapping <code>f: X → Y</code> and is used to predict labels for new, unseen inputs.</p>
+</div>
+<div class="box keypoint">
+  <div class="label">Key Point</div>
+  <p>Supervised = "Learning with a teacher/answer key." Two main sub-types: <strong>Classification</strong> (discrete output, e.g., Yes/No) and <strong>Regression</strong> (continuous output, e.g., price).</p>
+</div>
+<div class="box example">
+  <div class="label">Real-world example</div>
+  <p>A student learning from solved examples in a textbook where each problem already has the correct answer given — comparable to predicting house prices from past sale records (area, location → price).</p>
+</div>
+
+<h3 id="unsupervised">2.2 Unsupervised Learning</h3>
+<div class="box definition">
+  <div class="label">Definition</div>
+  <p>Learning from data that has <strong>no labels</strong>. The model tries to find hidden structure, patterns, or groupings in the data on its own (e.g., clustering, association).</p>
+</div>
+<div class="box example">
+  <div class="label">Real-world example</div>
+  <p>Grouping customers of a supermarket into segments (budget shoppers, premium shoppers) purely based on purchase behaviour — nobody tells the algorithm the "correct" group in advance.</p>
+</div>
+
+<h3 id="semi">2.3 Semi-Supervised Learning</h3>
+<div class="box definition">
+  <div class="label">Definition</div>
+  <p>Learning from a dataset that has a <strong>small amount of labelled data and a large amount of unlabelled data</strong>. It combines ideas of both supervised and unsupervised learning to improve accuracy without the high cost of labelling everything.</p>
+</div>
+<div class="box example">
+  <div class="label">Real-world example</div>
+  <p>A photo app where a user manually tags a few photos with family members' names; the app then uses those few labels plus thousands of unlabelled photos to auto-tag the rest.</p>
+</div>
+
+<h3 id="reinforcement">2.4 Reinforcement Learning</h3>
+<div class="box definition">
+  <div class="label">Definition</div>
+  <p>Learning where an <strong>agent</strong> interacts with an <strong>environment</strong>, takes <strong>actions</strong>, and receives <strong>rewards or penalties</strong>. The agent learns a policy that maximizes total cumulative reward over time — there is no fixed "correct answer" dataset, only feedback.</p>
+</div>
+<div class="box example">
+  <div class="label">Real-world example</div>
+  <p>Training a dog with treats: the dog is not shown a labelled dataset of "correct actions" — it tries actions, gets a treat (reward) for the right one, and a scolding (penalty) for the wrong one, gradually learning the best behaviour. Self-driving cars and game-playing AI (e.g., Chess/Go engines) use this approach.</p>
+</div>
+
+<table>
+<caption>Comparison of the Four Types of Learning</caption>
+<tr><th>Type</th><th>Data Used</th><th>Goal</th><th>Example Task</th></tr>
+<tr><td>Supervised</td><td>Labelled data</td><td>Predict output for new input</td><td>Spam detection, price prediction</td></tr>
+<tr><td>Unsupervised</td><td>Unlabelled data</td><td>Discover hidden structure/groups</td><td>Customer segmentation</td></tr>
+<tr><td>Semi-Supervised</td><td>Few labelled + many unlabelled</td><td>Improve accuracy using both</td><td>Photo auto-tagging</td></tr>
+<tr><td>Reinforcement</td><td>Reward/penalty feedback (no dataset)</td><td>Maximize cumulative reward</td><td>Game playing, robotics, self-driving cars</td></tr>
+</table>
+
+<div class="box check">
+  <div class="label">Concept Check — Identify the Type</div>
+  <p>Classify each scenario as Supervised / Unsupervised / Semi-Supervised / Reinforcement:</p>
+  <ol type="a">
+    <li>A robot learns to walk by getting a positive signal every time it stays balanced.</li>
+    <li>An email service labels 100 emails as spam/ham and uses them to train a spam filter.</li>
+    <li>A news website automatically groups articles into topics without any predefined categories.</li>
+  </ol>
+  <details class="answer"><summary>Show Answer</summary><div class="ans-body">(a) Reinforcement Learning &nbsp; (b) Supervised Learning &nbsp; (c) Unsupervised Learning</div></details>
+</div>
+
+<div class="box activity">
+  <div class="label">Interactive Activity — Complete the Table</div>
+  <table>
+  <tr><th>Scenario</th><th>Type of Learning?</th></tr>
+  <tr><td>Netflix recommending movies based on viewing history clusters</td><td>______</td></tr>
+  <tr><td>Predicting tomorrow's temperature from historical weather data</td><td>______</td></tr>
+  <tr><td>A chess-playing AI improving by playing millions of games against itself</td><td>______</td></tr>
+  </table>
+  <details class="answer"><summary>Show Answer</summary><div class="ans-body">Row 1: Unsupervised &nbsp; Row 2: Supervised (Regression) &nbsp; Row 3: Reinforcement Learning</div></details>
+</div>
+</section>
+
+<!-- ============ 3. HYPOTHESIS SPACE ============ -->
+<section id="hspace">
+<h2>3. Hypothesis Space</h2>
+<div class="box definition">
+  <div class="label">Definition</div>
+  <p>The <strong>hypothesis space (H)</strong> is the set of <strong>all possible functions/models</strong> that a learning algorithm is allowed to consider as candidate solutions for mapping inputs to outputs. A single candidate function from this set is called a <strong>hypothesis (h)</strong>. Learning = searching through H to find the hypothesis that best fits the training data.</p>
+</div>
+
+<div class="box keypoint">
+  <div class="label">Key Point</div>
+  <p>Choosing the model type (e.g., "only straight lines" vs "any polynomial") <strong>defines</strong> the hypothesis space. A bigger/richer hypothesis space can fit more complex patterns but also risks overfitting.</p>
+</div>
+
+<div class="box example">
+  <div class="label">Real-world example</div>
+  <p>Imagine you are trying to guess a stranger's height using only their shoe size. If you decide the rule must be a <em>straight line</em> (height = a × shoe size + b), your hypothesis space is "all straight lines." If instead you allow any curve, your hypothesis space becomes much larger.</p>
+</div>
+
+<div class="box numerical">
+  <div class="label">Worked Numerical Example</div>
+  <p>Suppose the hypothesis space is restricted to linear functions of the form <code>h(x) = w·x + b</code>, where <code>w</code> and <code>b</code> can each take one of 3 values: {0, 1, 2}.</p>
+  <p><strong>Number of hypotheses in H</strong> = choices for w × choices for b = 3 × 3 = <strong>9 hypotheses</strong>.</p>
+  <p>Each of the 9 combinations (w, b) is one candidate hypothesis; the learning algorithm's job is to pick the (w, b) pair that best fits the given training data (e.g., using least error).</p>
+</div>
+
+<div class="box check">
+  <div class="label">Concept Check</div>
+  <p>True or False: "The hypothesis space contains only the one final model chosen after training."</p>
+  <details class="answer"><summary>Show Answer</summary><div class="ans-body"><strong>False.</strong> The hypothesis space is the entire set of candidate models available <em>before</em> training; the "final model" is just one hypothesis selected from it.</div></details>
+</div>
+
+<div class="box activity">
+  <div class="label">Interactive Activity</div>
+  <p>If a hypothesis space allows decision rules of the form "IF attribute A = value v THEN Class = 1, ELSE Class = 0," and attribute A can take 4 possible values, how many distinct hypotheses exist in this space?</p>
+  <details class="answer"><summary>Show Answer</summary><div class="ans-body">4 hypotheses — one for each possible value of v that A can take.</div></details>
+</div>
+</section>
+
+<!-- ============ 4. INDUCTIVE BIAS ============ -->
+<section id="ibias">
+<h2>4. Inductive Bias</h2>
+<div class="box definition">
+  <div class="label">Definition</div>
+  <p><strong>Inductive bias</strong> refers to the set of <strong>assumptions</strong> a learning algorithm uses to predict outputs for inputs it has <em>never seen before</em>. Since training data is always finite, some assumption is essential to "generalize" beyond it — without inductive bias, a learner cannot make any prediction on new data at all.</p>
+</div>
+
+<div class="box keypoint">
+  <div class="label">Remember</div>
+  <p>No inductive bias → No generalization. Every ML algorithm (Decision Tree, k-NN, Neural Network) has its own built-in bias (e.g., "prefer shorter trees," "nearby points have similar labels," "prefer smoother functions").</p>
+</div>
+
+<div class="box example">
+  <div class="label">Real-world example</div>
+  <p>If you have only ever seen white swans, you might assume "all swans are white" — that assumption (bias) lets you predict the colour of a swan you've never seen. It could be wrong (black swans exist!), but without such an assumption you could never predict anything about a new swan at all.</p>
+</div>
+
+<table>
+<caption>Common Inductive Biases in Popular Algorithms</caption>
+<tr><th>Algorithm</th><th>Typical Inductive Bias</th></tr>
+<tr><td>k-Nearest Neighbour (k-NN)</td><td>Points that are close in feature space tend to have the same label</td></tr>
+<tr><td>Decision Tree</td><td>Shorter trees (simpler rules) are preferred over longer ones</td></tr>
+<tr><td>Linear Regression</td><td>The relationship between input and output is linear</td></tr>
+</table>
+
+<div class="box check">
+  <div class="label">Concept Check</div>
+  <p>True or False: "Inductive bias is a flaw in an algorithm that should always be removed."</p>
+  <details class="answer"><summary>Show Answer</summary><div class="ans-body"><strong>False.</strong> Inductive bias is <em>necessary</em> — without some assumption about unseen data, a learning algorithm cannot generalize at all. The goal is to choose a bias that suits the problem, not eliminate it.</div></details>
+</div>
+
+<div class="box activity">
+  <div class="label">Interactive Activity — Fill in the Blank</div>
+  <p>A learning algorithm that always predicts the majority class label for any new, unseen input has an inductive bias of "______."</p>
+  <details class="answer"><summary>Show Answer</summary><div class="ans-body">"Prefer the most frequent/majority class" (a very strong, simple bias)</div></details>
+</div>
+</section>
+
+<!-- ============ 5. EVALUATION & CROSS VALIDATION ============ -->
+<section id="eval">
+<h2>5. Evaluation and Cross Validation</h2>
+
+<h3>5.1 Why Evaluate a Model?</h3>
+<div class="box definition">
+  <div class="label">Definition</div>
+  <p><strong>Evaluation</strong> is the process of measuring how well a trained model performs on data, using metrics such as Accuracy, Precision, Recall, or Mean Squared Error, so that we can trust its predictions on new, real-world data.</p>
+</div>
+
+<div class="box keypoint">
+  <div class="label">Key Point</div>
+  <p>Never evaluate a model only on the data it was trained on — that gives an overly optimistic (misleading) score. Always test on data the model has NOT seen during training.</p>
+</div>
+
+<h3>5.2 Cross Validation</h3>
+<div class="box definition">
+  <div class="label">Definition</div>
+  <p><strong>Cross Validation (CV)</strong> is a technique to evaluate a model reliably by repeatedly splitting the available data into training and testing subsets, so that every data point gets a chance to be tested on, giving a more trustworthy, less biased estimate of model performance.</p>
+</div>
+
+<div class="box example">
+  <div class="label">Real-world example</div>
+  <p>A teacher testing a student's understanding using 5 different mock tests (each covering different topics) instead of just one, then averaging the scores — this gives a fairer estimate of the student's true ability than a single test.</p>
+</div>
+
+<h4>5.2.1 K-Fold Cross Validation</h4>
+<div class="box numerical">
+  <div class="label">Worked Numerical Example</div>
+  <p>Given a dataset of 100 samples and <strong>k = 5</strong> (5-fold cross validation):</p>
+  <ul>
+    <li>Data is split into 5 equal folds of 20 samples each.</li>
+    <li>Round 1: Fold 1 = Test (20 samples), Folds 2–5 = Train (80 samples) → compute accuracy A1</li>
+    <li>Round 2: Fold 2 = Test, remaining = Train → compute A2</li>
+    <li>...continue until every fold has been the test set once (5 rounds total).</li>
+    <li><strong>Final Accuracy</strong> = (A1 + A2 + A3 + A4 + A5) / 5</li>
+  </ul>
+  <p>If the 5 round accuracies are 80%, 82%, 78%, 85%, 80%, then Final CV Accuracy = (80+82+78+85+80)/5 = <strong>81%</strong>.</p>
+</div>
+
+<h4>5.2.2 Leave-One-Out Cross Validation (LOOCV)</h4>
+<div class="box definition">
+  <div class="label">Definition</div>
+  <p>A special case of k-fold CV where <strong>k = n</strong> (n = total number of samples). In each round, exactly <strong>one</strong> sample is used as the test set and all remaining n−1 samples are used for training. This is repeated n times.</p>
+</div>
+
+<table>
+<caption>K-Fold CV vs Leave-One-Out CV (LOOCV)</caption>
+<tr><th>Aspect</th><th>K-Fold CV</th><th>LOOCV</th></tr>
+<tr><td>Value of k</td><td>Usually small (5 or 10)</td><td>k = n (total samples)</td></tr>
+<tr><td>Test set size per round</td><td>n/k samples</td><td>Exactly 1 sample</td></tr>
+<tr><td>Number of rounds</td><td>k rounds</td><td>n rounds</td></tr>
+<tr><td>Computation cost</td><td>Lower</td><td>Very high for large n</td></tr>
+<tr><td>Best suited for</td><td>Medium/large datasets</td><td>Very small datasets</td></tr>
+</table>
+
+<div class="box check">
+  <div class="label">Concept Check</div>
+  <p>True or False: "In 10-fold cross validation, the model is trained only once on 10% of the data."</p>
+  <details class="answer"><summary>Show Answer</summary><div class="ans-body"><strong>False.</strong> The model is trained <em>10 times</em>, each time on 90% of the data (9 folds), and tested on the remaining 10% (1 fold), rotating which fold is the test set.</div></details>
+</div>
+
+<div class="box activity">
+  <div class="label">Interactive Activity</div>
+  <p>A dataset has 60 samples. If we perform 6-fold cross validation, how many samples will be in the test set during each round, and how many rounds will be performed in total?</p>
+  <details class="answer"><summary>Show Answer</summary><div class="ans-body">Test set per round = 60/6 = <strong>10 samples</strong>. Total rounds = <strong>6</strong>.</div></details>
+</div>
+</section>
+
+<!-- ============ FREQUENTLY CONFUSED ============ -->
+<section id="confused">
+<h2>⚡ Frequently Confused Concepts</h2>
+<table>
+<tr><th>Term A</th><th>Term B</th><th>Key Difference</th></tr>
+<tr><td>Supervised Learning</td><td>Reinforcement Learning</td><td>Supervised uses a fixed labelled dataset given upfront; RL learns from reward/penalty feedback through trial-and-error interaction with an environment.</td></tr>
+<tr><td>Unsupervised Learning</td><td>Semi-Supervised Learning</td><td>Unsupervised uses NO labels at all; Semi-supervised uses a small amount of labelled data plus a large amount of unlabelled data.</td></tr>
+<tr><td>Hypothesis Space</td><td>Hypothesis</td><td>Hypothesis space is the entire SET of candidate models; a hypothesis is ONE specific model chosen from that set.</td></tr>
+<tr><td>Inductive Bias</td><td>Overfitting</td><td>Inductive bias is the necessary assumption enabling generalization; overfitting is a problem caused by a model fitting training data (including noise) too closely, often due to too little/wrong bias.</td></tr>
+<tr><td>K-Fold CV</td><td>LOOCV</td><td>K-Fold uses k (small) groups; LOOCV is the extreme case where k equals the total number of samples (test set size = 1).</td></tr>
+<tr><td>Training Data</td><td>Test Data</td><td>Training data is used to build/fit the model; test data is unseen data used only to evaluate performance.</td></tr>
+<tr><td>Classification</td><td>Regression</td><td>Classification predicts a discrete/categorical output (e.g., Yes/No); Regression predicts a continuous numeric output (e.g., price).</td></tr>
+</table>
+</section>
+
+<!-- ============ REVISION SHEET ============ -->
+<section id="revision">
+<h2>📝 Quick Revision Sheet</h2>
+<table class="revision-table">
+<tr><td>Machine Learning</td><td>A system that improves its performance on a task through experience (data), without explicit rule-based programming.</td></tr>
+<tr><td>Supervised Learning</td><td>Learning from labelled data to predict outputs for new inputs.</td></tr>
+<tr><td>Unsupervised Learning</td><td>Learning hidden patterns/groupings from unlabelled data.</td></tr>
+<tr><td>Semi-Supervised Learning</td><td>Learning using a small labelled set plus a large unlabelled set.</td></tr>
+<tr><td>Reinforcement Learning</td><td>Learning via rewards/penalties from interacting with an environment.</td></tr>
+<tr><td>Hypothesis Space (H)</td><td>The complete set of candidate functions/models a learner can choose from.</td></tr>
+<tr><td>Hypothesis (h)</td><td>One specific candidate model chosen from the hypothesis space.</td></tr>
+<tr><td>Inductive Bias</td><td>The assumptions a learner makes to predict outputs on unseen data.</td></tr>
+<tr><td>Evaluation</td><td>Measuring model performance using metrics on unseen/held-out data.</td></tr>
+<tr><td>Cross Validation</td><td>Repeatedly splitting data into train/test sets to get a reliable performance estimate.</td></tr>
+<tr><td>K-Fold CV</td><td>Data divided into k parts; each part used once as test set, rest as train, over k rounds.</td></tr>
+<tr><td>LOOCV</td><td>Special case of K-Fold CV where k equals the total number of samples.</td></tr>
+</table>
+</section>
+
+<!-- ============ QUESTION BANK ============ -->
+<section id="qbank">
+<h2>📚 Question Bank (5-Mark Answers)</h2>
+<div class="qbank">
+
+<div class="q">
+<h4>Q1. Define Machine Learning. Explain Mitchell's formal definition with a suitable example. <span class="marks-tag">5 Marks</span></h4>
+<p><strong>Answer:</strong></p>
+<p>Machine Learning (ML) is a branch of Artificial Intelligence that enables a system to automatically learn patterns from data (experience) and improve its performance on a given task over time, without being explicitly programmed with fixed rules.</p>
+<p><strong>Tom Mitchell's Formal Definition:</strong> "A computer program is said to learn from experience E with respect to task T and performance measure P, if its performance at task T, as measured by P, improves with experience E."</p>
+<table>
+<tr><th>Component</th><th>Meaning</th><th>Example (Spam Filter)</th></tr>
+<tr><td>Task (T)</td><td>The job to be performed</td><td>Classify email as spam/not spam</td></tr>
+<tr><td>Experience (E)</td><td>Data used to learn</td><td>Set of pre-labelled emails</td></tr>
+<tr><td>Performance (P)</td><td>Measure of success</td><td>% of correctly classified emails</td></tr>
+</table>
+<p>As E (more labelled emails) increases, P (accuracy) improves — this defines "learning" formally.</p>
+</div>
+
+<div class="q">
+<h4>Q2. Differentiate between Traditional Programming and Machine Learning. <span class="marks-tag">5 Marks</span></h4>
+<p><strong>Answer:</strong></p>
+<table>
+<tr><th>Aspect</th><th>Traditional Programming</th><th>Machine Learning</th></tr>
+<tr><td>Approach</td><td>Rules coded manually</td><td>Rules learned from data automatically</td></tr>
+<tr><td>Input/Output</td><td>Data + Rules → Output</td><td>Data + Output → Model (Rules)</td></tr>
+<tr><td>Flexibility</td><td>Needs re-coding for new scenarios</td><td>Adapts by retraining on new data</td></tr>
+<tr><td>Suitability</td><td>Simple, well-defined problems</td><td>Complex, pattern-rich problems</td></tr>
+<tr><td>Example</td><td>Tax calculator using fixed slabs</td><td>Predicting loan default risk</td></tr>
+</table>
+<p>In short, traditional programming requires the programmer to specify the logic explicitly, while ML infers the logic itself from historical data, making it suitable for problems too complex to define with fixed rules.</p>
+</div>
+
+<div class="q">
+<h4>Q3. Explain the different types of learning with suitable real-world examples. <span class="marks-tag">5 Marks</span></h4>
+<p><strong>Answer:</strong></p>
+<table>
+<tr><th>Type</th><th>Data Characteristics</th><th>Goal</th><th>Example</th></tr>
+<tr><td>Supervised</td><td>Labelled data</td><td>Predict output for new input</td><td>House price prediction</td></tr>
+<tr><td>Unsupervised</td><td>Unlabelled data</td><td>Find hidden groups/patterns</td><td>Customer segmentation</td></tr>
+<tr><td>Semi-Supervised</td><td>Few labelled + many unlabelled</td><td>Improve accuracy using both types</td><td>Photo auto-tagging</td></tr>
+<tr><td>Reinforcement</td><td>Reward/penalty signals</td><td>Maximize cumulative reward</td><td>Self-driving cars, game AI</td></tr>
+</table>
+<p>Each type is chosen based on what kind of data/feedback is available for the given problem. Supervised and unsupervised are the two extremes (fully labelled vs. no labels), semi-supervised lies in between, while reinforcement learning is fundamentally different as it learns through interaction rather than a fixed dataset.</p>
+</div>
+
+<div class="q">
+<h4>Q4. What is Hypothesis Space? Explain with a numerical example. <span class="marks-tag">5 Marks</span></h4>
+<p><strong>Answer:</strong></p>
+<p>The Hypothesis Space (H) is the set of all possible candidate functions (hypotheses) that a learning algorithm can choose from to map inputs to outputs. Each individual candidate function is called a hypothesis (h). The learning process is essentially a <em>search</em> through this space to find the hypothesis that best fits the training data.</p>
+<p><strong>Example:</strong> Suppose we restrict our model to linear hypotheses of the form h(x) = w·x + b, where w and b can each take values from the set {0, 1, 2}.</p>
+<p>Number of possible hypotheses = (choices of w) × (choices of b) = 3 × 3 = <strong>9</strong>.</p>
+<table>
+<tr><th>w</th><th>b</th><th>Hypothesis h(x)</th></tr>
+<tr><td>0</td><td>0</td><td>h(x) = 0</td></tr>
+<tr><td>1</td><td>1</td><td>h(x) = x + 1</td></tr>
+<tr><td>2</td><td>2</td><td>h(x) = 2x + 2</td></tr>
+<tr><td>...</td><td>...</td><td>(6 more combinations)</td></tr>
+</table>
+<p>A larger/richer hypothesis space (e.g., allowing curves, not just lines) can represent more complex relationships but also increases risk of overfitting.</p>
+</div>
+
+<div class="q">
+<h4>Q5. What is Inductive Bias? Why is it necessary in Machine Learning? <span class="marks-tag">5 Marks</span></h4>
+<p><strong>Answer:</strong></p>
+<p>Inductive Bias refers to the set of assumptions that a learning algorithm uses to predict outputs for inputs that were not part of the training data. Since any training dataset is finite while the space of possible inputs may be infinite, some assumption is essential to make predictions beyond the observed examples — this process is called <strong>generalization</strong>.</p>
+<p><strong>Why necessary:</strong> Without inductive bias, a learner has no basis to prefer one output over another for an unseen input, and cannot generalize at all.</p>
+<table>
+<tr><th>Algorithm</th><th>Typical Inductive Bias</th></tr>
+<tr><td>k-NN</td><td>Similar/nearby inputs have similar outputs</td></tr>
+<tr><td>Decision Tree</td><td>Shorter (simpler) trees are preferred</td></tr>
+<tr><td>Linear Regression</td><td>Relationship between input and output is linear</td></tr>
+</table>
+<p><strong>Example:</strong> Having only observed white swans, assuming "all swans are white" is an inductive bias that allows a prediction about a new, unseen swan — even though it might occasionally be wrong (e.g., black swans).</p>
+</div>
+
+<div class="q">
+<h4>Q6. Explain Cross Validation and describe K-Fold Cross Validation with a numerical example. <span class="marks-tag">5 Marks</span></h4>
+<p><strong>Answer:</strong></p>
+<p>Cross Validation (CV) is a model evaluation technique that repeatedly partitions the available data into training and testing subsets, ensuring every data point is used for testing exactly once, resulting in a more reliable and less biased estimate of the model's true performance compared to a single train/test split.</p>
+<p><strong>K-Fold CV Procedure:</strong></p>
+<ul>
+  <li>Divide the dataset randomly into k equal-sized folds.</li>
+  <li>In each of the k rounds, use one fold as the test set and the remaining (k−1) folds as the training set.</li>
+  <li>Compute the performance metric (e.g., accuracy) in each round.</li>
+  <li>Average the k performance values to get the final CV score.</li>
+</ul>
+<p><strong>Numerical Example:</strong> Dataset of 100 samples, k = 5. Each fold has 100/5 = 20 samples. If the 5 round accuracies obtained are 80%, 82%, 78%, 85%, 80%:</p>
+<p>Final CV Accuracy = (80 + 82 + 78 + 85 + 80) / 5 = 405 / 5 = <strong>81%</strong></p>
+<p>This average is a more trustworthy estimate of real-world performance than a single train-test split, since every sample contributed to testing exactly once.</p>
+</div>
+
+<div class="q">
+<h4>Q7. Compare K-Fold Cross Validation and Leave-One-Out Cross Validation (LOOCV). <span class="marks-tag">5 Marks</span></h4>
+<p><strong>Answer:</strong></p>
+<table>
+<tr><th>Aspect</th><th>K-Fold CV</th><th>LOOCV</th></tr>
+<tr><td>Value of k</td><td>Small, chosen value (e.g., 5 or 10)</td><td>k = n (total number of samples)</td></tr>
+<tr><td>Test set size</td><td>n/k samples per round</td><td>1 sample per round</td></tr>
+<tr><td>Number of training rounds</td><td>k</td><td>n</td></tr>
+<tr><td>Computation cost</td><td>Moderate</td><td>Very high for large datasets</td></tr>
+<tr><td>Bias/Variance of estimate</td><td>Slightly higher bias, lower variance</td><td>Lower bias, higher variance</td></tr>
+<tr><td>Best used when</td><td>Dataset size is medium/large</td><td>Dataset size is very small</td></tr>
+</table>
+<p>In short, LOOCV is a special/extreme case of K-Fold CV where each fold contains only a single test sample, making it exhaustive but computationally expensive, while standard K-Fold CV (typically k=5 or k=10) is a practical trade-off between reliability and computation time.</p>
+</div>
+
+</div>
+</section>
+
+<!-- ============ CONCLUSION ============ -->
+<section id="conclusion">
+<h2>🎯 Exam-Oriented Conclusion</h2>
+<div class="box conclusion">
+<p>Unit 1 builds the vocabulary that every future unit of this subject depends on: Machine Learning is fundamentally about learning patterns from experience (data) rather than following hand-coded rules, and the type of learning used — Supervised, Unsupervised, Semi-Supervised, or Reinforcement — depends entirely on what kind of data/feedback is available for the problem at hand. Every learning algorithm searches through a <strong>hypothesis space</strong> to find a good model, but this search is only possible, and generalization to unseen data only works, because of some <strong>inductive bias</strong> built into the algorithm. Finally, since a model is only useful if it performs well on data it hasn't seen, <strong>evaluation techniques like Cross Validation</strong> (especially K-Fold and LOOCV) are essential to get a trustworthy, unbiased estimate of real-world performance. For exams, focus on clear definitions, the comparison tables, and being able to classify a given scenario correctly — these are the most commonly asked question patterns.</p>
+</div>
+
+<h3>📖 Reference Books (as per Syllabus)</h3>
+<ol>
+  <li>Tom M. Mitchell, "Machine Learning", McGraw Hill</li>
+  <li>Ethem Alpaydin, "Introduction to Machine Learning", MIT Press</li>
+  <li>Peter Flach, "Machine Learning: The Art and Science of Algorithms that Make Sense of Data", Cambridge University Press</li>
+  <li>Christopher Bishop, "Pattern Recognition and Machine Learning", Springer</li>
+</ol>
+<p style="font-size:0.85em;color:#888;">Note: Please verify the exact reference book list against your latest official GTU syllabus document for subject code 3171114, as editions/titles may vary slightly across syllabus revisions.</p>
+</section>
+
+<div class="top-link"><a href="#top">↑ Back to Index</a></div>
+
+<footer>
+  GTU B.E. Semester VII — Subject Code 3171114 — Introduction to Machine Learning — Unit 1 Concept Notes
+</footer>
+
+</div>
+</body>
+</html>
