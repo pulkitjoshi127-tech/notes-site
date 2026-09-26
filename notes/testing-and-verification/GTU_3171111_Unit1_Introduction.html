@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 1: Introduction — Testing & Verification (3171111)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1c2c;
+    --navy-2:#132a40;
+    --teal:#0e8a7d;
+    --teal-light:#12b8a6;
+    --copper:#c17a3f;
+    --paper:#f7f5ef;
+    --card:#ffffff;
+    --ink:#16232f;
+    --ink-soft:#4a5a68;
+    --line:#dfe3e0;
+    --warn-bg:#fff4e8;
+    --warn-line:#c17a3f;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; scroll-padding-top:20px;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    line-height:1.6;
+    font-size:16px;
+  }
+  h1,h2,h3,h4{
+    font-family:'Source Serif 4', Georgia, serif;
+    color:var(--navy);
+    line-height:1.25;
+    font-weight:700;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px 80px;}
+
+  /* HERO */
+  .hero{
+    background: linear-gradient(155deg, var(--navy) 0%, var(--navy-2) 60%, #0e3a4f 100%);
+    color:#eef4f2;
+    padding:52px 20px 60px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(18,184,166,0.08) 0 1px, transparent 1px 46px),
+      repeating-linear-gradient(0deg, rgba(18,184,166,0.08) 0 1px, transparent 1px 46px);
+    pointer-events:none;
+  }
+  .hero-inner{max-width:920px;margin:0 auto;position:relative;}
+  .eyebrow{
+    color:var(--teal-light);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    letter-spacing:0.02em;
+    margin-bottom:14px;
+  }
+  .hero h1{
+    color:#fff;
+    font-size:2.3rem;
+    margin:0 0 10px;
+    max-width:680px;
+  }
+  .hero p.sub{
+    color:#c7d6d3;
+    max-width:600px;
+    margin:0 0 22px;
+    font-size:1.02rem;
+  }
+  .hero-meta{
+    display:flex; flex-wrap:wrap; gap:10px 22px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:#a9c2bd;
+  }
+  .hero-meta span b{color:#fff; font-weight:600;}
+
+  /* TOC */
+  .toc{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:4px;
+    margin-top:-34px;
+    position:relative;
+    box-shadow:0 8px 24px rgba(11,28,44,0.10);
+    padding:28px 30px 22px;
+  }
+  .toc h2{font-size:1.15rem; margin:0 0 14px; display:flex; align-items:center; gap:10px;}
+  .toc h2 .chip{
+    width:8px;height:8px;border-radius:50%;background:var(--teal);display:inline-block;
+  }
+  .toc ol{margin:0; padding-left:0; list-style:none; counter-reset:toc;}
+  .toc li{counter-increment:toc; margin:0; border-bottom:1px dashed var(--line);}
+  .toc li:last-child{border-bottom:none;}
+  .toc a{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding:9px 2px; text-decoration:none; color:var(--ink);
+  }
+  .toc a::before{
+    content: counter(toc) ". ";
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--copper);
+    margin-right:6px;
+  }
+  .toc a .pg{
+    font-family:'IBM Plex Mono', monospace; color:var(--ink-soft); font-size:13px;
+  }
+  .toc a:hover{color:var(--teal);}
+
+  section{margin-top:56px;}
+  .section-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--copper);
+    margin-bottom:6px;
+  }
+  h2.h-main{font-size:1.6rem; margin:0 0 6px; border-bottom:2px solid var(--navy); padding-bottom:10px;}
+  h3.h-sub{font-size:1.2rem; margin:34px 0 8px; color:var(--teal); }
+  h3.h-sub .num{color:var(--copper); font-family:'IBM Plex Mono',monospace; font-size:0.85em; margin-right:6px;}
+
+  p{color:var(--ink); margin:10px 0;}
+  .lead{color:var(--ink-soft); font-size:1.02rem;}
+
+  /* Definition box */
+  .def{
+    background:var(--card);
+    border-left:4px solid var(--navy);
+    border-radius:3px;
+    padding:14px 18px;
+    margin:14px 0;
+    box-shadow:0 1px 4px rgba(11,28,44,0.06);
+  }
+  .def .lbl{font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--navy); font-weight:600;}
+  .def p{margin:6px 0 0;}
+
+  /* Key point / remember */
+  .key{
+    background:var(--warn-bg);
+    border:1px solid var(--warn-line);
+    border-radius:3px;
+    padding:12px 18px;
+    margin:14px 0;
+  }
+  .key .lbl{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--copper); font-weight:600;
+  }
+  .key p{margin:6px 0 0;}
+
+  /* Example box */
+  .example{
+    background:#eef7f5;
+    border-left:4px solid var(--teal);
+    border-radius:3px;
+    padding:12px 18px;
+    margin:14px 0;
+  }
+  .example .lbl{font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--teal); font-weight:600;}
+
+  /* Numerical box */
+  .numeric{
+    background:#0e2233;
+    color:#e8f1ee;
+    border-radius:4px;
+    padding:16px 20px;
+    margin:14px 0;
+    font-size:0.96rem;
+  }
+  .numeric .lbl{font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--teal-light); font-weight:600;}
+  .numeric code, .numeric .eq{font-family:'IBM Plex Mono',monospace; color:#ffd9a8;}
+  .numeric p{color:#e8f1ee;}
+  .numeric hr{border:none; border-top:1px solid rgba(255,255,255,0.15); margin:10px 0;}
+
+  table{
+    width:100%; border-collapse:collapse; margin:16px 0; font-size:0.94rem;
+    background:var(--card);
+  }
+  caption{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); margin-bottom:6px;}
+  th,td{border:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top;}
+  th{background:var(--navy); color:#fff; font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:0.88rem;}
+  tr:nth-child(even) td{background:#fbfaf6;}
+
+  .diagram{
+    background:var(--card); border:1px solid var(--line); border-radius:4px;
+    padding:18px; margin:18px 0; text-align:center;
+  }
+  .diagram .cap{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); margin-top:8px;}
+  svg{max-width:100%; height:auto;}
+
+  ul.plain{padding-left:20px;}
+  ul.plain li{margin:5px 0;}
+
+  .qa{
+    background:var(--card); border:1px solid var(--line); border-radius:4px;
+    padding:16px 20px; margin:16px 0;
+  }
+  .qa .q{font-weight:600; color:var(--navy); margin-bottom:8px;}
+  .qa .marks{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; color:#fff; background:var(--copper);
+    padding:2px 8px; border-radius:10px; margin-left:8px; vertical-align:middle;
+  }
+  .qa ul{margin:6px 0 0; padding-left:20px;}
+  .qa li{margin:4px 0;}
+
+  .revision-grid{display:grid; grid-template-columns:1fr; gap:0;}
+  .revision-grid .row{
+    display:grid; grid-template-columns: 200px 1fr;
+    border-bottom:1px solid var(--line); padding:8px 0;
+  }
+  .revision-grid .row:nth-child(odd){background:#fbfaf6;}
+  .revision-grid .term{font-weight:600; color:var(--navy); padding:0 10px;}
+  .revision-grid .desc{padding:0 10px; color:var(--ink-soft);}
+
+  .conclusion{
+    background:linear-gradient(155deg, var(--navy), var(--navy-2));
+    color:#eef4f2; border-radius:6px; padding:26px 28px; margin:20px 0;
+  }
+  .conclusion h2{color:#fff;}
+  .conclusion p{color:#dbe7e3;}
+
+  .refs{margin:10px 0 0; padding-left:20px;}
+  .refs li{margin:6px 0;}
+
+  footer{text-align:center; color:var(--ink-soft); font-size:13px; margin-top:60px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:600px){
+    .hero h1{font-size:1.7rem;}
+    .revision-grid .row{grid-template-columns:140px 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">GTU // B.E. SEMESTER VII // SUBJECT CODE 3171111</div>
+    <h1>Testing &amp; Verification</h1>
+    <p class="sub">Unit 1 — Introduction: why chips are tested, where testing sits in the VLSI lifecycle, the challenges it faces, the abstraction levels it works at, and how the field evolved.</p>
+    <div class="hero-meta">
+      <span>Teaching hours: <b>8</b></span>
+      <span>Unit weight (approx.): <b>5%</b> of theory marks</span>
+      <span>Bloom levels: <b>R, U</b></span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="toc">
+    <h2><span class="chip"></span> Interactive Index</h2>
+    <ol>
+      <li><a href="#overview"><span>Chapter Overview &amp; Learning Outcomes</span><span class="pg">p.1</span></a></li>
+      <li><a href="#topic1"><span>1. Importance of Testing</span><span class="pg">p.2</span></a></li>
+      <li><a href="#topic2"><span>2. Testing during the VLSI Lifecycle</span><span class="pg">p.4</span></a></li>
+      <li><a href="#topic3"><span>3. Challenges in VLSI Testing</span><span class="pg">p.6</span></a></li>
+      <li><a href="#topic4"><span>4. Levels of Abstraction in VLSI Testing</span><span class="pg">p.8</span></a></li>
+      <li><a href="#topic5"><span>5. Historical Review of VLSI Test Technology</span><span class="pg">p.10</span></a></li>
+      <li><a href="#confused"><span>Frequently Confused Concepts</span><span class="pg">p.12</span></a></li>
+      <li><a href="#revision"><span>Quick Revision Sheet</span><span class="pg">p.13</span></a></li>
+      <li><a href="#qna"><span>5-Mark Questions &amp; Model Answers</span><span class="pg">p.14</span></a></li>
+      <li><a href="#conclusion"><span>Exam-Oriented Conclusion &amp; References</span><span class="pg">p.16</span></a></li>
+    </ol>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section id="overview">
+    <div class="section-tag">SECTION 00</div>
+    <h2 class="h-main">Chapter Overview &amp; Learning Outcomes</h2>
+    <p class="lead">Before you build a device, you design it. Before you sell it, you test it. This unit is the "why" chapter of the course — it sets up every technical tool (scan, ATPG, BIST, coverage) you'll learn later by first answering: why do chips fail, where in the manufacturing flow do we catch that, and why has this become harder every decade?</p>
+
+    <div class="key">
+      <div class="lbl">By the end of this unit, you should be able to</div>
+      <p>
+        1. Explain why testing is unavoidable in VLSI manufacturing.<br>
+        2. Identify every stage of the IC lifecycle where testing is applied.<br>
+        3. List and explain the major challenges facing modern VLSI testing.<br>
+        4. Describe the different abstraction levels at which testing/fault models operate.<br>
+        5. Trace how test technology evolved from manual functional testing to today's structured, IP-reuse-based test methodology.
+      </p>
+    </div>
+
+    <table>
+      <caption>Unit-at-a-glance</caption>
+      <tr><th>Topic</th><th>Core Idea</th><th>Teaching Hours</th></tr>
+      <tr><td>Importance of Testing</td><td>Separates good chips from defective ones; economic necessity</td><td rowspan="5" style="vertical-align:middle; text-align:center;">8 (shared across Unit 1)</td></tr>
+      <tr><td>Testing during VLSI Lifecycle</td><td>Testing happens at design, wafer, package, board and field stages</td></tr>
+      <tr><td>Challenges in VLSI Testing</td><td>Shrinking geometry, rising complexity, cost and speed pressures</td></tr>
+      <tr><td>Levels of Abstraction</td><td>Behavioral → RTL → Gate → Switch/Transistor → Layout</td></tr>
+      <tr><td>Historical Review</td><td>1960s functional test → scan/ATPG → BIST → SoC/IP-based test</td></tr>
+    </table>
+  </section>
+
+  <!-- TOPIC 1 -->
+  <section id="topic1">
+    <div class="section-tag">SECTION 01</div>
+    <h2 class="h-main">Importance of Testing</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p><b>VLSI testing</b> is the process of applying a set of electrical inputs (test vectors) to a fabricated chip and comparing its outputs against expected "good-chip" responses, in order to determine whether the chip is free of manufacturing defects.</p>
+    </div>
+
+    <p>No manufacturing process is perfect. Silicon wafers pick up dust particles, photolithography steps misalign by a few nanometers, and process variations creep in. Some of these physical imperfections turn into <b>defects</b>, and some defects change chip behavior enough to become observable <b>faults</b>. Testing exists purely to catch these before the chip reaches a customer.</p>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>Testing does <u>not</u> improve chip quality — it only <u>sorts</u> good chips from bad ones. Improving quality is the job of better process control and design (verification), not testing.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>Think of an egg-packing unit on a farm. The hens (fabrication) are already done producing eggs; some are naturally cracked or empty. The packing line (test) doesn't stop eggs from cracking — it simply shines a light through each egg (a "test stimulus") and rejects the ones that don't look right, so only good eggs reach the supermarket shelf.</p>
+    </div>
+
+    <h3 class="h-sub"><span class="num">1.1</span>Why testing is economically critical — the Rule of Ten</h3>
+    <p>A defect that escapes testing becomes dramatically more expensive to fix the later it is discovered. This is informally called the <b>Rule of Ten</b>: the cost of detecting a fault increases roughly by a factor of 10 at each subsequent level of packaging/integration.</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#0e8a7d"/>
+          </marker>
+        </defs>
+        <g font-family="IBM Plex Mono, monospace" font-size="12" fill="#16232f">
+          <rect x="10" y="40" width="110" height="50" rx="4" fill="#0b1c2c"/>
+          <text x="65" y="60" fill="#fff" text-anchor="middle">Chip</text>
+          <text x="65" y="76" fill="#12b8a6" text-anchor="middle">$1</text>
+
+          <line x1="120" y1="65" x2="155" y2="65" stroke="#0e8a7d" stroke-width="2" marker-end="url(#arrow1)"/>
+
+          <rect x="160" y="40" width="110" height="50" rx="4" fill="#0b1c2c"/>
+          <text x="215" y="60" fill="#fff" text-anchor="middle">Board</text>
+          <text x="215" y="76" fill="#12b8a6" text-anchor="middle">$10</text>
+
+          <line x1="270" y1="65" x2="305" y2="65" stroke="#0e8a7d" stroke-width="2" marker-end="url(#arrow1)"/>
+
+          <rect x="310" y="40" width="110" height="50" rx="4" fill="#0b1c2c"/>
+          <text x="365" y="60" fill="#fff" text-anchor="middle">System</text>
+          <text x="365" y="76" fill="#12b8a6" text-anchor="middle">$100</text>
+
+          <line x1="420" y1="65" x2="455" y2="65" stroke="#0e8a7d" stroke-width="2" marker-end="url(#arrow1)"/>
+
+          <rect x="460" y="40" width="160" height="50" rx="4" fill="#c17a3f"/>
+          <text x="540" y="60" fill="#fff" text-anchor="middle">Field (customer)</text>
+          <text x="540" y="76" fill="#fff" text-anchor="middle">$1000+</text>
+        </g>
+        <text x="320" y="130" font-family="IBM Plex Sans, sans-serif" font-size="13" fill="#4a5a68" text-anchor="middle">Cost of catching the same defect rises ~10× at every stage it escapes</text>
+      </svg>
+      <div class="cap">Fig 1.1 — The Rule of Ten: escalating cost of a missed defect</div>
+    </div>
+
+    <div class="numeric">
+      <div class="lbl">Worked Numerical Example — Defect Level</div>
+      <p>One common way to quantify "how good is my test" is the <b>Defect Level (DL)</b> formula:</p>
+      <p class="eq">DL = 1 − Y<sup>(1−T)</sup></p>
+      <p>where <b>Y</b> = fabrication yield (fraction of chips that are actually good) and <b>T</b> = fault coverage of the test (fraction of possible faults the test can detect), 0 ≤ T ≤ 1.</p>
+      <hr>
+      <p><b>Given:</b> Yield Y = 0.6 (60% of manufactured chips are defect-free), Fault coverage T = 0.9 (90%).</p>
+      <p><b>Step 1:</b> 1 − T = 1 − 0.9 = 0.1</p>
+      <p><b>Step 2:</b> DL = 1 − (0.6)<sup>0.1</sup></p>
+      <p><b>Step 3:</b> (0.6)<sup>0.1</sup> ≈ 0.9502</p>
+      <p><b>Step 4:</b> DL ≈ 1 − 0.9502 = <b>0.0498 ≈ 5%</b></p>
+      <p>Interpretation: even with a fairly good 90% fault-coverage test, about 5% of the chips that <i>pass</i> testing and reach the customer are still secretly defective. Raising T to 99% would drop this defect level to under 1%, showing numerically why chasing higher fault coverage matters commercially.</p>
+    </div>
+
+    <table>
+      <caption>Table 1.1 — Testing vs. Verification (often confused; expanded in Unit 4 too)</caption>
+      <tr><th>Aspect</th><th>Testing</th><th>Verification</th></tr>
+      <tr><td>When performed</td><td>After fabrication, on physical silicon</td><td>Before fabrication, on the design/model</td></tr>
+      <tr><td>Purpose</td><td>Detect manufacturing defects</td><td>Detect design errors</td></tr>
+      <tr><td>Checks against</td><td>The design itself (assumed correct)</td><td>The specification/intended behavior</td></tr>
+      <tr><td>Tool example</td><td>ATE (Automatic Test Equipment)</td><td>Simulator, formal verification tool</td></tr>
+      <tr><td>Runs on</td><td>Every manufactured chip</td><td>Only the design, once</td></tr>
+    </table>
+  </section>
+
+  <!-- TOPIC 2 -->
+  <section id="topic2">
+    <div class="section-tag">SECTION 02</div>
+    <h2 class="h-main">Testing during the VLSI Lifecycle</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p>The <b>VLSI lifecycle</b> is the complete sequence of stages a chip passes through — specification, design, verification, fabrication, packaging, and field use. <b>Testing is not one event; it is repeated at almost every stage</b> of this lifecycle, each time with a different goal.</p>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#4a5a68"/>
+          </marker>
+        </defs>
+        <g font-family="IBM Plex Sans, sans-serif" font-size="12.5">
+          <!-- boxes -->
+          <rect x="10" y="10" width="130" height="46" rx="5" fill="#0b1c2c"/>
+          <text x="75" y="38" fill="#fff" text-anchor="middle">Specification</text>
+
+          <rect x="10" y="90" width="130" height="46" rx="5" fill="#0b1c2c"/>
+          <text x="75" y="112" fill="#fff" text-anchor="middle">Design (RTL)</text>
+          <text x="75" y="126" fill="#12b8a6" text-anchor="middle" font-size="11">↳ Verification</text>
+
+          <rect x="185" y="90" width="130" height="46" rx="5" fill="#0b1c2c"/>
+          <text x="250" y="112" fill="#fff" text-anchor="middle">Fabrication</text>
+          <text x="250" y="126" fill="#c17a3f" text-anchor="middle" font-size="11">↳ Wafer Probe Test</text>
+
+          <rect x="360" y="90" width="130" height="46" rx="5" fill="#0b1c2c"/>
+          <text x="425" y="112" fill="#fff" text-anchor="middle">Packaging</text>
+          <text x="425" y="126" fill="#c17a3f" text-anchor="middle" font-size="11">↳ Package/Final Test</text>
+
+          <rect x="535" y="90" width="140" height="46" rx="5" fill="#0b1c2c"/>
+          <text x="605" y="112" fill="#fff" text-anchor="middle">Burn-in / Stress</text>
+          <text x="605" y="126" fill="#c17a3f" text-anchor="middle" font-size="11">↳ Reliability Test</text>
+
+          <rect x="185" y="180" width="130" height="46" rx="5" fill="#0b1c2c"/>
+          <text x="250" y="202" fill="#fff" text-anchor="middle">Board / System</text>
+          <text x="250" y="216" fill="#c17a3f" text-anchor="middle" font-size="11">↳ Board-level Test</text>
+
+          <rect x="360" y="180" width="130" height="46" rx="5" fill="#0b1c2c"/>
+          <text x="425" y="202" fill="#fff" text-anchor="middle">Field Use</text>
+          <text x="425" y="216" fill="#c17a3f" text-anchor="middle" font-size="11">↳ Maintenance Test</text>
+
+          <!-- arrows -->
+          <line x1="75" y1="56" x2="75" y2="90" stroke="#4a5a68" stroke-width="2" marker-end="url(#arrow2)"/>
+          <line x1="140" y1="113" x2="185" y2="113" stroke="#4a5a68" stroke-width="2" marker-end="url(#arrow2)"/>
+          <line x1="315" y1="113" x2="360" y2="113" stroke="#4a5a68" stroke-width="2" marker-end="url(#arrow2)"/>
+          <line x1="490" y1="113" x2="535" y2="113" stroke="#4a5a68" stroke-width="2" marker-end="url(#arrow2)"/>
+          <line x1="425" y1="136" x2="250" y2="180" stroke="#4a5a68" stroke-width="2" marker-end="url(#arrow2)"/>
+          <line x1="315" y1="203" x2="360" y2="203" stroke="#4a5a68" stroke-width="2" marker-end="url(#arrow2)"/>
+        </g>
+      </svg>
+      <div class="cap">Fig 1.2 — Testing touchpoints across the VLSI product lifecycle</div>
+    </div>
+
+    <h3 class="h-sub"><span class="num">2.1</span>Stage-wise breakdown</h3>
+    <ul class="plain">
+      <li><b>Design-time verification</b> — simulate the RTL/gate-level model to catch logic/design bugs before silicon exists.</li>
+      <li><b>Wafer probe test</b> — each die is tested electrically on the wafer itself (before dicing) to reject grossly defective dies early and save packaging cost.</li>
+      <li><b>Package/final test</b> — after dicing and packaging, the chip is retested since packaging itself can introduce new defects (bond-wire faults, etc.).</li>
+      <li><b>Burn-in test</b> — chips are run at elevated temperature/voltage to accelerate and weed out "infant mortality" failures (weak parts that would fail early in the field).</li>
+      <li><b>Board-level test</b> — after chips are soldered onto a PCB, the assembled board is tested for interconnect and assembly faults.</li>
+      <li><b>System/field test</b> — the completed product is tested by the end system, and periodically re-tested during maintenance (e.g., power-on self-test).</li>
+    </ul>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>Wafer probe test happens <b>before</b> packaging; package/final test happens <b>after</b>. This ordering exists purely to avoid wasting an expensive package on a die that was already dead.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>It's like quality checks in a bakery: dough is checked before baking (design/wafer test), the baked loaf is checked again before it's wrapped (package test), and the wrapped loaf gets a final visual check before it leaves the factory (board/system test) — each check catches a different class of problem.</p>
+    </div>
+
+    <table>
+      <caption>Table 1.2 — Wafer (Probe) Test vs. Package (Final) Test</caption>
+      <tr><th>Aspect</th><th>Wafer / Probe Test</th><th>Package / Final Test</th></tr>
+      <tr><td>Stage</td><td>Before dicing, on the wafer</td><td>After dicing and packaging</td></tr>
+      <tr><td>Access method</td><td>Probe needles on bond pads</td><td>Package pins via test socket</td></tr>
+      <tr><td>Purpose</td><td>Screen out grossly bad dies early (save packaging cost)</td><td>Catch packaging-induced defects + final quality sign-off</td></tr>
+      <tr><td>Test thoroughness</td><td>Often a reduced/quick test</td><td>Full, more comprehensive test</td></tr>
+    </table>
+  </section>
+
+  <!-- TOPIC 3 -->
+  <section id="topic3">
+    <div class="section-tag">SECTION 03</div>
+    <h2 class="h-main">Challenges in VLSI Testing</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p>The <b>challenges in VLSI testing</b> are the technical and economic pressures that make it progressively harder to fully test a chip as technology scales — arising from shrinking transistor geometry, exploding design complexity, and tightening cost/time budgets.</p>
+    </div>
+
+    <h3 class="h-sub"><span class="num">3.1</span>Major challenge areas</h3>
+    <ul class="plain">
+      <li><b>Growing complexity:</b> Modern SoCs contain billions of transistors; exhaustively testing every possible input pattern is physically impossible.</li>
+      <li><b>Deep sub-micron (DSM) effects:</b> At very small geometries, new defect and fault behaviors appear (e.g., bridging faults, delay faults) that older fault models don't capture well.</li>
+      <li><b>Controllability &amp; Observability limits:</b> Only chip pins are directly accessible; millions of internal nodes must be controlled/observed indirectly, which is hard.</li>
+      <li><b>Rising test cost:</b> Automatic Test Equipment (ATE) is extremely expensive, and per-chip test time directly adds to production cost.</li>
+      <li><b>High-speed / at-speed testing:</b> Chips must be tested at their real operating frequency to catch timing-related (delay) faults, requiring very fast, precise testers.</li>
+      <li><b>Low-power test:</b> Test mode often switches far more circuit nodes simultaneously than normal operation, causing excess power/heat — a problem the test itself creates.</li>
+      <li><b>IP core reuse / SoC integration:</b> Chips built from third-party IP blocks make it hard to get detailed internal test information for each block.</li>
+      <li><b>Growing test data volume:</b> More gates mean more test vectors and larger test-pattern files, straining tester memory and test time.</li>
+    </ul>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>A famous industry observation: <b>test cost is on track to exceed design cost</b> if testing methodology doesn't keep improving — this is why Design for Testability (DFT), covered in Unit 2, exists.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>Imagine inspecting a 500-page book for typos, but you're only allowed to look at the cover and the last page (the "pins"). You'd have to design clever ways — like sampling checks or a table of contents — to indirectly infer whether the inside pages are correct. That's exactly the controllability/observability problem inside a chip with millions of internal nodes but only a few hundred pins.</p>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg">
+        <g font-family="IBM Plex Sans, sans-serif" font-size="13">
+          <rect x="230" y="20" width="180" height="150" rx="8" fill="#0b1c2c" stroke="#12b8a6" stroke-width="1.5"/>
+          <text x="320" y="100" fill="#fff" text-anchor="middle" font-size="12">Millions of internal</text>
+          <text x="320" y="118" fill="#fff" text-anchor="middle" font-size="12">gates / flip-flops</text>
+
+          <!-- pins left (control) -->
+          <line x1="180" y1="45" x2="230" y2="45" stroke="#12b8a6" stroke-width="2"/>
+          <line x1="180" y1="70" x2="230" y2="70" stroke="#12b8a6" stroke-width="2"/>
+          <line x1="180" y1="95" x2="230" y2="95" stroke="#12b8a6" stroke-width="2"/>
+          <text x="120" y="72" fill="#0e8a7d" text-anchor="middle">Control<tspan x="120" dy="14">(inputs / pins)</tspan></text>
+
+          <!-- pins right (observe) -->
+          <line x1="410" y1="45" x2="460" y2="45" stroke="#c17a3f" stroke-width="2"/>
+          <line x1="410" y1="70" x2="460" y2="70" stroke="#c17a3f" stroke-width="2"/>
+          <line x1="410" y1="95" x2="460" y2="95" stroke="#c17a3f" stroke-width="2"/>
+          <text x="520" y="72" fill="#c17a3f" text-anchor="middle">Observe<tspan x="520" dy="14">(outputs / pins)</tspan></text>
+        </g>
+      </svg>
+      <div class="cap">Fig 1.3 — Only a handful of pins connect to millions of internal nodes</div>
+    </div>
+
+    <table>
+      <caption>Table 1.3 — Controllability vs. Observability</caption>
+      <tr><th>Aspect</th><th>Controllability</th><th>Observability</th></tr>
+      <tr><td>Meaning</td><td>Ease of setting an internal node to a desired logic value from primary inputs</td><td>Ease of propagating an internal node's value to a primary output where it can be seen</td></tr>
+      <tr><td>Direction</td><td>Primary inputs → internal node</td><td>Internal node → primary outputs</td></tr>
+      <tr><td>Poor when</td><td>Node is buried deep behind many logic levels from inputs</td><td>Node's effect gets masked/blocked before reaching an output</td></tr>
+      <tr><td>Improved by (preview)</td><td>Scan chains, test points (Unit 2)</td><td>Scan chains, test points (Unit 2)</td></tr>
+    </table>
+  </section>
+
+  <!-- TOPIC 4 -->
+  <section id="topic4">
+    <div class="section-tag">SECTION 04</div>
+    <h2 class="h-main">Levels of Abstraction in VLSI Testing</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p>Since a chip can be described at several levels of detail, testing and fault models are also applied at different <b>levels of abstraction</b> — from a high-level behavioral description down to the physical transistor/layout level. Higher levels are faster to analyze but less precise; lower levels are precise but computationally expensive.</p>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 500 260" xmlns="http://www.w3.org/2000/svg">
+        <g font-family="IBM Plex Sans, sans-serif" font-size="13" text-anchor="middle">
+          <polygon points="250,10 400,60 100,60" fill="#0b1c2c"/>
+          <text x="250" y="42" fill="#fff">Behavioral / System</text>
+
+          <polygon points="100,60 400,60 430,110 70,110" fill="#123449"/>
+          <text x="250" y="92" fill="#fff">RTL (Register Transfer Level)</text>
+
+          <polygon points="70,110 430,110 460,160 40,160" fill="#0e5a5a"/>
+          <text x="250" y="142" fill="#fff">Gate Level</text>
+
+          <polygon points="40,160 460,160 490,210 10,210" fill="#0e8a7d"/>
+          <text x="250" y="192" fill="#fff">Switch / Transistor Level</text>
+
+          <polygon points="10,210 490,210 500,250 0,250" fill="#c17a3f"/>
+          <text x="250" y="236" fill="#fff">Physical / Layout Level</text>
+        </g>
+      </svg>
+      <div class="cap">Fig 1.4 — Abstraction pyramid: fast &amp; approximate (top) to precise &amp; slow (bottom)</div>
+    </div>
+
+    <h3 class="h-sub"><span class="num">4.1</span>What happens at each level</h3>
+    <ul class="plain">
+      <li><b>Behavioral / System level:</b> Chip described as algorithms/functions (e.g., "this block performs an FFT"); used for early functional test planning.</li>
+      <li><b>RTL level:</b> Described using registers and the logic between them (Verilog/VHDL); most functional verification and coverage work happens here.</li>
+      <li><b>Gate level:</b> Described as interconnected logic gates (AND, OR, flip-flops); classic fault models like <i>stuck-at faults</i> are defined here.</li>
+      <li><b>Switch/Transistor level:</b> Described as MOS transistors/switches; used to model faults like <i>bridging</i> and <i>transistor stuck-open/stuck-short</i> faults.</li>
+      <li><b>Physical/Layout level:</b> Described as actual geometric layout (masks); used to derive realistic defect models directly from likely manufacturing flaws.</li>
+    </ul>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>The most commonly used fault model in this course, the <b>stuck-at fault model</b>, belongs to the <u>gate level</u> — it's the sweet spot between accuracy and computational feasibility.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>It's like inspecting a car at different zoom levels: a test drive checks system-level behavior ("does it drive smoothly?"), a mechanic's checklist checks RTL/gate-level behavior ("does each part function?"), and a metallurgist's microscope checks physical-level defects in a bolt. Each zoom level catches problems the others miss.</p>
+    </div>
+
+    <table>
+      <caption>Table 1.4 — Abstraction Level vs. Typical Fault Model Used</caption>
+      <tr><th>Abstraction Level</th><th>Description Style</th><th>Typical Fault/Defect Model</th></tr>
+      <tr><td>Behavioral/System</td><td>Algorithms, functions</td><td>Functional errors</td></tr>
+      <tr><td>RTL</td><td>Registers + logic equations</td><td>RTL-level faults (design errors)</td></tr>
+      <tr><td>Gate</td><td>Logic gates, flip-flops</td><td>Stuck-at fault, delay fault</td></tr>
+      <tr><td>Switch/Transistor</td><td>MOS transistors</td><td>Bridging fault, stuck-open/short</td></tr>
+      <tr><td>Physical/Layout</td><td>Geometric masks</td><td>Realistic spot defects (opens, shorts)</td></tr>
+    </table>
+  </section>
+
+  <!-- TOPIC 5 -->
+  <section id="topic5">
+    <div class="section-tag">SECTION 05</div>
+    <h2 class="h-main">Historical Review of VLSI Test Technology</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p>The <b>historical evolution of VLSI test technology</b> traces how testing methods changed from simple manual functional checks in early ICs to today's highly structured, automated, and reuse-based methodologies — driven by exponentially rising transistor counts (per Moore's Law).</p>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 700 210" xmlns="http://www.w3.org/2000/svg">
+        <line x1="30" y1="105" x2="670" y2="105" stroke="#4a5a68" stroke-width="2"/>
+        <g font-family="IBM Plex Sans, sans-serif" font-size="12" text-anchor="middle">
+          <circle cx="80" cy="105" r="7" fill="#0b1c2c"/>
+          <text x="80" y="85" fill="#16232f">1960s–70s</text>
+          <text x="80" y="130" fill="#4a5a68">Functional</text>
+          <text x="80" y="144" fill="#4a5a68">testing (manual)</text>
+
+          <circle cx="220" cy="105" r="7" fill="#0b1c2c"/>
+          <text x="220" y="85" fill="#16232f">1980s</text>
+          <text x="220" y="130" fill="#4a5a68">Scan design +</text>
+          <text x="220" y="144" fill="#4a5a68">ATPG tools</text>
+
+          <circle cx="360" cy="105" r="7" fill="#0e8a7d"/>
+          <text x="360" y="85" fill="#16232f">1990s</text>
+          <text x="360" y="130" fill="#4a5a68">BIST &amp; DFT</text>
+          <text x="360" y="144" fill="#4a5a68">become standard</text>
+
+          <circle cx="500" cy="105" r="7" fill="#0e8a7d"/>
+          <text x="500" y="85" fill="#16232f">2000s</text>
+          <text x="500" y="130" fill="#4a5a68">SoC test, IP-core</text>
+          <text x="500" y="144" fill="#4a5a68">based reuse</text>
+
+          <circle cx="630" cy="105" r="7" fill="#c17a3f"/>
+          <text x="630" y="85" fill="#16232f">2010s–now</text>
+          <text x="630" y="130" fill="#4a5a68">Low-power test,</text>
+          <text x="630" y="144" fill="#4a5a68">adaptive/AI test</text>
+        </g>
+      </svg>
+      <div class="cap">Fig 1.5 — Timeline of VLSI test technology evolution</div>
+    </div>
+
+    <ul class="plain">
+      <li><b>1960s–70s:</b> ICs had few hundred transistors. Testing was mostly manual, ad-hoc <b>functional testing</b> — simply running the chip's intended function and checking outputs.</li>
+      <li><b>1980s:</b> As gate counts rose, ad-hoc testing couldn't keep up. <b>Scan design</b> (converting flip-flops into a shift-register chain for easy access) and <b>Automatic Test Pattern Generation (ATPG)</b> tools emerged, based on the stuck-at fault model.</li>
+      <li><b>1990s:</b> <b>Design for Testability (DFT)</b> and <b>Built-In Self-Test (BIST)</b> became mainstream — testability was now planned in during design, not added afterward.</li>
+      <li><b>2000s:</b> With System-on-Chip (SoC) designs combining many reused IP blocks, <b>SoC test methodologies</b> and IP-core test wrapping (test reuse) became essential.</li>
+      <li><b>2010s–present:</b> Focus shifted to <b>low-power test</b>, <b>at-speed/delay testing</b>, and increasingly <b>adaptive/data-driven test</b> techniques to control soaring test cost and time.</li>
+    </ul>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>The historical driver behind every shift was the same: <b>transistor count kept growing faster than test methodology could handle manually</b> — so testing had to become progressively more automated and structured.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>Compare it to quality checking in a factory as it scales: a small workshop checks each handmade item by eye; a mid-size factory adds inspection checklists and jigs (scan/ATPG); a giant modern factory uses automated robotic inspection lines and self-checking machines (BIST) — the check method had to evolve as production volume and product complexity exploded.</p>
+    </div>
+  </section>
+
+  <!-- FREQUENTLY CONFUSED -->
+  <section id="confused">
+    <div class="section-tag">SECTION 06</div>
+    <h2 class="h-main">Frequently Confused Concepts</h2>
+    <table>
+      <caption>Quick-glance disambiguation table</caption>
+      <tr><th>Term A</th><th>Term B</th><th>Key Difference</th></tr>
+      <tr>
+        <td><b>Testing</b></td>
+        <td><b>Verification</b></td>
+        <td>Testing checks manufactured silicon against the design; verification checks the design against the specification, before fabrication.</td>
+      </tr>
+      <tr>
+        <td><b>Defect</b></td>
+        <td><b>Fault</b></td>
+        <td>A defect is a physical imperfection (e.g., a broken wire); a fault is the logical/electrical representation of that defect's effect (e.g., stuck-at-0).</td>
+      </tr>
+      <tr>
+        <td><b>Fault</b></td>
+        <td><b>Error</b></td>
+        <td>A fault is the cause (a logic node stuck at wrong value); an error is the observable, incorrect output that results from the fault being activated.</td>
+      </tr>
+      <tr>
+        <td><b>Controllability</b></td>
+        <td><b>Observability</b></td>
+        <td>Controllability = can we set a node's value from inputs; Observability = can we see a node's effect at outputs.</td>
+      </tr>
+      <tr>
+        <td><b>Wafer (Probe) Test</b></td>
+        <td><b>Package (Final) Test</b></td>
+        <td>Probe test is done before dicing/packaging on the raw wafer; package test is done after the die is packaged.</td>
+      </tr>
+      <tr>
+        <td><b>Burn-in Test</b></td>
+        <td><b>Functional Test</b></td>
+        <td>Burn-in stresses the chip (heat/voltage) to trigger early-life failures; functional test simply checks correct logical behavior at normal conditions.</td>
+      </tr>
+      <tr>
+        <td><b>Yield</b></td>
+        <td><b>Defect Level</b></td>
+        <td>Yield = fraction of manufactured chips that are actually good; Defect Level = fraction of chips that pass the test but are secretly still bad.</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- QUICK REVISION -->
+  <section id="revision">
+    <div class="section-tag">SECTION 07</div>
+    <h2 class="h-main">Quick Revision Sheet</h2>
+    <div class="revision-grid">
+      <div class="row"><div class="term">Testing</div><div class="desc">Applying inputs to a fabricated chip and checking outputs to detect manufacturing defects.</div></div>
+      <div class="row"><div class="term">Verification</div><div class="desc">Confirming the design meets its specification, before fabrication.</div></div>
+      <div class="row"><div class="term">Defect</div><div class="desc">A physical imperfection introduced during manufacturing.</div></div>
+      <div class="row"><div class="term">Fault</div><div class="desc">A logical/electrical model representing the effect of a defect.</div></div>
+      <div class="row"><div class="term">Error</div><div class="desc">An observable incorrect output caused by an activated fault.</div></div>
+      <div class="row"><div class="term">Yield (Y)</div><div class="desc">Fraction of fabricated chips that are actually defect-free.</div></div>
+      <div class="row"><div class="term">Fault Coverage (T)</div><div class="desc">Fraction of all possible faults that a given test can detect.</div></div>
+      <div class="row"><div class="term">Defect Level (DL)</div><div class="desc">Fraction of chips that pass testing yet are still defective: DL = 1 − Y^(1−T).</div></div>
+      <div class="row"><div class="term">Controllability</div><div class="desc">Ease of driving an internal node to a desired value from primary inputs.</div></div>
+      <div class="row"><div class="term">Observability</div><div class="desc">Ease of propagating an internal node's value to a primary output.</div></div>
+      <div class="row"><div class="term">Wafer Probe Test</div><div class="desc">Electrical test done on the wafer before dicing/packaging.</div></div>
+      <div class="row"><div class="term">Package Test</div><div class="desc">Test performed after the die is packaged into its final form.</div></div>
+      <div class="row"><div class="term">Burn-in</div><div class="desc">Stress test at high temperature/voltage to catch early-life (infant mortality) failures.</div></div>
+      <div class="row"><div class="term">Rule of Ten</div><div class="desc">Cost of catching a defect rises ~10× at each later manufacturing/lifecycle stage.</div></div>
+      <div class="row"><div class="term">Levels of Abstraction</div><div class="desc">Different description depths of a chip: Behavioral, RTL, Gate, Switch, Physical.</div></div>
+      <div class="row"><div class="term">Stuck-at Fault</div><div class="desc">Gate-level fault model where a node is permanently fixed at logic 0 or 1.</div></div>
+      <div class="row"><div class="term">Deep Sub-Micron (DSM) Effects</div><div class="desc">New defect behaviors (bridging, delay faults) that emerge as geometry shrinks.</div></div>
+      <div class="row"><div class="term">DFT</div><div class="desc">Design for Testability — designing extra circuitry to make testing easier.</div></div>
+      <div class="row"><div class="term">BIST</div><div class="desc">Built-In Self-Test — a chip generates its own test patterns and checks its own responses.</div></div>
+      <div class="row"><div class="term">ATPG</div><div class="desc">Automatic Test Pattern Generation — software that automatically creates test vectors for target faults.</div></div>
+    </div>
+  </section>
+
+  <!-- Q&A -->
+  <section id="qna">
+    <div class="section-tag">SECTION 08</div>
+    <h2 class="h-main">5-Mark Questions &amp; Model Answers</h2>
+
+    <div class="qa">
+      <div class="q">Q1. Explain the importance of testing in VLSI manufacturing. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Necessity:</b> No fabrication process is defect-free; testing separates good chips from defective ones before shipment.</li>
+        <li><b>Quality assurance:</b> Ensures only functionally correct chips reach the customer, protecting brand reliability.</li>
+        <li><b>Economic reason — Rule of Ten:</b> The cost of a missed defect rises ~10× at each later stage (chip → board → system → field), so early detection saves massive downstream cost.</li>
+        <li><b>Yield-related insight:</b> Testing with high fault coverage minimizes the "defect level" (DL = 1 − Y^(1−T)) — the fraction of bad chips that slip through as "passed."</li>
+        <li><b>Note:</b> Testing does not improve quality; it only sorts good from bad — quality itself comes from process control and design.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q2. Describe the various stages of testing during the VLSI lifecycle. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Design-time verification:</b> Simulating the RTL/gate-level design to catch logic errors before fabrication.</li>
+        <li><b>Wafer probe test:</b> Electrical testing on the un-diced wafer to reject grossly bad dies early.</li>
+        <li><b>Package/final test:</b> Full re-test after packaging, to catch packaging-induced defects.</li>
+        <li><b>Burn-in test:</b> Stress testing at elevated temperature/voltage to eliminate early-life ("infant mortality") failures.</li>
+        <li><b>Board-level test:</b> Testing the assembled PCB for solder/interconnect defects.</li>
+        <li><b>Field/system test:</b> Ongoing testing (e.g., power-on self-test) during the product's operational life.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q3. What are the major challenges faced in VLSI testing today? <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Complexity:</b> Billions of transistors make exhaustive testing impossible.</li>
+        <li><b>Deep sub-micron effects:</b> New fault types (bridging, delay faults) appear as geometry shrinks.</li>
+        <li><b>Controllability/Observability:</b> Limited pins vs. millions of internal nodes make internal fault access hard.</li>
+        <li><b>Cost and time:</b> Expensive ATE and long per-chip test time drive up production cost.</li>
+        <li><b>At-speed &amp; low-power testing:</b> Chips must be tested at real operating frequency, while test mode itself often causes excess power/heat.</li>
+        <li><b>IP-core reuse:</b> Third-party IP blocks complicate getting full internal test visibility in SoC designs.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q4. Explain the different levels of abstraction used in VLSI testing. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Behavioral/System level:</b> High-level functional description; used for early functional test planning.</li>
+        <li><b>RTL level:</b> Registers and logic equations (Verilog/VHDL); primary level for functional verification.</li>
+        <li><b>Gate level:</b> Logic gates and flip-flops; home of the classic stuck-at fault model.</li>
+        <li><b>Switch/Transistor level:</b> MOS transistor description; models bridging and stuck-open/stuck-short faults.</li>
+        <li><b>Physical/Layout level:</b> Actual geometric mask layout; used to derive realistic defect models.</li>
+        <li><b>Trade-off:</b> Higher levels are faster but less precise; lower levels are precise but computationally expensive — gate level is the standard working compromise.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q5. Give a historical review of the evolution of VLSI test technology. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>1960s–70s:</b> Manual, ad-hoc functional testing on low-complexity ICs.</li>
+        <li><b>1980s:</b> Introduction of scan design and ATPG tools using the stuck-at fault model, as complexity grew.</li>
+        <li><b>1990s:</b> DFT and BIST became mainstream — testability planned in at design time.</li>
+        <li><b>2000s:</b> SoC-based designs pushed IP-core reuse and structured SoC test methodologies.</li>
+        <li><b>2010s–present:</b> Emphasis on low-power test, at-speed test, and adaptive/data-driven test approaches.</li>
+        <li><b>Driving force:</b> Continuous, exponential growth in transistor count (Moore's Law) consistently outpaced manual test capability, forcing each new methodology shift.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q6. Differentiate between controllability and observability with examples. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Controllability:</b> The ease of setting an internal circuit node to a required logic value (0 or 1) using only the primary inputs.</li>
+        <li><b>Observability:</b> The ease of propagating the value/effect of an internal node to a primary output where it can be measured.</li>
+        <li><b>Example — Controllability:</b> A node fed by a 10-input AND gate deep in the logic is hard to control, since many specific input combinations are needed.</li>
+        <li><b>Example — Observability:</b> A node whose output is ANDed with a constant 0 elsewhere can never be observed at the output, no matter its value.</li>
+        <li><b>Relevance:</b> Both are core testability metrics; poor values in either indicate a "hard to test" design, motivating DFT techniques like scan insertion (Unit 2).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CONCLUSION -->
+  <section id="conclusion">
+    <div class="conclusion">
+      <h2>Exam-Oriented Conclusion</h2>
+      <p>Unit 1 builds the conceptual foundation for the entire course: testing exists because manufacturing is imperfect, and it must be applied repeatedly across the lifecycle — from design verification through wafer probe, package test, burn-in, and field maintenance — because each stage exposes different defect types. As chips have scaled from a few hundred transistors to billions, the challenges of complexity, controllability/observability, cost, speed, and IP reuse have forced test technology to evolve historically from manual functional checks to structured, automated methodologies like scan, ATPG, and BIST. Testing is also carried out at multiple abstraction levels — behavioral, RTL, gate, switch, and physical — each trading off speed against precision. Together, these five topics answer the exam's favorite "why" and "where" questions, and set up the "how" (DFT, scan, ATPG, simulation) that follows in later units.</p>
+    </div>
+
+    <h3 class="h-sub" style="margin-top:28px;">Reference Books (as per syllabus)</h3>
+    <ol class="refs">
+      <li>Wang, Wu, Wen — <i>VLSI Test Principles and Architectures</i>, Morgan Kaufmann Publishers</li>
+      <li>M. Bushnell and V. D. Agrawal — <i>Essentials of Electronic Testing for Digital, Memory and Mixed-Signal VLSI Circuits</i>, Kluwer Academic Publishers, 2000</li>
+      <li>M. Abramovici, M. A. Breuer and A. D. Friedman — <i>Digital Systems Testing and Testable Design</i>, IEEE Press, 1990</li>
+      <li>T. Kropf — <i>Introduction to Formal Hardware Verification</i>, Springer Verlag, 2000</li>
+      <li>P. Rashinkar, Paterson and L. Singh — <i>System-on-a-Chip Verification: Methodology and Techniques</i>, Kluwer Academic Publishers, 2001</li>
+      <li>Janick Bergeron — <i>Writing Testbenches: Functional Verification of HDL Models</i>, Springer</li>
+      <li>Janick Bergeron — <i>Writing Testbenches using SystemVerilog</i>, Springer</li>
+    </ol>
+  </section>
+
+  <footer>GTU · B.E. Semester VII · 3171111 — Testing &amp; Verification · Unit 1 Concept Notes</footer>
+</div>
+</body>
+</html>

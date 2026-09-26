@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 4: Verification — Testing & Verification (3171111)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1c2c;
+    --navy-2:#132a40;
+    --teal:#0e8a7d;
+    --teal-light:#12b8a6;
+    --copper:#c17a3f;
+    --paper:#f7f5ef;
+    --card:#ffffff;
+    --ink:#16232f;
+    --ink-soft:#4a5a68;
+    --line:#dfe3e0;
+    --warn-bg:#fff4e8;
+    --warn-line:#c17a3f;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; scroll-padding-top:20px;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'IBM Plex Sans', system-ui, sans-serif; line-height:1.6; font-size:16px;
+  }
+  h1,h2,h3,h4{font-family:'Source Serif 4', Georgia, serif; color:var(--navy); line-height:1.25; font-weight:700;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px 80px;}
+  .hero{
+    background: linear-gradient(155deg, var(--navy) 0%, var(--navy-2) 60%, #0e3a4f 100%);
+    color:#eef4f2; padding:52px 20px 60px; position:relative; overflow:hidden;
+  }
+  .hero::before{
+    content:""; position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(18,184,166,0.08) 0 1px, transparent 1px 46px),
+      repeating-linear-gradient(0deg, rgba(18,184,166,0.08) 0 1px, transparent 1px 46px);
+    pointer-events:none;
+  }
+  .hero-inner{max-width:920px;margin:0 auto;position:relative;}
+  .eyebrow{color:var(--teal-light); font-family:'IBM Plex Mono', monospace; font-size:13px; margin-bottom:14px;}
+  .hero h1{color:#fff; font-size:2.2rem; margin:0 0 10px; max-width:700px;}
+  .hero p.sub{color:#c7d6d3; max-width:620px; margin:0 0 22px; font-size:1.02rem;}
+  .hero-meta{display:flex; flex-wrap:wrap; gap:10px 22px; font-family:'IBM Plex Mono', monospace; font-size:13px; color:#a9c2bd;}
+  .hero-meta span b{color:#fff; font-weight:600;}
+
+  .toc{background:var(--card); border:1px solid var(--line); border-radius:4px; margin-top:-34px; position:relative;
+    box-shadow:0 8px 24px rgba(11,28,44,0.10); padding:28px 30px 22px;}
+  .toc h2{font-size:1.15rem; margin:0 0 14px; display:flex; align-items:center; gap:10px;}
+  .toc h2 .chip{width:8px;height:8px;border-radius:50%;background:var(--teal);display:inline-block;}
+  .toc ol{margin:0; padding-left:0; list-style:none; counter-reset:toc;}
+  .toc li{counter-increment:toc; margin:0; border-bottom:1px dashed var(--line);}
+  .toc li:last-child{border-bottom:none;}
+  .toc a{display:flex; justify-content:space-between; align-items:baseline; padding:9px 2px; text-decoration:none; color:var(--ink);}
+  .toc a::before{content: counter(toc) ". "; font-family:'IBM Plex Mono', monospace; color:var(--copper); margin-right:6px;}
+  .toc a .pg{font-family:'IBM Plex Mono', monospace; color:var(--ink-soft); font-size:13px;}
+  .toc a:hover{color:var(--teal);}
+
+  section{margin-top:56px;}
+  .section-tag{font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--copper); margin-bottom:6px;}
+  h2.h-main{font-size:1.6rem; margin:0 0 6px; border-bottom:2px solid var(--navy); padding-bottom:10px;}
+  h3.h-sub{font-size:1.2rem; margin:34px 0 8px; color:var(--teal);}
+  h3.h-sub .num{color:var(--copper); font-family:'IBM Plex Mono',monospace; font-size:0.85em; margin-right:6px;}
+
+  p{color:var(--ink); margin:10px 0;}
+  .lead{color:var(--ink-soft); font-size:1.02rem;}
+
+  .def{background:var(--card); border-left:4px solid var(--navy); border-radius:3px; padding:14px 18px; margin:14px 0; box-shadow:0 1px 4px rgba(11,28,44,0.06);}
+  .def .lbl{font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--navy); font-weight:600;}
+  .def p{margin:6px 0 0;}
+
+  .key{background:var(--warn-bg); border:1px solid var(--warn-line); border-radius:3px; padding:12px 18px; margin:14px 0;}
+  .key .lbl{font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--copper); font-weight:600;}
+  .key p{margin:6px 0 0;}
+
+  .example{background:#eef7f5; border-left:4px solid var(--teal); border-radius:3px; padding:12px 18px; margin:14px 0;}
+  .example .lbl{font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--teal); font-weight:600;}
+
+  .numeric{background:#0e2233; color:#e8f1ee; border-radius:4px; padding:16px 20px; margin:14px 0; font-size:0.96rem;}
+  .numeric .lbl{font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--teal-light); font-weight:600;}
+  .numeric code, .numeric .eq{font-family:'IBM Plex Mono',monospace; color:#ffd9a8;}
+  .numeric p{color:#e8f1ee;}
+  .numeric hr{border:none; border-top:1px solid rgba(255,255,255,0.15); margin:10px 0;}
+
+  table{width:100%; border-collapse:collapse; margin:16px 0; font-size:0.94rem; background:var(--card);}
+  caption{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); margin-bottom:6px;}
+  th,td{border:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top;}
+  th{background:var(--navy); color:#fff; font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:0.88rem;}
+  tr:nth-child(even) td{background:#fbfaf6;}
+
+  .diagram{background:var(--card); border:1px solid var(--line); border-radius:4px; padding:18px; margin:18px 0; text-align:center;}
+  .diagram .cap{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); margin-top:8px;}
+  svg{max-width:100%; height:auto;}
+
+  ul.plain{padding-left:20px;}
+  ul.plain li{margin:5px 0;}
+
+  .qa{background:var(--card); border:1px solid var(--line); border-radius:4px; padding:16px 20px; margin:16px 0;}
+  .qa .q{font-weight:600; color:var(--navy); margin-bottom:8px;}
+  .qa .marks{font-family:'IBM Plex Mono',monospace; font-size:11px; color:#fff; background:var(--copper); padding:2px 8px; border-radius:10px; margin-left:8px; vertical-align:middle;}
+  .qa ul{margin:6px 0 0; padding-left:20px;}
+  .qa li{margin:4px 0;}
+
+  .revision-grid{display:grid; grid-template-columns:1fr; gap:0;}
+  .revision-grid .row{display:grid; grid-template-columns: 220px 1fr; border-bottom:1px solid var(--line); padding:8px 0;}
+  .revision-grid .row:nth-child(odd){background:#fbfaf6;}
+  .revision-grid .term{font-weight:600; color:var(--navy); padding:0 10px;}
+  .revision-grid .desc{padding:0 10px; color:var(--ink-soft);}
+
+  .conclusion{background:linear-gradient(155deg, var(--navy), var(--navy-2)); color:#eef4f2; border-radius:6px; padding:26px 28px; margin:20px 0;}
+  .conclusion h2{color:#fff;}
+  .conclusion p{color:#dbe7e3;}
+  .refs{margin:10px 0 0; padding-left:20px;}
+  .refs li{margin:6px 0;}
+  footer{text-align:center; color:var(--ink-soft); font-size:13px; margin-top:60px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:600px){
+    .hero h1{font-size:1.6rem;}
+    .revision-grid .row{grid-template-columns:150px 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">GTU // B.E. SEMESTER VII // SUBJECT CODE 3171111</div>
+    <h1>Testing &amp; Verification</h1>
+    <p class="sub">Unit 4 — Verification: why we verify a design before it's fabricated, how a verification effort is planned and executed, at what granularities it happens, and which methods and languages carry it out.</p>
+    <div class="hero-meta">
+      <span>Teaching hours: <b>5</b></span>
+      <span>Unit weight (approx.): <b>10%</b> of theory marks</span>
+      <span>Bloom levels: <b>U, A</b></span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="toc">
+    <h2><span class="chip"></span> Interactive Index</h2>
+    <ol>
+      <li><a href="#overview"><span>Chapter Overview &amp; Learning Outcomes</span><span class="pg">p.1</span></a></li>
+      <li><a href="#topic1"><span>1. Importance of Verification</span><span class="pg">p.2</span></a></li>
+      <li><a href="#topic2"><span>2. Verification Plan</span><span class="pg">p.4</span></a></li>
+      <li><a href="#topic3"><span>3. Verification Flow</span><span class="pg">p.6</span></a></li>
+      <li><a href="#topic4"><span>4. Levels of Verification</span><span class="pg">p.8</span></a></li>
+      <li><a href="#topic5"><span>5. Verification Methods &amp; Languages</span><span class="pg">p.10</span></a></li>
+      <li><a href="#confused"><span>Frequently Confused Concepts</span><span class="pg">p.12</span></a></li>
+      <li><a href="#revision"><span>Quick Revision Sheet</span><span class="pg">p.13</span></a></li>
+      <li><a href="#qna"><span>5-Mark Questions &amp; Model Answers</span><span class="pg">p.14</span></a></li>
+      <li><a href="#conclusion"><span>Exam-Oriented Conclusion &amp; References</span><span class="pg">p.16</span></a></li>
+    </ol>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section id="overview">
+    <div class="section-tag">SECTION 00</div>
+    <h2 class="h-main">Chapter Overview &amp; Learning Outcomes</h2>
+    <p class="lead">If Units 1–3 dealt with catching manufacturing defects in silicon that already exists, Unit 4 steps back one stage earlier: making sure the design itself is correct before a single wafer is fabricated. Verification is where the vast majority of a chip project's schedule and budget actually goes, so this unit builds a clear mental model of what verification is, how it is planned, how it flows in practice, at what levels it is applied, and which methods/languages carry it out.</p>
+
+    <div class="key">
+      <div class="lbl">By the end of this unit, you should be able to</div>
+      <p>
+        1. Explain why verification is critical and how it differs from manufacturing testing.<br>
+        2. Describe the contents and purpose of a verification plan.<br>
+        3. Walk through a typical verification flow, including regression testing.<br>
+        4. Distinguish the different levels at which verification is performed.<br>
+        5. Compare simulation-based and formal verification methods, and identify common verification languages.
+      </p>
+    </div>
+
+    <table>
+      <caption>Unit-at-a-glance</caption>
+      <tr><th>Topic</th><th>Core Idea</th></tr>
+      <tr><td>Importance of Verification</td><td>Confirms the design matches intent, before fabrication — catches design bugs, not manufacturing defects</td></tr>
+      <tr><td>Verification Plan</td><td>A document defining what to verify, how, and when "done" is reached</td></tr>
+      <tr><td>Verification Flow</td><td>Plan → testbench → run tests → coverage → debug → regression → signoff</td></tr>
+      <tr><td>Levels of Verification</td><td>Block, sub-system, full-chip/SoC, and system-level verification</td></tr>
+      <tr><td>Methods &amp; Languages</td><td>Simulation vs. formal methods; HDLs vs. HVLs (e.g., SystemVerilog, UVM)</td></tr>
+    </table>
+  </section>
+
+  <!-- TOPIC 1 -->
+  <section id="topic1">
+    <div class="section-tag">SECTION 01</div>
+    <h2 class="h-main">Importance of Verification</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p><b>Verification</b> is the process of confirming, through simulation or formal analysis, that a design (RTL or gate-level model) correctly implements its intended specification — performed entirely on the design model, before any chip is fabricated.</p>
+    </div>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>The classic one-line distinction: <b>"Verification asks: did we build the right chip? Testing (Unit 1) asks: did we build the chip right?"</b> Verification catches design errors; manufacturing testing catches physical defects.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>Verification is like an architect and structural engineer reviewing a building's blueprint against the client's requirements before construction starts — checking that the design itself is sound. Manufacturing testing (Unit 1) is like the site inspector later checking the actual built structure for construction defects, assuming the blueprint was already correct.</p>
+    </div>
+
+    <p>Verification matters so much because a design bug that escapes into silicon can force an extremely costly re-spin (a new mask set and fabrication run) — often costing far more, and taking far longer, than fixing the same bug in RTL simulation.</p>
+
+    <div class="numeric">
+      <div class="lbl">Worked Numerical Example — Cost of a Bug Escaping Verification</div>
+      <p><b>Given:</b> Fixing a bug at the RTL/simulation stage costs 1 unit of engineering effort. Industry rule-of-thumb multipliers: ~10× if found at gate-level/post-synthesis, ~100× if found after tape-out (silicon re-spin), ~1000× if found in the field by a customer.</p>
+      <hr>
+      <p><b>Suppose</b> fixing a bug at RTL costs $2,000 (engineer-hours + tool time).</p>
+      <p class="eq">Cost if found post-synthesis ≈ $2,000 × 10 = $20,000</p>
+      <p class="eq">Cost if found after tape-out (re-spin) ≈ $2,000 × 100 = $200,000</p>
+      <p class="eq">Cost if found in the field ≈ $2,000 × 1000 = $2,000,000</p>
+      <p><b>Interpretation:</b> This is verification's own version of Unit 1's "Rule of Ten" — the earlier a design bug is caught, the cheaper it is to fix, which is exactly why heavy investment in pre-silicon verification pays off.</p>
+    </div>
+
+    <div class="numeric">
+      <div class="lbl">Worked Numerical Example — Verification Effort Share</div>
+      <p><b>Given:</b> Industry data commonly shows that verification consumes about 70% of total chip design project effort. Suppose a project's total effort is estimated at 100 engineer-months.</p>
+      <hr>
+      <p class="eq">Verification effort = 70% × 100 = 70 engineer-months</p>
+      <p class="eq">Design (RTL coding) effort = 30% × 100 = 30 engineer-months</p>
+      <p><b>Interpretation:</b> Verification is not a "final check" — it is the single largest activity in a chip project's schedule, which is why it needs its own formal plan and flow (Sections 2–3).</p>
+    </div>
+
+    <table>
+      <caption>Table 4.1 — Verification vs. Manufacturing Testing (recap and expansion of Unit 1)</caption>
+      <tr><th>Aspect</th><th>Verification</th><th>Manufacturing Testing</th></tr>
+      <tr><td>When performed</td><td>Before fabrication, on the design model</td><td>After fabrication, on physical silicon</td></tr>
+      <tr><td>Detects</td><td>Design/logic errors ("bugs")</td><td>Manufacturing defects</td></tr>
+      <tr><td>Checked against</td><td>The specification</td><td>The (assumed correct) design</td></tr>
+      <tr><td>Run how many times</td><td>Once per design (until signoff)</td><td>On every manufactured chip</td></tr>
+      <tr><td>Typical tools</td><td>Simulators, formal verification tools</td><td>Automatic Test Equipment (ATE)</td></tr>
+    </table>
+  </section>
+
+  <!-- TOPIC 2 -->
+  <section id="topic2">
+    <div class="section-tag">SECTION 02</div>
+    <h2 class="h-main">Verification Plan</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p>A <b>verification plan</b> is a document, written before verification execution begins, that specifies what needs to be verified (features/scenarios), how it will be verified (methods, testbench structure), and what criteria define "verification complete" (coverage goals, pass criteria).</p>
+    </div>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>A verification plan is written directly from the <b>specification</b>, not from the RTL code — writing it independently of the implementation avoids the plan inheriting the same blind spots or misunderstandings the designer may have had.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>It's like preparing an exam's question-paper blueprint (which topics, how many marks each, what difficulty mix) before any specific question is actually written — the blueprint comes from the syllabus (specification), not from a particular student's notes (the implementation).</p>
+    </div>
+
+    <ul class="plain">
+      <li><b>Feature list:</b> Every functional feature/requirement from the specification that must be verified.</li>
+      <li><b>Test strategy:</b> Mix of directed tests (specific hand-written scenarios) and constrained-random tests (randomized but legal stimulus).</li>
+      <li><b>Coverage goals:</b> Target code coverage and functional coverage percentages that define "enough testing has been done."</li>
+      <li><b>Resources and schedule:</b> Tools, engineers, and milestones for the verification effort.</li>
+    </ul>
+
+    <div class="numeric">
+      <div class="lbl">Worked Numerical Example — Test Case Distribution</div>
+      <p><b>Given:</b> The verification plan calls for 500 total test scenarios, split as 60% directed tests and 40% constrained-random tests.</p>
+      <hr>
+      <p class="eq">Directed tests = 60% × 500 = 300</p>
+      <p class="eq">Constrained-random tests = 40% × 500 = 200</p>
+      <p><b>Interpretation:</b> Directed tests target specific known-critical scenarios (e.g., corner cases from the spec), while constrained-random tests explore the wider input space to catch unanticipated bugs — a good plan balances both.</p>
+    </div>
+
+    <table>
+      <caption>Table 4.2 — Verification Plan vs. (Manufacturing) Test Plan</caption>
+      <tr><th>Aspect</th><th>Verification Plan</th><th>Manufacturing Test Plan</th></tr>
+      <tr><td>Written from</td><td>The specification</td><td>The design/netlist and fault models</td></tr>
+      <tr><td>Defines</td><td>Features to verify, coverage goals</td><td>Test patterns, fault coverage targets for ATE</td></tr>
+      <tr><td>Used by</td><td>Verification/design engineers</td><td>Test engineers</td></tr>
+      <tr><td>Applies to</td><td>The design model (pre-silicon)</td><td>Every manufactured chip (post-silicon)</td></tr>
+    </table>
+  </section>
+
+  <!-- TOPIC 3 -->
+  <section id="topic3">
+    <div class="section-tag">SECTION 03</div>
+    <h2 class="h-main">Verification Flow</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p>The <b>verification flow</b> is the ordered, often iterative sequence of activities carried out to execute a verification plan — from writing the testbench through running tests, tracking coverage, debugging failures, and repeating (regression) until signoff criteria are met.</p>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 720 150" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="af" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4a5a68"/></marker>
+        </defs>
+        <g font-family="IBM Plex Sans, sans-serif" font-size="11">
+          <rect x="5" y="45" width="100" height="46" rx="4" fill="#0b1c2c"/><text x="55" y="65" fill="#fff" text-anchor="middle">Verification</text><text x="55" y="79" fill="#fff" text-anchor="middle">Plan</text>
+          <line x1="105" y1="68" x2="130" y2="68" stroke="#4a5a68" stroke-width="2" marker-end="url(#af)"/>
+
+          <rect x="135" y="45" width="100" height="46" rx="4" fill="#0b1c2c"/><text x="185" y="65" fill="#fff" text-anchor="middle">Testbench</text><text x="185" y="79" fill="#fff" text-anchor="middle">Development</text>
+          <line x1="235" y1="68" x2="260" y2="68" stroke="#4a5a68" stroke-width="2" marker-end="url(#af)"/>
+
+          <rect x="265" y="45" width="100" height="46" rx="4" fill="#0e8a7d"/><text x="315" y="65" fill="#fff" text-anchor="middle">Run Tests /</text><text x="315" y="79" fill="#fff" text-anchor="middle">Simulate</text>
+          <line x1="365" y1="68" x2="390" y2="68" stroke="#4a5a68" stroke-width="2" marker-end="url(#af)"/>
+
+          <rect x="395" y="45" width="100" height="46" rx="4" fill="#0e8a7d"/><text x="445" y="65" fill="#fff" text-anchor="middle">Collect</text><text x="445" y="79" fill="#fff" text-anchor="middle">Coverage</text>
+          <line x1="495" y1="68" x2="520" y2="68" stroke="#4a5a68" stroke-width="2" marker-end="url(#af)"/>
+
+          <rect x="525" y="45" width="90" height="46" rx="4" fill="#c17a3f"/><text x="570" y="65" fill="#fff" text-anchor="middle">Debug &amp;</text><text x="570" y="79" fill="#fff" text-anchor="middle">Fix Bugs</text>
+          <line x1="615" y1="68" x2="640" y2="68" stroke="#4a5a68" stroke-width="2" marker-end="url(#af)"/>
+
+          <rect x="645" y="45" width="70" height="46" rx="4" fill="#c17a3f"/><text x="680" y="65" fill="#fff" text-anchor="middle" font-size="10">Sign-</text><text x="680" y="79" fill="#fff" text-anchor="middle" font-size="10">off</text>
+
+          <!-- regression loop -->
+          <path d="M 315 91 Q 315 130 570 130 Q 615 130 615 91" fill="none" stroke="#c17a3f" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#af)"/>
+          <text x="465" y="145" fill="#c17a3f" text-anchor="middle" font-size="11">Regression: repeat after every RTL fix</text>
+        </g>
+      </svg>
+      <div class="cap">Fig 4.1 — Typical verification flow, with the regression loop</div>
+    </div>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p><b>Regression testing</b> means re-running the entire (or a prioritized subset of the) test suite every time the RTL changes, to make sure a bug fix didn't silently break something that was previously passing.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>It's like a manuscript's editing cycle: an editor reviews a draft, flags issues, the author revises, and then the editor re-reads not just the fixed sections but re-checks the surrounding context too, in case the fix introduced a new inconsistency — this "re-check everything after any change" habit is exactly regression testing.</p>
+    </div>
+
+    <div class="numeric">
+      <div class="lbl">Worked Numerical Example — Regression Run Time</div>
+      <p><b>Given:</b> A regression suite has 1,000 tests, each taking an average of 2 minutes on a single simulation machine.</p>
+      <hr>
+      <p><b>On a single machine:</b></p>
+      <p class="eq">Total time = 1000 × 2 min = 2000 minutes ≈ 33.3 hours</p>
+      <p><b>Now distribute across a farm of 50 parallel machines:</b></p>
+      <p class="eq">Total time ≈ 2000 / 50 = 40 minutes</p>
+      <p><b>Interpretation:</b> Running a large regression suite on a single machine could take over a day, which is far too slow for a daily development cycle; distributing tests across parallel compute farms (common in real verification teams) brings this down to well under an hour.</p>
+    </div>
+  </section>
+
+  <!-- TOPIC 4 -->
+  <section id="topic4">
+    <div class="section-tag">SECTION 04</div>
+    <h2 class="h-main">Levels of Verification</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p><b>Levels of verification</b> refer to the different granularities/scopes of a design at which verification is carried out — from an individual functional block, up through sub-systems, to the complete chip, and finally the full system it will operate within.</p>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 480 240" xmlns="http://www.w3.org/2000/svg">
+        <g font-family="IBM Plex Sans, sans-serif" font-size="12.5" text-anchor="middle">
+          <polygon points="240,10 360,55 120,55" fill="#0b1c2c"/>
+          <text x="240" y="38" fill="#fff">System Level</text>
+
+          <polygon points="120,55 360,55 400,100 80,100" fill="#123449"/>
+          <text x="240" y="83" fill="#fff">Full-Chip / SoC Level</text>
+
+          <polygon points="80,100 400,100 440,145 40,145" fill="#0e5a5a"/>
+          <text x="240" y="128" fill="#fff">Sub-system / Cluster Level</text>
+
+          <polygon points="40,145 440,145 480,195 0,195" fill="#0e8a7d"/>
+          <text x="240" y="175" fill="#fff">Block / Unit Level</text>
+        </g>
+      </svg>
+      <div class="cap">Fig 4.2 — Levels of verification, from individual blocks up to the full system</div>
+    </div>
+
+    <ul class="plain">
+      <li><b>Block/Unit level:</b> Verifies one functional module in isolation (e.g., an ALU or FIFO) with a dedicated, focused testbench — bugs here are cheapest and fastest to fix.</li>
+      <li><b>Sub-system/Cluster level:</b> Verifies interaction between a few connected blocks (e.g., a CPU core with its cache), catching interface/integration bugs missed at block level.</li>
+      <li><b>Full-chip/SoC level:</b> Verifies the entire chip with all blocks integrated, checking system-wide behavior, bus arbitration, and cross-block interactions.</li>
+      <li><b>System level:</b> Verifies the chip operating within its target system/board/software stack — often continues into post-silicon validation once real chips are available.</li>
+    </ul>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>The same "earlier is cheaper" principle from Section 1 applies here too: a bug caught at block level might cost a fraction of what the same bug would cost if it were only caught at full-chip or system level.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>Building construction again: individual bricks and beams are quality-checked first (block level), then a single room's walls and wiring together (sub-system level), then the whole building's structure (full-chip level), and finally the building is tested with people actually living/working in it, along with its city utilities (system level).</p>
+    </div>
+
+    <table>
+      <caption>Table 4.3 — Block-Level vs. System-Level Verification</caption>
+      <tr><th>Aspect</th><th>Block-Level Verification</th><th>System-Level Verification</th></tr>
+      <tr><td>Scope</td><td>One module in isolation</td><td>Entire chip within its real operating environment</td></tr>
+      <tr><td>Simulation speed</td><td>Fast (small design)</td><td>Slow (very large design, sometimes needs emulation/FPGA prototyping)</td></tr>
+      <tr><td>Bugs typically found</td><td>Internal logic errors</td><td>Integration, interface, timing, and software-interaction bugs</td></tr>
+      <tr><td>Cost of a found bug</td><td>Low</td><td>High</td></tr>
+    </table>
+  </section>
+
+  <!-- TOPIC 5 -->
+  <section id="topic5">
+    <div class="section-tag">SECTION 05</div>
+    <h2 class="h-main">Verification Methods &amp; Languages</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p><b>Verification methods</b> are the technical approaches used to check design correctness — mainly <b>simulation-based (dynamic)</b> verification and <b>formal (static)</b> verification. <b>Verification languages</b> are the languages used to describe designs (HDLs) and to build testbenches around them (HVLs).</p>
+    </div>
+
+    <h3 class="h-sub"><span class="num">5.1</span>Simulation-based vs. Formal verification</h3>
+    <ul class="plain">
+      <li><b>Simulation-based verification:</b> Applies specific input stimulus (directed or constrained-random) to a design model and checks its output responses against expected behavior, cycle by cycle — inherently a sampling of the total possible input space.</li>
+      <li><b>Formal verification:</b> Uses mathematical techniques to prove (or disprove) that a design satisfies certain properties for <i>all</i> possible input combinations, without running any simulation stimulus at all.</li>
+    </ul>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>Simulation can never claim 100% certainty (it only tests the specific scenarios you ran); formal verification can mathematically guarantee a property holds for every possible case — but only for properties and design sizes it can practically handle.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>Simulation is like test-driving a new car on many different road conditions — highway, rain, hills — and confirming it behaves well each time, but you can never drive every possible road in the world. Formal verification is like a mathematical proof that the car's brakes will always stop it within a certain distance, for any speed and any road surface, derived from the physics rather than from driving trials.</p>
+    </div>
+
+    <table>
+      <caption>Table 4.4 — Simulation-Based vs. Formal Verification</caption>
+      <tr><th>Aspect</th><th>Simulation-Based Verification</th><th>Formal Verification</th></tr>
+      <tr><td>Basis</td><td>Applying stimulus and observing responses</td><td>Mathematical proof of properties</td></tr>
+      <tr><td>Coverage guarantee</td><td>Only what was actually simulated</td><td>Exhaustive, for the properties checked</td></tr>
+      <tr><td>Scalability</td><td>Scales to very large designs</td><td>Limited by state-space explosion on large designs</td></tr>
+      <tr><td>Typical use</td><td>Full functional behavior across the design</td><td>Specific critical properties (e.g., no deadlock, protocol compliance)</td></tr>
+    </table>
+
+    <h3 class="h-sub"><span class="num">5.2</span>Verification languages</h3>
+    <ul class="plain">
+      <li><b>HDLs (Hardware Description Languages):</b> Verilog, VHDL — used to describe the design itself (the DUT, Design Under Test).</li>
+      <li><b>HVLs (Hardware Verification Languages):</b> SystemVerilog, e (Specman) — used to build testbenches, generate stimulus, and check responses, with richer software-like constructs (classes, randomization, constraints) than plain HDLs.</li>
+      <li><b>Methodologies:</b> UVM (Universal Verification Methodology) — a standardized, reusable testbench framework built on top of SystemVerilog.</li>
+    </ul>
+
+    <div class="numeric">
+      <div class="lbl">Worked Numerical Example — Functional Coverage Gap</div>
+      <p><b>Given:</b> The verification plan sets a functional coverage goal of 95%. Current regression run shows 80% functional coverage, and each additional constrained-random test on average contributes 0.1% new coverage.</p>
+      <hr>
+      <p><b>Step 1:</b> Remaining coverage needed = 95% − 80% = 15%</p>
+      <p><b>Step 2:</b> Number of additional tests ≈ 15% / 0.1% per test = <b>150 additional tests</b></p>
+      <p><b>Interpretation:</b> Coverage-driven verification uses exactly this kind of tracking to decide when more random tests are worth running, versus when the team should instead write new directed tests to target the specific coverage holes that remain.</p>
+    </div>
+
+    <table>
+      <caption>Table 4.5 — HDL vs. HVL</caption>
+      <tr><th>Aspect</th><th>HDL (e.g., Verilog, VHDL)</th><th>HVL (e.g., SystemVerilog, e)</th></tr>
+      <tr><td>Primary purpose</td><td>Describe the hardware design (DUT)</td><td>Build the testbench around the DUT</td></tr>
+      <tr><td>Key features</td><td>Structural/RTL constructs, synthesizable</td><td>Classes, randomization, constraints, coverage — mostly not synthesizable</td></tr>
+      <tr><td>Typical output</td><td>Gate-level netlist (after synthesis)</td><td>Simulation stimulus and checking logic only</td></tr>
+    </table>
+  </section>
+
+  <!-- FREQUENTLY CONFUSED -->
+  <section id="confused">
+    <div class="section-tag">SECTION 06</div>
+    <h2 class="h-main">Frequently Confused Concepts</h2>
+    <table>
+      <caption>Quick-glance disambiguation table</caption>
+      <tr><th>Term A</th><th>Term B</th><th>Key Difference</th></tr>
+      <tr><td><b>Verification</b></td><td><b>Manufacturing Testing</b></td><td>Verification checks design vs. spec, pre-silicon; testing checks silicon vs. design, post-fabrication.</td></tr>
+      <tr><td><b>Bug</b></td><td><b>Defect</b></td><td>A bug is a design/logic error found during verification; a defect is a physical manufacturing imperfection found during testing.</td></tr>
+      <tr><td><b>Verification Plan</b></td><td><b>(Manufacturing) Test Plan</b></td><td>Verification plan is written from the specification for pre-silicon use; test plan is written from the netlist/fault models for post-silicon ATE use.</td></tr>
+      <tr><td><b>Directed Testing</b></td><td><b>Constrained-Random Testing</b></td><td>Directed tests target specific known scenarios by hand; constrained-random tests generate randomized-but-legal stimulus to explore unanticipated cases.</td></tr>
+      <tr><td><b>Simulation-Based Verification</b></td><td><b>Formal Verification</b></td><td>Simulation samples specific scenarios; formal mathematically proves properties for all possible cases.</td></tr>
+      <tr><td><b>HDL</b></td><td><b>HVL</b></td><td>HDL describes the synthesizable design; HVL builds the (non-synthesizable) testbench around it.</td></tr>
+      <tr><td><b>Block-Level Verification</b></td><td><b>System-Level Verification</b></td><td>Block-level checks one module in isolation; system-level checks the whole chip in its real operating environment.</td></tr>
+    </table>
+  </section>
+
+  <!-- QUICK REVISION -->
+  <section id="revision">
+    <div class="section-tag">SECTION 07</div>
+    <h2 class="h-main">Quick Revision Sheet</h2>
+    <div class="revision-grid">
+      <div class="row"><div class="term">Verification</div><div class="desc">Confirming a design correctly implements its specification, before fabrication.</div></div>
+      <div class="row"><div class="term">Bug</div><div class="desc">A design/logic error found during verification.</div></div>
+      <div class="row"><div class="term">Verification Plan</div><div class="desc">A document defining what to verify, how, and the criteria for "done."</div></div>
+      <div class="row"><div class="term">Feature List</div><div class="desc">Every functional requirement from the spec that must be verified.</div></div>
+      <div class="row"><div class="term">Directed Test</div><div class="desc">A specific, hand-written test scenario targeting a known case.</div></div>
+      <div class="row"><div class="term">Constrained-Random Test</div><div class="desc">Randomized but legal stimulus used to explore unanticipated scenarios.</div></div>
+      <div class="row"><div class="term">Verification Flow</div><div class="desc">The ordered process: plan → testbench → run → coverage → debug → regression → signoff.</div></div>
+      <div class="row"><div class="term">Regression Testing</div><div class="desc">Re-running the test suite after every RTL change to catch newly introduced bugs.</div></div>
+      <div class="row"><div class="term">Coverage-Driven Verification</div><div class="desc">Using coverage metrics to decide when enough testing has been done.</div></div>
+      <div class="row"><div class="term">Levels of Verification</div><div class="desc">Block, sub-system, full-chip/SoC, and system-level scopes of verification.</div></div>
+      <div class="row"><div class="term">Block-Level Verification</div><div class="desc">Verifying a single functional module in isolation.</div></div>
+      <div class="row"><div class="term">System-Level Verification</div><div class="desc">Verifying the chip within its full real-world operating environment.</div></div>
+      <div class="row"><div class="term">Simulation-Based Verification</div><div class="desc">Applying stimulus and checking responses; covers only what is actually run.</div></div>
+      <div class="row"><div class="term">Formal Verification</div><div class="desc">Mathematically proving design properties hold for all possible inputs.</div></div>
+      <div class="row"><div class="term">HDL</div><div class="desc">Hardware Description Language (Verilog, VHDL) used to describe the design.</div></div>
+      <div class="row"><div class="term">HVL</div><div class="desc">Hardware Verification Language (SystemVerilog, e) used to build testbenches.</div></div>
+      <div class="row"><div class="term">UVM</div><div class="desc">Universal Verification Methodology — a standardized reusable testbench framework.</div></div>
+      <div class="row"><div class="term">Functional Coverage</div><div class="desc">A metric tracking which intended design scenarios/features have actually been exercised.</div></div>
+    </div>
+  </section>
+
+  <!-- Q&A -->
+  <section id="qna">
+    <div class="section-tag">SECTION 08</div>
+    <h2 class="h-main">5-Mark Questions &amp; Model Answers</h2>
+
+    <div class="qa">
+      <div class="q">Q1. Explain the importance of verification in the VLSI design cycle. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Purpose:</b> Confirms the design correctly implements its intended specification, before any silicon is fabricated.</li>
+        <li><b>Distinction:</b> Verification asks "did we build the right chip?"; manufacturing testing asks "did we build the chip right?"</li>
+        <li><b>Economic reason:</b> A bug escaping to silicon can force a costly re-spin, roughly 100× the cost of catching it during RTL simulation.</li>
+        <li><b>Effort share:</b> Verification typically consumes about 70% of total project effort, making it the single largest activity in a chip design project.</li>
+        <li><b>Conclusion:</b> Investing in thorough pre-silicon verification is far cheaper than fixing design bugs later.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q2. What is a verification plan? Explain its key components. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Definition:</b> A document, written before verification execution, specifying what to verify, how, and the criteria that define completion.</li>
+        <li><b>Written from spec:</b> Created from the specification, independent of the RTL implementation, to avoid inheriting the designer's blind spots.</li>
+        <li><b>Feature list:</b> Enumerates every functional requirement that must be checked.</li>
+        <li><b>Test strategy:</b> Defines the mix of directed and constrained-random tests to be used.</li>
+        <li><b>Coverage goals and schedule:</b> Sets target coverage percentages and resource/timeline milestones that define "verification complete."</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q3. Describe the typical verification flow, including the role of regression testing. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Step 1 — Verification plan:</b> Defines what/how to verify.</li>
+        <li><b>Step 2 — Testbench development:</b> Builds the environment to generate stimulus and check responses.</li>
+        <li><b>Step 3 — Run tests/simulate:</b> Executes directed and constrained-random tests against the design.</li>
+        <li><b>Step 4 — Collect coverage:</b> Tracks code and functional coverage to identify untested areas.</li>
+        <li><b>Step 5 — Debug and fix bugs; then regression:</b> Failures are debugged and fixed, and the full test suite is re-run (regression) to ensure the fix didn't break anything else, repeating until signoff criteria are met.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q4. Explain the different levels at which verification is carried out. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Block/Unit level:</b> A single functional module is verified in isolation with a focused testbench.</li>
+        <li><b>Sub-system/Cluster level:</b> Verifies interaction between a few connected blocks, catching interface bugs.</li>
+        <li><b>Full-chip/SoC level:</b> Verifies the entire integrated chip, including system-wide interactions and bus arbitration.</li>
+        <li><b>System level:</b> Verifies the chip within its real operating environment (board/software), often extending into post-silicon validation.</li>
+        <li><b>Key principle:</b> Bugs are cheaper and easier to fix the earlier (lower level) they are caught.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q5. Compare simulation-based verification and formal verification. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Simulation-based:</b> Applies specific stimulus and checks output responses; only guarantees correctness for the scenarios actually simulated.</li>
+        <li><b>Formal verification:</b> Uses mathematical proof techniques to establish that a property holds for all possible inputs, without running simulation stimulus.</li>
+        <li><b>Coverage:</b> Simulation coverage is partial/sampling-based; formal coverage is exhaustive for the properties it checks.</li>
+        <li><b>Scalability:</b> Simulation scales to very large designs; formal verification is limited by state-space explosion on large designs.</li>
+        <li><b>Typical use:</b> Simulation is used for broad functional behavior; formal is used for specific critical properties like deadlock-freedom or protocol compliance.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q6. What are HDLs and HVLs? Explain with examples. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>HDL (Hardware Description Language):</b> Used to describe the design itself; examples include Verilog and VHDL; output is synthesizable to a gate-level netlist.</li>
+        <li><b>HVL (Hardware Verification Language):</b> Used to build the testbench around the design; examples include SystemVerilog and e (Specman); provides classes, randomization, and constraints, and is generally not synthesizable.</li>
+        <li><b>UVM:</b> Universal Verification Methodology — a standardized, reusable testbench framework built on SystemVerilog, widely used in industry.</li>
+        <li><b>Relationship:</b> The HDL-described design (DUT) sits inside the HVL-built testbench during simulation.</li>
+        <li><b>Why it matters:</b> Using the right language for each role keeps design code synthesizable while giving the testbench the rich, flexible constructs verification needs.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CONCLUSION -->
+  <section id="conclusion">
+    <div class="conclusion">
+      <h2>Exam-Oriented Conclusion</h2>
+      <p>Unit 4 reframes the entire course around a single insight: it is far cheaper to prove a design correct before fabrication than to discover its flaws afterward. Verification's importance is rooted in this economics, which is why it consumes the majority of project effort and demands a formal, specification-driven verification plan rather than ad-hoc checking. That plan is executed through an iterative verification flow — testbench, simulation, coverage tracking, debugging, and regression — applied at increasing levels of scope from individual blocks up to the full system, using either simulation-based sampling or mathematically exhaustive formal methods, expressed through HDLs for the design and HVLs like SystemVerilog for the testbench. Together, these five topics set the stage for Unit 5, where SystemVerilog-specific verification techniques (linting, coverage, assertions) put this framework into practice.</p>
+    </div>
+
+    <h3 class="h-sub" style="margin-top:28px;">Reference Books (as per syllabus)</h3>
+    <ol class="refs">
+      <li>Wang, Wu, Wen — <i>VLSI Test Principles and Architectures</i>, Morgan Kaufmann Publishers</li>
+      <li>M. Bushnell and V. D. Agrawal — <i>Essentials of Electronic Testing for Digital, Memory and Mixed-Signal VLSI Circuits</i>, Kluwer Academic Publishers, 2000</li>
+      <li>M. Abramovici, M. A. Breuer and A. D. Friedman — <i>Digital Systems Testing and Testable Design</i>, IEEE Press, 1990</li>
+      <li>T. Kropf — <i>Introduction to Formal Hardware Verification</i>, Springer Verlag, 2000</li>
+      <li>P. Rashinkar, Paterson and L. Singh — <i>System-on-a-Chip Verification: Methodology and Techniques</i>, Kluwer Academic Publishers, 2001</li>
+      <li>Janick Bergeron — <i>Writing Testbenches: Functional Verification of HDL Models</i>, Springer</li>
+      <li>Janick Bergeron — <i>Writing Testbenches using SystemVerilog</i>, Springer</li>
+    </ol>
+  </section>
+
+  <footer>GTU · B.E. Semester VII · 3171111 — Testing &amp; Verification · Unit 4 Concept Notes</footer>
+</div>
+</body>
+</html>

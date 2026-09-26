@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 2: Design and Testability — Testing & Verification (3171111)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1c2c;
+    --navy-2:#132a40;
+    --teal:#0e8a7d;
+    --teal-light:#12b8a6;
+    --copper:#c17a3f;
+    --paper:#f7f5ef;
+    --card:#ffffff;
+    --ink:#16232f;
+    --ink-soft:#4a5a68;
+    --line:#dfe3e0;
+    --warn-bg:#fff4e8;
+    --warn-line:#c17a3f;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth; scroll-padding-top:20px;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    line-height:1.6;
+    font-size:16px;
+  }
+  h1,h2,h3,h4{
+    font-family:'Source Serif 4', Georgia, serif;
+    color:var(--navy);
+    line-height:1.25;
+    font-weight:700;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px 80px;}
+  .hero{
+    background: linear-gradient(155deg, var(--navy) 0%, var(--navy-2) 60%, #0e3a4f 100%);
+    color:#eef4f2; padding:52px 20px 60px; position:relative; overflow:hidden;
+  }
+  .hero::before{
+    content:""; position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(18,184,166,0.08) 0 1px, transparent 1px 46px),
+      repeating-linear-gradient(0deg, rgba(18,184,166,0.08) 0 1px, transparent 1px 46px);
+    pointer-events:none;
+  }
+  .hero-inner{max-width:920px;margin:0 auto;position:relative;}
+  .eyebrow{color:var(--teal-light); font-family:'IBM Plex Mono', monospace; font-size:13px; margin-bottom:14px;}
+  .hero h1{color:#fff; font-size:2.2rem; margin:0 0 10px; max-width:700px;}
+  .hero p.sub{color:#c7d6d3; max-width:620px; margin:0 0 22px; font-size:1.02rem;}
+  .hero-meta{display:flex; flex-wrap:wrap; gap:10px 22px; font-family:'IBM Plex Mono', monospace; font-size:13px; color:#a9c2bd;}
+  .hero-meta span b{color:#fff; font-weight:600;}
+
+  .toc{background:var(--card); border:1px solid var(--line); border-radius:4px; margin-top:-34px; position:relative;
+    box-shadow:0 8px 24px rgba(11,28,44,0.10); padding:28px 30px 22px;}
+  .toc h2{font-size:1.15rem; margin:0 0 14px; display:flex; align-items:center; gap:10px;}
+  .toc h2 .chip{width:8px;height:8px;border-radius:50%;background:var(--teal);display:inline-block;}
+  .toc ol{margin:0; padding-left:0; list-style:none; counter-reset:toc;}
+  .toc li{counter-increment:toc; margin:0; border-bottom:1px dashed var(--line);}
+  .toc li:last-child{border-bottom:none;}
+  .toc a{display:flex; justify-content:space-between; align-items:baseline; padding:9px 2px; text-decoration:none; color:var(--ink);}
+  .toc a::before{content: counter(toc) ". "; font-family:'IBM Plex Mono', monospace; color:var(--copper); margin-right:6px;}
+  .toc a .pg{font-family:'IBM Plex Mono', monospace; color:var(--ink-soft); font-size:13px;}
+  .toc a:hover{color:var(--teal);}
+
+  section{margin-top:56px;}
+  .section-tag{font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--copper); margin-bottom:6px;}
+  h2.h-main{font-size:1.6rem; margin:0 0 6px; border-bottom:2px solid var(--navy); padding-bottom:10px;}
+  h3.h-sub{font-size:1.2rem; margin:34px 0 8px; color:var(--teal);}
+  h3.h-sub .num{color:var(--copper); font-family:'IBM Plex Mono',monospace; font-size:0.85em; margin-right:6px;}
+
+  p{color:var(--ink); margin:10px 0;}
+  .lead{color:var(--ink-soft); font-size:1.02rem;}
+
+  .def{background:var(--card); border-left:4px solid var(--navy); border-radius:3px; padding:14px 18px; margin:14px 0; box-shadow:0 1px 4px rgba(11,28,44,0.06);}
+  .def .lbl{font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--navy); font-weight:600;}
+  .def p{margin:6px 0 0;}
+
+  .key{background:var(--warn-bg); border:1px solid var(--warn-line); border-radius:3px; padding:12px 18px; margin:14px 0;}
+  .key .lbl{font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--copper); font-weight:600;}
+  .key p{margin:6px 0 0;}
+
+  .example{background:#eef7f5; border-left:4px solid var(--teal); border-radius:3px; padding:12px 18px; margin:14px 0;}
+  .example .lbl{font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--teal); font-weight:600;}
+
+  .numeric{background:#0e2233; color:#e8f1ee; border-radius:4px; padding:16px 20px; margin:14px 0; font-size:0.96rem;}
+  .numeric .lbl{font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--teal-light); font-weight:600;}
+  .numeric code, .numeric .eq{font-family:'IBM Plex Mono',monospace; color:#ffd9a8;}
+  .numeric p{color:#e8f1ee;}
+  .numeric hr{border:none; border-top:1px solid rgba(255,255,255,0.15); margin:10px 0;}
+
+  table{width:100%; border-collapse:collapse; margin:16px 0; font-size:0.94rem; background:var(--card);}
+  caption{text-align:left; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); margin-bottom:6px;}
+  th,td{border:1px solid var(--line); padding:9px 12px; text-align:left; vertical-align:top;}
+  th{background:var(--navy); color:#fff; font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:0.88rem;}
+  tr:nth-child(even) td{background:#fbfaf6;}
+
+  .diagram{background:var(--card); border:1px solid var(--line); border-radius:4px; padding:18px; margin:18px 0; text-align:center;}
+  .diagram .cap{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); margin-top:8px;}
+  svg{max-width:100%; height:auto;}
+
+  ul.plain{padding-left:20px;}
+  ul.plain li{margin:5px 0;}
+
+  .qa{background:var(--card); border:1px solid var(--line); border-radius:4px; padding:16px 20px; margin:16px 0;}
+  .qa .q{font-weight:600; color:var(--navy); margin-bottom:8px;}
+  .qa .marks{font-family:'IBM Plex Mono',monospace; font-size:11px; color:#fff; background:var(--copper); padding:2px 8px; border-radius:10px; margin-left:8px; vertical-align:middle;}
+  .qa ul{margin:6px 0 0; padding-left:20px;}
+  .qa li{margin:4px 0;}
+
+  .revision-grid{display:grid; grid-template-columns:1fr; gap:0;}
+  .revision-grid .row{display:grid; grid-template-columns: 220px 1fr; border-bottom:1px solid var(--line); padding:8px 0;}
+  .revision-grid .row:nth-child(odd){background:#fbfaf6;}
+  .revision-grid .term{font-weight:600; color:var(--navy); padding:0 10px;}
+  .revision-grid .desc{padding:0 10px; color:var(--ink-soft);}
+
+  .conclusion{background:linear-gradient(155deg, var(--navy), var(--navy-2)); color:#eef4f2; border-radius:6px; padding:26px 28px; margin:20px 0;}
+  .conclusion h2{color:#fff;}
+  .conclusion p{color:#dbe7e3;}
+  .refs{margin:10px 0 0; padding-left:20px;}
+  .refs li{margin:6px 0;}
+  footer{text-align:center; color:var(--ink-soft); font-size:13px; margin-top:60px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:600px){
+    .hero h1{font-size:1.6rem;}
+    .revision-grid .row{grid-template-columns:150px 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow">GTU // B.E. SEMESTER VII // SUBJECT CODE 3171111</div>
+    <h1>Testing &amp; Verification</h1>
+    <p class="sub">Unit 2 — Design and Testability: how testability is measured, engineered into a circuit through scan, and preserved right from the RTL coding stage.</p>
+    <div class="hero-meta">
+      <span>Teaching hours: <b>14</b></span>
+      <span>Unit weight (approx.): <b>30%</b> of theory marks (heaviest unit)</span>
+      <span>Bloom levels: <b>U, A</b></span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="toc">
+    <h2><span class="chip"></span> Interactive Index</h2>
+    <ol>
+      <li><a href="#overview"><span>Chapter Overview &amp; Learning Outcomes</span><span class="pg">p.1</span></a></li>
+      <li><a href="#topic1"><span>1. Introduction to Design &amp; Testability</span><span class="pg">p.2</span></a></li>
+      <li><a href="#topic2"><span>2. Testability Analysis (SCOAP)</span><span class="pg">p.3</span></a></li>
+      <li><a href="#topic3"><span>3. Design for Testability Basics</span><span class="pg">p.6</span></a></li>
+      <li><a href="#topic4"><span>4. Scan Cell Designs</span><span class="pg">p.8</span></a></li>
+      <li><a href="#topic5"><span>5. Scan Architectures</span><span class="pg">p.10</span></a></li>
+      <li><a href="#topic6"><span>6. Scan Design Rules</span><span class="pg">p.13</span></a></li>
+      <li><a href="#topic7"><span>7. Scan Design Flow</span><span class="pg">p.15</span></a></li>
+      <li><a href="#topic8"><span>8. Special Purpose Scan Designs</span><span class="pg">p.17</span></a></li>
+      <li><a href="#topic9"><span>9. RTL Design for Testability</span><span class="pg">p.19</span></a></li>
+      <li><a href="#confused"><span>Frequently Confused Concepts</span><span class="pg">p.21</span></a></li>
+      <li><a href="#revision"><span>Quick Revision Sheet</span><span class="pg">p.22</span></a></li>
+      <li><a href="#qna"><span>5-Mark Questions &amp; Model Answers</span><span class="pg">p.24</span></a></li>
+      <li><a href="#conclusion"><span>Exam-Oriented Conclusion &amp; References</span><span class="pg">p.27</span></a></li>
+    </ol>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section id="overview">
+    <div class="section-tag">SECTION 00</div>
+    <h2 class="h-main">Chapter Overview &amp; Learning Outcomes</h2>
+    <p class="lead">Unit 1 established that testing chips is unavoidable and hard. Unit 2 answers the natural follow-up: how do we make a design easier to test in the first place? This is the biggest unit of the course (14 hours) because it covers the complete journey — measuring testability, understanding the philosophy of DFT, building scan flip-flops, wiring them into chains, following strict design rules, running the automated scan flow, using special scan variants, and finally baking testability into RTL code from day one.</p>
+
+    <div class="key">
+      <div class="lbl">By the end of this unit, you should be able to</div>
+      <p>
+        1. Compute SCOAP controllability/observability numbers for a simple gate network.<br>
+        2. Distinguish ad-hoc and structured DFT approaches, and justify why scan dominates industry practice.<br>
+        3. Explain the internal working of Mux-D and LSSD scan cells.<br>
+        4. Compare full scan, partial scan, and boundary scan architectures.<br>
+        5. List scan design rules and identify rule violations from a given circuit.<br>
+        6. Walk through the automated scan design flow end-to-end.<br>
+        7. Describe special scan variants like random access scan and boundary scan (JTAG).<br>
+        8. Apply RTL-level testability guidelines while writing synthesizable code.
+      </p>
+    </div>
+
+    <table>
+      <caption>Unit-at-a-glance</caption>
+      <tr><th>Topic</th><th>Core Idea</th></tr>
+      <tr><td>Introduction</td><td>DFT = designing testability in, not fixing it after fabrication</td></tr>
+      <tr><td>Testability Analysis</td><td>SCOAP numbers estimate controllability/observability without full ATPG</td></tr>
+      <tr><td>DFT Basics</td><td>Ad-hoc (local fixes) vs. Structured (systematic scan/BIST)</td></tr>
+      <tr><td>Scan Cell Designs</td><td>Mux-D, clocked-scan, and LSSD flip-flop variants</td></tr>
+      <tr><td>Scan Architectures</td><td>Full scan, partial scan, multiple chains, boundary scan</td></tr>
+      <tr><td>Scan Design Rules</td><td>Rules that keep the shift chain electrically clean</td></tr>
+      <tr><td>Scan Design Flow</td><td>RTL → rule-check → insertion → stitching → ATPG → simulation</td></tr>
+      <tr><td>Special Purpose Scan</td><td>Random access scan, boundary scan, power-aware scan</td></tr>
+      <tr><td>RTL DFT</td><td>Coding guidelines that prevent testability problems at the source</td></tr>
+    </table>
+  </section>
+
+  <!-- TOPIC 1 -->
+  <section id="topic1">
+    <div class="section-tag">SECTION 01</div>
+    <h2 class="h-main">Introduction to Design and Testability</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p><b>Design and Testability</b> is the discipline of building a circuit so that its internal nodes can be easily controlled and observed for test purposes, treating testability as a design goal alongside area, speed, and power — not as an afterthought handled once the chip already exists.</p>
+    </div>
+
+    <p>A circuit designed with no thought for testing might be functionally perfect yet nearly untestable — its internal nodes may be so deeply buried that generating test patterns takes impossibly long, or some faults may never be detectable at all. "Design and Testability" flips the responsibility: testability becomes a design-time decision.</p>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>The guiding principle of this unit is: <b>"Design for Testability first, generate tests second."</b> A testable design makes ATPG (Unit 3) fast and gives near-complete fault coverage; an untestable design makes ATPG slow, incomplete, or impossible.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>Think of a car engine. A well-designed engine bay has access panels and diagnostic ports built in at design time, so a mechanic can quickly plug in a scanner and read every sensor. A poorly designed one might require removing the entire engine just to check one sensor. DFT is the chip equivalent of designing those access panels in from day one.</p>
+    </div>
+
+    <table>
+      <caption>Table 2.1 — Testing (Unit 1 recap) vs. Design for Testability</caption>
+      <tr><th>Aspect</th><th>Testing</th><th>Design for Testability (DFT)</th></tr>
+      <tr><td>When applied</td><td>After fabrication</td><td>During design, before fabrication</td></tr>
+      <tr><td>Goal</td><td>Detect defective chips</td><td>Make detection of defects fast, cheap, and complete</td></tr>
+      <tr><td>Owned by</td><td>Test engineers</td><td>Design engineers (with test-aware guidelines)</td></tr>
+      <tr><td>Typical output</td><td>Pass/fail sorted chips</td><td>A circuit with high controllability/observability</td></tr>
+    </table>
+  </section>
+
+  <!-- TOPIC 2 -->
+  <section id="topic2">
+    <div class="section-tag">SECTION 02</div>
+    <h2 class="h-main">Testability Analysis</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p><b>Testability analysis</b> is a set of heuristic (approximate, fast-to-compute) techniques used to estimate how hard it is to control and observe every node in a circuit, without actually running full ATPG. The most widely taught method is <b>SCOAP</b> (Sandia Controllability/Observability Analysis Program).</p>
+    </div>
+
+    <p>SCOAP assigns every node two controllability numbers and one observability number:</p>
+    <ul class="plain">
+      <li><b>CC0</b> — combinational difficulty of setting the node to logic 0.</li>
+      <li><b>CC1</b> — combinational difficulty of setting the node to logic 1.</li>
+      <li><b>CO</b> — combinational difficulty of observing the node at a primary output.</li>
+    </ul>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>SCOAP numbers measure <b>difficulty, not ease</b> — a <u>higher</u> number means the node is <u>harder</u> to control/observe. Primary inputs always start at the minimum value, CC0 = CC1 = 1.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>Think of CC0/CC1 like a "number of steps needed" score to reach a hidden light switch behind furniture. A switch right next to the door has a score of 1 (easy); one behind three stacked boxes in a locked closet has a much higher score. SCOAP is exactly this — a step-count estimate, not an exact test pattern.</p>
+    </div>
+
+    <table>
+      <caption>Table 2.2 — Basic SCOAP Combinational Controllability Rules</caption>
+      <tr><th>Gate</th><th>CC1 (output)</th><th>CC0 (output)</th></tr>
+      <tr><td>Primary Input</td><td>1</td><td>1</td></tr>
+      <tr><td>AND (a, b)</td><td>CC1(a) + CC1(b) + 1</td><td>min(CC0(a), CC0(b)) + 1</td></tr>
+      <tr><td>OR (a, b)</td><td>min(CC1(a), CC1(b)) + 1</td><td>CC0(a) + CC0(b) + 1</td></tr>
+      <tr><td>NOT (a)</td><td>CC0(a) + 1</td><td>CC1(a) + 1</td></tr>
+    </table>
+
+    <div class="numeric">
+      <div class="lbl">Worked Numerical Example — SCOAP Controllability</div>
+      <p><b>Circuit:</b> Primary inputs A and B feed a 2-input AND gate G1. The output of G1 feeds a NOT gate G2, whose output is Z.</p>
+      <hr>
+      <p><b>Step 1 — Primary inputs:</b> CC0(A) = CC1(A) = 1; CC0(B) = CC1(B) = 1 (by definition).</p>
+      <p><b>Step 2 — AND gate G1:</b></p>
+      <p class="eq">CC1(G1) = CC1(A) + CC1(B) + 1 = 1 + 1 + 1 = 3</p>
+      <p class="eq">CC0(G1) = min(CC0(A), CC0(B)) + 1 = min(1,1) + 1 = 2</p>
+      <p><b>Step 3 — NOT gate G2 (output Z):</b></p>
+      <p class="eq">CC0(Z) = CC1(G1) + 1 = 3 + 1 = 4</p>
+      <p class="eq">CC1(Z) = CC0(G1) + 1 = 2 + 1 = 3</p>
+      <hr>
+      <p><b>Result:</b> Node Z has CC0 = 4, CC1 = 3 — meaning it takes a few more logical "steps" to force Z to 0 than to 1, information a test engineer can use to flag Z as a relatively hard-to-control node worth adding a test point near.</p>
+    </div>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>Sequential SCOAP measures (SC0, SC1, SO) work the same way but also count the number of clock cycles needed to propagate through flip-flops — useful for spotting nodes that are hard to reach purely because they sit deep inside sequential logic.</p>
+    </div>
+  </section>
+
+  <!-- TOPIC 3 -->
+  <section id="topic3">
+    <div class="section-tag">SECTION 03</div>
+    <h2 class="h-main">Design for Testability Basics</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p><b>Design for Testability (DFT)</b> is the collection of design techniques that add extra hardware or design discipline to a circuit purely to improve its controllability and observability, at the cost of some silicon area, timing, and power overhead.</p>
+    </div>
+
+    <p>DFT techniques fall into two broad families:</p>
+    <ul class="plain">
+      <li><b>Ad-hoc DFT:</b> Localized, experience-based fixes — inserting test points at specific hard-to-test nodes identified via testability analysis (e.g., SCOAP), without any global structural rule.</li>
+      <li><b>Structured DFT:</b> A systematic, uniform methodology applied across the entire chip — the most common example being <b>scan design</b>, where every flip-flop is replaced by a scan flip-flop following strict rules (Sections 4–6 of this unit).</li>
+    </ul>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>Structured DFT (scan) is preferred in modern industry flows because it is <b>automatable</b> — EDA tools can insert it and generate patterns for it without manual intervention, which ad-hoc DFT cannot guarantee.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>Ad-hoc DFT is like patching a single squeaky floorboard you noticed while walking through a house. Structured DFT is like installing a uniform grid of access panels under every floorboard in the house at construction time — more upfront cost, but guaranteed access everywhere, and any future inspector knows exactly where to look.</p>
+    </div>
+
+    <table>
+      <caption>Table 2.3 — Ad-hoc DFT vs. Structured DFT</caption>
+      <tr><th>Aspect</th><th>Ad-hoc DFT</th><th>Structured DFT (Scan-based)</th></tr>
+      <tr><td>Basis</td><td>Manual identification of hard nodes (via testability analysis)</td><td>Uniform rule applied to every flip-flop</td></tr>
+      <tr><td>Automation</td><td>Difficult to automate; needs designer judgement</td><td>Fully automatable via DFT/synthesis tools</td></tr>
+      <tr><td>Coverage guarantee</td><td>No formal guarantee</td><td>Near-complete, provable fault coverage</td></tr>
+      <tr><td>Overhead</td><td>Small, localized</td><td>Larger but predictable and uniform</td></tr>
+      <tr><td>Best suited for</td><td>Small designs, or fixing specific hotspots</td><td>Large, complex SoC designs (industry default)</td></tr>
+    </table>
+
+    <div class="numeric">
+      <div class="lbl">Worked Numerical Example — Area Overhead of DFT</div>
+      <p><b>Given:</b> A design has 50,000 gate-equivalents (GE) before DFT. Adding scan logic (extra MUX per flip-flop) adds 1,500 GE.</p>
+      <hr>
+      <p class="eq">Area overhead % = (Added GE / Original GE) × 100</p>
+      <p class="eq">= (1,500 / 50,000) × 100 = 3%</p>
+      <p><b>Interpretation:</b> A 3% area overhead is a typical, acceptable price to pay for the dramatic increase in fault coverage and automatability that structured scan provides.</p>
+    </div>
+  </section>
+
+  <!-- TOPIC 4 -->
+  <section id="topic4">
+    <div class="section-tag">SECTION 04</div>
+    <h2 class="h-main">Scan Cell Designs</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p>A <b>scan cell</b> is a modified flip-flop or latch that can operate in two modes: <b>normal (functional) mode</b>, behaving exactly like the original storage element, and <b>scan (shift) mode</b>, where it becomes one link of a shift-register chain used to load and unload test data.</p>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 520 190" xmlns="http://www.w3.org/2000/svg">
+        <g font-family="IBM Plex Sans, sans-serif" font-size="12.5">
+          <!-- MUX -->
+          <polygon points="60,50 60,110 110,95 110,65" fill="#0b1c2c"/>
+          <text x="85" y="83" fill="#fff" text-anchor="middle" font-size="11">MUX</text>
+          <!-- inputs to mux -->
+          <line x1="10" y1="65" x2="60" y2="65" stroke="#4a5a68" stroke-width="2"/>
+          <text x="12" y="60" fill="#16232f" font-size="11">D (functional)</text>
+          <line x1="10" y1="95" x2="60" y2="95" stroke="#4a5a68" stroke-width="2"/>
+          <text x="12" y="112" fill="#16232f" font-size="11">SI (scan-in)</text>
+          <line x1="85" y1="35" x2="85" y2="50" stroke="#c17a3f" stroke-width="2"/>
+          <text x="85" y="25" fill="#c17a3f" text-anchor="middle" font-size="11">Scan-Enable (SE)</text>
+          <!-- FF -->
+          <rect x="140" y="55" width="90" height="50" rx="4" fill="#0e8a7d"/>
+          <text x="185" y="85" fill="#fff" text-anchor="middle">D Flip-Flop</text>
+          <line x1="110" y1="80" x2="140" y2="80" stroke="#4a5a68" stroke-width="2"/>
+          <!-- output -->
+          <line x1="230" y1="80" x2="300" y2="80" stroke="#4a5a68" stroke-width="2"/>
+          <text x="305" y="85" fill="#16232f" font-size="11">Q (functional out / scan-out)</text>
+          <line x1="185" y1="105" x2="185" y2="125" stroke="#4a5a68" stroke-width="2"/>
+          <text x="185" y="140" fill="#16232f" text-anchor="middle" font-size="11">CLK</text>
+        </g>
+      </svg>
+      <div class="cap">Fig 2.1 — Mux-D scan cell: a 2:1 MUX selects functional data (SE=0) or scan-in data (SE=1) into the flip-flop</div>
+    </div>
+
+    <h3 class="h-sub"><span class="num">4.1</span>Common scan cell types</h3>
+    <ul class="plain">
+      <li><b>Mux-D scan cell:</b> A 2:1 multiplexer placed before a standard D flip-flop, controlled by a Scan-Enable (SE) signal. Simplest and most widely used in industry.</li>
+      <li><b>Clocked-scan cell:</b> Uses a separate scan clock pin instead of a mux, switching between functional and scan clocks — reduces mux delay but needs extra clock routing.</li>
+      <li><b>LSSD (Level Sensitive Scan Design) cell:</b> Uses two level-sensitive latches (master + slave) driven by non-overlapping clocks, guaranteeing race-free, level-sensitive operation regardless of clock edge rates.</li>
+    </ul>
+
+    <div class="diagram">
+      <svg viewBox="0 0 560 190" xmlns="http://www.w3.org/2000/svg">
+        <g font-family="IBM Plex Sans, sans-serif" font-size="12">
+          <rect x="30" y="60" width="140" height="60" rx="4" fill="#0b1c2c"/>
+          <text x="100" y="85" fill="#fff" text-anchor="middle">Master Latch (L1)</text>
+          <text x="100" y="102" fill="#12b8a6" text-anchor="middle" font-size="10.5">clock C1</text>
+
+          <rect x="220" y="60" width="140" height="60" rx="4" fill="#0e8a7d"/>
+          <text x="290" y="85" fill="#fff" text-anchor="middle">Slave Latch (L2)</text>
+          <text x="290" y="102" fill="#ffd9a8" text-anchor="middle" font-size="10.5">clock C2</text>
+
+          <rect x="410" y="60" width="130" height="60" rx="4" fill="#c17a3f"/>
+          <text x="475" y="85" fill="#fff" text-anchor="middle">Scan Latch (L2*)</text>
+          <text x="475" y="102" fill="#fff" text-anchor="middle" font-size="10.5">clock C3 (shift)</text>
+
+          <line x1="170" y1="90" x2="220" y2="90" stroke="#4a5a68" stroke-width="2"/>
+          <line x1="360" y1="80" x2="410" y2="80" stroke="#4a5a68" stroke-width="2" stroke-dasharray="4,3"/>
+        </g>
+        <text x="280" y="150" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="#4a5a68" text-anchor="middle">Non-overlapping clocks (C1, C2, C3) avoid any race condition during shift or capture</text>
+      </svg>
+      <div class="cap">Fig 2.2 — LSSD double-latch scan cell structure</div>
+    </div>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>Mux-D is edge-triggered and needs only 1 extra clock (shared scan clock); LSSD is level-sensitive and needs multiple non-overlapping clocks but is inherently race-free — a classic speed-vs-robustness trade-off.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>A Mux-D cell is like a railway point/switch: one lever (SE) decides whether the train (data) goes on the "normal" or "test" track through the same station. LSSD is more like a two-stage airlock (master then slave chamber) where each door opens only when the other is sealed shut — slower to pass through, but nothing can leak through by accident.</p>
+    </div>
+
+    <table>
+      <caption>Table 2.4 — Mux-D Scan Cell vs. LSSD Scan Cell</caption>
+      <tr><th>Aspect</th><th>Mux-D Scan Cell</th><th>LSSD Scan Cell</th></tr>
+      <tr><td>Trigger type</td><td>Edge-triggered</td><td>Level-sensitive (double latch)</td></tr>
+      <tr><td>Clocking</td><td>1 functional clock + shared scan enable</td><td>Multiple non-overlapping clocks</td></tr>
+      <tr><td>Race conditions</td><td>Possible if clock skew is poor</td><td>Inherently race-free by design</td></tr>
+      <tr><td>Area/delay overhead</td><td>Lower (just 1 mux)</td><td>Higher (extra latch + clock routing)</td></tr>
+      <tr><td>Industry usage</td><td>Very common (default in most ASIC flows)</td><td>Historically used in IBM mainframes; less common now</td></tr>
+    </table>
+
+    <div class="numeric">
+      <div class="lbl">Worked Numerical Example — Overhead Comparison</div>
+      <p><b>Given:</b> A design has 10,000 flip-flops. Assume each Mux-D scan cell adds ~4 gate-equivalents (GE), while each LSSD cell adds ~8 GE (extra latch + clocking). Base combinational logic = 200,000 GE.</p>
+      <hr>
+      <p><b>Mux-D total added:</b> 10,000 × 4 = 40,000 GE → overhead = 40,000 / 200,000 × 100 = <b>20%</b></p>
+      <p><b>LSSD total added:</b> 10,000 × 8 = 80,000 GE → overhead = 80,000 / 200,000 × 100 = <b>40%</b></p>
+      <p><b>Conclusion:</b> Mux-D scan roughly halves the area overhead compared to LSSD for the same number of flip-flops — a major reason it dominates modern ASIC design.</p>
+    </div>
+  </section>
+
+  <!-- TOPIC 5 -->
+  <section id="topic5">
+    <div class="section-tag">SECTION 05</div>
+    <h2 class="h-main">Scan Architectures</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p>A <b>scan architecture</b> defines how scan cells are organized and connected at the chip level — how many chains exist, which flip-flops belong to each chain, and whether scan is applied only internally or also at the chip's I/O boundary.</p>
+    </div>
+
+    <h3 class="h-sub"><span class="num">5.1</span>Major architecture types</h3>
+    <ul class="plain">
+      <li><b>Full scan:</b> Every flip-flop in the design is converted to a scan cell — gives the highest fault coverage since the whole sequential circuit effectively becomes combinational-like for test purposes.</li>
+      <li><b>Partial scan:</b> Only a selected subset of flip-flops (chosen via testability analysis) is converted — reduces area/timing overhead at the cost of some fault coverage.</li>
+      <li><b>Multiple (parallel) scan chains:</b> Instead of one very long chain, flip-flops are split into several shorter chains operating in parallel, cutting test time.</li>
+      <li><b>Boundary scan (IEEE 1149.1 / JTAG):</b> Scan cells placed specifically at the chip's I/O pins, enabling board-level interconnect testing between chips without needing bed-of-nails physical probes.</li>
+    </ul>
+
+    <div class="diagram">
+      <svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg">
+        <g font-family="IBM Plex Sans, sans-serif" font-size="11.5">
+          <rect x="20" y="20" width="580" height="160" rx="6" fill="none" stroke="#dfe3e0" stroke-width="1.5"/>
+          <text x="35" y="40" fill="#4a5a68" font-size="11">Chip boundary (I/O pins with boundary-scan cells)</text>
+
+          <!-- chain 1 -->
+          <rect x="50" y="60" width="60" height="30" rx="3" fill="#0e8a7d"/><text x="80" y="80" fill="#fff" text-anchor="middle" font-size="10">SC</text>
+          <rect x="130" y="60" width="60" height="30" rx="3" fill="#0e8a7d"/><text x="160" y="80" fill="#fff" text-anchor="middle" font-size="10">SC</text>
+          <rect x="210" y="60" width="60" height="30" rx="3" fill="#0e8a7d"/><text x="240" y="80" fill="#fff" text-anchor="middle" font-size="10">SC</text>
+          <text x="45" y="55" fill="#0e8a7d" font-size="10.5">Chain A (internal)</text>
+          <line x1="110" y1="75" x2="130" y2="75" stroke="#4a5a68" stroke-width="2"/>
+          <line x1="190" y1="75" x2="210" y2="75" stroke="#4a5a68" stroke-width="2"/>
+
+          <!-- chain 2 -->
+          <rect x="50" y="120" width="60" height="30" rx="3" fill="#123449"/><text x="80" y="140" fill="#fff" text-anchor="middle" font-size="10">SC</text>
+          <rect x="130" y="120" width="60" height="30" rx="3" fill="#123449"/><text x="160" y="140" fill="#fff" text-anchor="middle" font-size="10">SC</text>
+          <rect x="210" y="120" width="60" height="30" rx="3" fill="#123449"/><text x="240" y="140" fill="#fff" text-anchor="middle" font-size="10">SC</text>
+          <text x="45" y="115" fill="#123449" font-size="10.5">Chain B (internal, parallel)</text>
+          <line x1="110" y1="135" x2="130" y2="135" stroke="#4a5a68" stroke-width="2"/>
+          <line x1="190" y1="135" x2="210" y2="135" stroke="#4a5a68" stroke-width="2"/>
+
+          <!-- boundary scan -->
+          <rect x="340" y="60" width="50" height="30" rx="3" fill="#c17a3f"/><text x="365" y="80" fill="#fff" text-anchor="middle" font-size="9">BS</text>
+          <rect x="410" y="60" width="50" height="30" rx="3" fill="#c17a3f"/><text x="435" y="80" fill="#fff" text-anchor="middle" font-size="9">BS</text>
+          <rect x="480" y="60" width="50" height="30" rx="3" fill="#c17a3f"/><text x="505" y="80" fill="#fff" text-anchor="middle" font-size="9">BS</text>
+          <text x="335" y="55" fill="#c17a3f" font-size="10.5">Boundary-scan cells (at I/O pins)</text>
+          <line x1="390" y1="75" x2="410" y2="75" stroke="#4a5a68" stroke-width="2"/>
+          <line x1="460" y1="75" x2="480" y2="75" stroke="#4a5a68" stroke-width="2"/>
+        </g>
+      </svg>
+      <div class="cap">Fig 2.3 — Multiple internal scan chains plus a boundary-scan ring at the chip's I/O</div>
+    </div>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>Full scan trades area/power for near-100% fault coverage; partial scan trades some coverage to save area/power. Multiple parallel chains don't change coverage at all — they only reduce test <i>time</i>.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>Full scan is like giving every room in a hotel an inspection checklist; partial scan only inspects the rooms most likely to have problems. Boundary scan is like inspecting only the doors and windows of connected buildings to make sure the wiring between them (not inside them) is fine — exactly how boundary scan checks the connections between chips on a PCB.</p>
+    </div>
+
+    <table>
+      <caption>Table 2.5 — Full Scan vs. Partial Scan</caption>
+      <tr><th>Aspect</th><th>Full Scan</th><th>Partial Scan</th></tr>
+      <tr><td>Flip-flops converted</td><td>All</td><td>A selected subset</td></tr>
+      <tr><td>Fault coverage</td><td>Very high (near 100%)</td><td>Lower, depends on selection quality</td></tr>
+      <tr><td>Area/timing overhead</td><td>Higher</td><td>Lower</td></tr>
+      <tr><td>ATPG complexity</td><td>Simple (combinational-like)</td><td>More complex (still some sequential depth)</td></tr>
+    </table>
+
+    <table>
+      <caption>Table 2.6 — Internal Scan vs. Boundary Scan</caption>
+      <tr><th>Aspect</th><th>Internal Scan</th><th>Boundary Scan (JTAG)</th></tr>
+      <tr><td>Location</td><td>Inside the chip, on internal flip-flops</td><td>At the chip's I/O pins only</td></tr>
+      <tr><td>Purpose</td><td>Test internal logic of one chip</td><td>Test interconnects between chips on a board</td></tr>
+      <tr><td>Standard</td><td>Vendor/tool-specific</td><td>IEEE 1149.1 (industry standard)</td></tr>
+    </table>
+
+    <div class="numeric">
+      <div class="lbl">Worked Numerical Example — Balancing Scan Chains</div>
+      <p><b>Given:</b> A design has 1,000 scan flip-flops, and the DFT engineer wants to split them into 4 balanced parallel scan chains.</p>
+      <hr>
+      <p class="eq">Flip-flops per chain = 1000 / 4 = 250</p>
+      <p>With one single chain of 1,000 cells, shifting in one test pattern takes ~1,000 clock cycles. With 4 balanced chains of 250 cells each (loaded in parallel), the same pattern only takes ~250 clock cycles — a <b>4× reduction in shift time</b>, directly cutting total test time (see Section 7's numerical for the full calculation).</p>
+    </div>
+  </section>
+
+  <!-- TOPIC 6 -->
+  <section id="topic6">
+    <div class="section-tag">SECTION 06</div>
+    <h2 class="h-main">Scan Design Rules</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p><b>Scan design rules</b> are mandatory guidelines that a circuit must follow before scan insertion, ensuring that the resulting scan chain shifts data cleanly and produces predictable, race-free behavior in both shift and capture modes.</p>
+    </div>
+
+    <p>Because every scan cell in a chain shares the same shift path, a single rule violation anywhere can corrupt the entire chain's data — not just one cell.</p>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>Think of scan rules as "plumbing rules" for the shift chain: any leak (bus contention), blockage (combinational loop), or mismatched pipe (mixed clock edges) anywhere in the line ruins the flow for the whole chain, not just the local segment.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>It's like a bucket-brigade fire line: if even one person in the middle uses a different-sized bucket, or two people try to pour into the same bucket at once (contention), the whole line's efficiency and accuracy breaks down — not just at that one point.</p>
+    </div>
+
+    <table>
+      <caption>Table 2.7 — Common Scan Design Rules &amp; Why They Matter</caption>
+      <tr><th>Rule</th><th>Problem it Prevents</th><th>Typical Fix</th></tr>
+      <tr><td>Use only one type of scan flip-flop (same clock edge) per chain</td><td>Mixing positive-edge and negative-edge cells causes race/timing mismatches during shift</td><td>Insert a lock-up latch between differently-clocked segments</td></tr>
+      <tr><td>Avoid combinational feedback loops</td><td>Feedback loops can oscillate or hold unknown (X) values, making shift/capture unpredictable</td><td>Break the loop by inserting a scan flip-flop, or redesign the logic</td></tr>
+      <tr><td>Control internal tri-state buses during test</td><td>Two drivers can be enabled at once during shift, causing bus contention</td><td>Add test-mode decoding logic so only one driver is active during scan</td></tr>
+      <tr><td>Isolate/synchronize cross-clock-domain scan cells</td><td>Cells clocked by different domains can shift data at wrong relative times</td><td>Add a lock-up latch between the two domains' scan chains</td></tr>
+      <tr><td>Use a dedicated test clock pin, not an internally-gated clock</td><td>Gated/derived clocks may not toggle correctly during shift mode</td><td>Bypass clock-gating logic with a MUX during scan/test mode</td></tr>
+    </table>
+  </section>
+
+  <!-- TOPIC 7 -->
+  <section id="topic7">
+    <div class="section-tag">SECTION 07</div>
+    <h2 class="h-main">Scan Design Flow</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p>The <b>scan design flow</b> is the ordered sequence of automated steps an EDA tool follows to convert a plain RTL/gate-level design into a fully scan-testable design, ready for ATPG pattern generation.</p>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="a3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#4a5a68"/></marker>
+        </defs>
+        <g font-family="IBM Plex Sans, sans-serif" font-size="11">
+          <rect x="5" y="40" width="100" height="46" rx="4" fill="#0b1c2c"/><text x="55" y="67" fill="#fff" text-anchor="middle">RTL Design</text>
+          <line x1="105" y1="63" x2="130" y2="63" stroke="#4a5a68" stroke-width="2" marker-end="url(#a3)"/>
+
+          <rect x="135" y="40" width="100" height="46" rx="4" fill="#0b1c2c"/><text x="185" y="60" fill="#fff" text-anchor="middle">DFT Rule</text><text x="185" y="74" fill="#fff" text-anchor="middle">Checking</text>
+          <line x1="235" y1="63" x2="260" y2="63" stroke="#4a5a68" stroke-width="2" marker-end="url(#a3)"/>
+
+          <rect x="265" y="40" width="100" height="46" rx="4" fill="#0e8a7d"/><text x="315" y="60" fill="#fff" text-anchor="middle">Scan Cell</text><text x="315" y="74" fill="#fff" text-anchor="middle">Insertion</text>
+          <line x1="365" y1="63" x2="390" y2="63" stroke="#4a5a68" stroke-width="2" marker-end="url(#a3)"/>
+
+          <rect x="395" y="40" width="100" height="46" rx="4" fill="#0e8a7d"/><text x="445" y="60" fill="#fff" text-anchor="middle">Scan</text><text x="445" y="74" fill="#fff" text-anchor="middle">Stitching</text>
+          <line x1="495" y1="63" x2="520" y2="63" stroke="#4a5a68" stroke-width="2" marker-end="url(#a3)"/>
+
+          <rect x="525" y="40" width="85" height="46" rx="4" fill="#c17a3f"/><text x="567" y="63" fill="#fff" text-anchor="middle">ATPG</text>
+          <line x1="610" y1="63" x2="635" y2="63" stroke="#4a5a68" stroke-width="2" marker-end="url(#a3)"/>
+
+          <rect x="638" y="40" width="58" height="46" rx="4" fill="#c17a3f"/><text x="667" y="60" fill="#fff" text-anchor="middle" font-size="10">Fault</text><text x="667" y="74" fill="#fff" text-anchor="middle" font-size="10">Sim</text>
+        </g>
+      </svg>
+      <div class="cap">Fig 2.4 — The automated scan design flow, RTL to fault simulation</div>
+    </div>
+
+    <h3 class="h-sub"><span class="num">7.1</span>Flow steps explained</h3>
+    <ul class="plain">
+      <li><b>RTL design:</b> The functional design is written and verified as usual.</li>
+      <li><b>DFT rule checking:</b> Tools scan the design for scan-rule violations (Section 6) — combinational loops, gated clocks, tri-state contention — and flag them for fixing.</li>
+      <li><b>Scan cell insertion:</b> Every (or selected) flip-flop is automatically replaced with its scan-cell equivalent (usually Mux-D).</li>
+      <li><b>Scan stitching:</b> Scan cells are connected in a defined order to form one or more shift chains, with scan-in/scan-out pins routed to the chip boundary.</li>
+      <li><b>ATPG (Automatic Test Pattern Generation):</b> Test patterns targeting stuck-at (and other) faults are generated, exploiting the scan chain's easy controllability/observability (detailed in Unit 3).</li>
+      <li><b>Fault simulation:</b> Generated patterns are simulated against fault models to confirm actual fault coverage before patterns are sent to the ATE.</li>
+    </ul>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>Scan insertion and stitching are almost always done by automated DFT/synthesis tools, not by hand — manual scan insertion for a modern SoC with millions of flip-flops would be practically impossible.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>It's like a factory retrofit: an automated line first checks the blueprint for code violations (rule checking), then robots swap out old machines for new ones with test ports (insertion), then re-route the conveyor belt to link them in sequence (stitching) — all before running any actual test jobs (ATPG/fault sim).</p>
+    </div>
+
+    <div class="numeric">
+      <div class="lbl">Worked Numerical Example — Scan Test Time Calculation</div>
+      <p><b>Given:</b> Scan chain length = 500 cells, number of test patterns = 2,000, clock period = 10 ns. Formula (simplified): total shift cycles ≈ patterns × (chain length + 1).</p>
+      <hr>
+      <p><b>Single chain (length 500):</b></p>
+      <p class="eq">Cycles = 2000 × (500 + 1) = 2000 × 501 = 1,002,000 cycles</p>
+      <p class="eq">Test time = 1,002,000 × 10 ns = 10,020,000 ns ≈ <b>10.02 ms</b></p>
+      <hr>
+      <p><b>Now split into 4 balanced chains (length 125 each, from Section 5's numerical):</b></p>
+      <p class="eq">Cycles = 2000 × (125 + 1) = 2000 × 126 = 252,000 cycles</p>
+      <p class="eq">Test time = 252,000 × 10 ns = 2,520,000 ns ≈ <b>2.52 ms</b></p>
+      <hr>
+      <p><b>Conclusion:</b> Splitting one long chain into 4 parallel chains cuts total test time roughly <b>4×</b> (from 10.02 ms to 2.52 ms) — directly reducing ATE time and per-chip test cost.</p>
+    </div>
+  </section>
+
+  <!-- TOPIC 8 -->
+  <section id="topic8">
+    <div class="section-tag">SECTION 08</div>
+    <h2 class="h-main">Special Purpose Scan Designs</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p><b>Special purpose scan designs</b> are scan variants engineered to solve a specific limitation of standard serial scan — such as long shift time, high test power, or the need for board-level (not just chip-level) testing.</p>
+    </div>
+
+    <ul class="plain">
+      <li><b>Random Access Scan (RAS):</b> Instead of shifting bit-by-bit through a chain, each scan cell is directly addressable like a memory location, allowing any single cell to be read/written without shifting through all the others.</li>
+      <li><b>Boundary Scan (IEEE 1149.1 / JTAG):</b> A standardized ring of scan cells placed at every I/O pin, controlled via a Test Access Port (TAP), enabling board-level interconnect testing between chips.</li>
+      <li><b>Power-aware / segmented scan:</b> Scan chains are shifted in smaller segments rather than all at once, to limit the peak switching activity (and hence power/heat) that a full-chain shift would otherwise cause.</li>
+    </ul>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>Random access scan trades extra addressing hardware for much lower shift latency and power — it avoids toggling the entire chain just to change one bit, unlike conventional serial scan.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>Conventional serial scan is like passing a note down a full row of students to reach the last one. Random access scan is like a teacher directly calling out a specific student's name to hand them the note — no need to disturb everyone else in the row.</p>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 560 150" xmlns="http://www.w3.org/2000/svg">
+        <g font-family="IBM Plex Sans, sans-serif" font-size="11.5">
+          <rect x="20" y="15" width="520" height="40" rx="4" fill="#0b1c2c"/>
+          <text x="280" y="40" fill="#fff" text-anchor="middle">TAP Controller (Test Access Port) — IEEE 1149.1</text>
+          <rect x="40" y="80" width="60" height="35" rx="3" fill="#c17a3f"/><text x="70" y="102" fill="#fff" text-anchor="middle" font-size="10">Pin BS</text>
+          <rect x="130" y="80" width="60" height="35" rx="3" fill="#c17a3f"/><text x="160" y="102" fill="#fff" text-anchor="middle" font-size="10">Pin BS</text>
+          <rect x="220" y="80" width="60" height="35" rx="3" fill="#c17a3f"/><text x="250" y="102" fill="#fff" text-anchor="middle" font-size="10">Pin BS</text>
+          <rect x="310" y="80" width="60" height="35" rx="3" fill="#c17a3f"/><text x="340" y="102" fill="#fff" text-anchor="middle" font-size="10">Pin BS</text>
+          <rect x="400" y="80" width="60" height="35" rx="3" fill="#c17a3f"/><text x="430" y="102" fill="#fff" text-anchor="middle" font-size="10">Pin BS</text>
+          <line x1="70" y1="55" x2="70" y2="80" stroke="#4a5a68" stroke-width="2"/>
+          <line x1="100" y1="97" x2="130" y2="97" stroke="#4a5a68" stroke-width="2"/>
+          <line x1="190" y1="97" x2="220" y2="97" stroke="#4a5a68" stroke-width="2"/>
+          <line x1="280" y1="97" x2="310" y2="97" stroke="#4a5a68" stroke-width="2"/>
+          <line x1="370" y1="97" x2="400" y2="97" stroke="#4a5a68" stroke-width="2"/>
+        </g>
+      </svg>
+      <div class="cap">Fig 2.5 — Boundary-scan (JTAG) ring around a chip's I/O pins, controlled by the TAP</div>
+    </div>
+
+    <table>
+      <caption>Table 2.8 — Serial Scan vs. Random Access Scan</caption>
+      <tr><th>Aspect</th><th>Serial Scan</th><th>Random Access Scan</th></tr>
+      <tr><td>Access method</td><td>Shift through entire chain sequentially</td><td>Direct address, like RAM</td></tr>
+      <tr><td>Time to change one bit</td><td>Up to full chain length in cycles</td><td>Roughly constant (1 access)</td></tr>
+      <tr><td>Test power (switching activity)</td><td>Higher (entire chain toggles each shift)</td><td>Lower (only the addressed cell toggles)</td></tr>
+      <tr><td>Extra hardware</td><td>Simple mux per cell</td><td>Address decoder logic per cell (more complex)</td></tr>
+    </table>
+  </section>
+
+  <!-- TOPIC 9 -->
+  <section id="topic9">
+    <div class="section-tag">SECTION 09</div>
+    <h2 class="h-main">RTL Design for Testability</h2>
+
+    <div class="def">
+      <div class="lbl">Definition</div>
+      <p><b>RTL Design for Testability</b> refers to coding guidelines applied while writing synthesizable RTL (Verilog/VHDL) so that the resulting gate-level design is automatically scan-friendly, avoiding costly manual fixes later in the flow.</p>
+    </div>
+
+    <p>Fixing a testability problem at the RTL stage is far cheaper than discovering it after synthesis or layout — an echo of the "Rule of Ten" idea from Unit 1, but applied within the design flow itself rather than the manufacturing flow.</p>
+
+    <table>
+      <caption>Table 2.9 — Common RTL DFT Guidelines</caption>
+      <tr><th>Guideline</th><th>Problem It Prevents</th></tr>
+      <tr><td>Avoid combinational feedback loops in RTL</td><td>Prevents unresolvable scan-rule violations found later at gate level</td></tr>
+      <tr><td>Avoid internally-generated (gated) clocks; use clock-enable logic instead</td><td>Prevents clocks that fail to toggle correctly during scan shift</td></tr>
+      <tr><td>Use synchronous resets where possible (or test-mode-controllable async resets)</td><td>Prevents asynchronous resets from interfering unpredictably with scan capture</td></tr>
+      <tr><td>Avoid multiplexed/multiple clock edges triggering the same register</td><td>Prevents race conditions during scan shift within one domain</td></tr>
+      <tr><td>Add synchronizers at asynchronous clock-domain boundaries</td><td>Prevents metastability issues that also break scan chain timing</td></tr>
+      <tr><td>Avoid internal tri-state buses; use muxes instead</td><td>Prevents bus contention during scan shift mode</td></tr>
+    </table>
+
+    <div class="key">
+      <div class="lbl">Key Point / Remember</div>
+      <p>RTL DFT guidelines exist so that when the automated scan design flow (Section 7) runs, the DFT rule-checking step finds <b>zero or minimal violations</b> — saving redesign cycles.</p>
+    </div>
+
+    <div class="example">
+      <div class="lbl">Real-World Example</div>
+      <p>It's exactly like including fire-exit doors in a building's blueprint rather than trying to knock new exits into finished concrete walls later. RTL DFT is "testability by blueprint," while ad-hoc post-synthesis fixes are "testability by demolition."</p>
+    </div>
+
+    <table>
+      <caption>Table 2.10 — Ad-hoc Post-Synthesis Fixes vs. RTL-Level DFT</caption>
+      <tr><th>Aspect</th><th>Post-Synthesis Fixes</th><th>RTL-Level DFT</th></tr>
+      <tr><td>Stage applied</td><td>After gate-level netlist exists</td><td>While writing RTL code</td></tr>
+      <tr><td>Cost of fixing an issue</td><td>High (re-synthesis, re-verification)</td><td>Low (just edit RTL code)</td></tr>
+      <tr><td>Designer awareness needed</td><td>Test/DFT engineer mainly</td><td>RTL/design engineer, from day one</td></tr>
+    </table>
+  </section>
+
+  <!-- FREQUENTLY CONFUSED -->
+  <section id="confused">
+    <div class="section-tag">SECTION 10</div>
+    <h2 class="h-main">Frequently Confused Concepts</h2>
+    <table>
+      <caption>Quick-glance disambiguation table</caption>
+      <tr><th>Term A</th><th>Term B</th><th>Key Difference</th></tr>
+      <tr><td><b>Ad-hoc DFT</b></td><td><b>Structured DFT</b></td><td>Ad-hoc fixes specific hard nodes manually; structured DFT (scan) applies one uniform, automatable rule to the whole chip.</td></tr>
+      <tr><td><b>Full Scan</b></td><td><b>Partial Scan</b></td><td>Full scan converts every flip-flop for max coverage; partial scan converts only a subset to save area/power.</td></tr>
+      <tr><td><b>Internal Scan</b></td><td><b>Boundary Scan</b></td><td>Internal scan tests logic inside one chip; boundary scan (JTAG) tests interconnects between chips on a board.</td></tr>
+      <tr><td><b>Mux-D Scan Cell</b></td><td><b>LSSD Scan Cell</b></td><td>Mux-D is edge-triggered with a single mux; LSSD is level-sensitive with a race-free double-latch structure.</td></tr>
+      <tr><td><b>Serial Scan</b></td><td><b>Random Access Scan</b></td><td>Serial scan shifts through the whole chain; random access scan directly addresses any single cell like RAM.</td></tr>
+      <tr><td><b>Scan Insertion</b></td><td><b>Scan Stitching</b></td><td>Insertion replaces flip-flops with scan cells; stitching connects those scan cells into an ordered chain.</td></tr>
+      <tr><td><b>Shift Mode</b></td><td><b>Capture Mode</b></td><td>Shift mode moves test data serially through the chain; capture mode lets the functional clock latch the circuit's actual response for one cycle.</td></tr>
+      <tr><td><b>Controllability (CC0/CC1)</b></td><td><b>Observability (CO)</b></td><td>Controllability = difficulty of setting a node's value; observability = difficulty of seeing that value at an output.</td></tr>
+    </table>
+  </section>
+
+  <!-- QUICK REVISION -->
+  <section id="revision">
+    <div class="section-tag">SECTION 11</div>
+    <h2 class="h-main">Quick Revision Sheet</h2>
+    <div class="revision-grid">
+      <div class="row"><div class="term">Design for Testability (DFT)</div><div class="desc">Design techniques that improve controllability/observability at the cost of some area/power overhead.</div></div>
+      <div class="row"><div class="term">Testability Analysis</div><div class="desc">Heuristic estimation of controllability/observability without full ATPG (e.g., SCOAP).</div></div>
+      <div class="row"><div class="term">SCOAP</div><div class="desc">Sandia Controllability/Observability Analysis Program — computes CC0, CC1, CO for each node.</div></div>
+      <div class="row"><div class="term">CC0 / CC1</div><div class="desc">Difficulty (in steps) of controlling a node to 0 or to 1 from primary inputs.</div></div>
+      <div class="row"><div class="term">CO</div><div class="desc">Difficulty of observing a node's value at a primary output.</div></div>
+      <div class="row"><div class="term">Ad-hoc DFT</div><div class="desc">Manual, localized testability fixes at specific hard-to-test nodes.</div></div>
+      <div class="row"><div class="term">Structured DFT</div><div class="desc">Systematic, uniform, automatable DFT applied chip-wide — typically scan design.</div></div>
+      <div class="row"><div class="term">Scan Cell</div><div class="desc">A flip-flop modified to work in both normal mode and shift (scan) mode.</div></div>
+      <div class="row"><div class="term">Mux-D Scan Cell</div><div class="desc">Scan cell using a 2:1 mux before a standard edge-triggered flip-flop.</div></div>
+      <div class="row"><div class="term">LSSD</div><div class="desc">Level Sensitive Scan Design — race-free double-latch scan cell using non-overlapping clocks.</div></div>
+      <div class="row"><div class="term">Full Scan</div><div class="desc">Every flip-flop in the design is made scannable.</div></div>
+      <div class="row"><div class="term">Partial Scan</div><div class="desc">Only selected flip-flops are made scannable.</div></div>
+      <div class="row"><div class="term">Boundary Scan (JTAG)</div><div class="desc">IEEE 1149.1 standard scan ring at chip I/O pins for board-level interconnect test.</div></div>
+      <div class="row"><div class="term">TAP</div><div class="desc">Test Access Port — the controller managing boundary-scan operations.</div></div>
+      <div class="row"><div class="term">Scan Design Rules</div><div class="desc">Mandatory guidelines (no combinational loops, no bus contention, single clock edge type, etc.) for clean scan operation.</div></div>
+      <div class="row"><div class="term">Lock-up Latch</div><div class="desc">Extra latch inserted between scan cells of different clock domains/edges to prevent races.</div></div>
+      <div class="row"><div class="term">Scan Insertion</div><div class="desc">Automated replacement of flip-flops with scan cell equivalents.</div></div>
+      <div class="row"><div class="term">Scan Stitching</div><div class="desc">Connecting scan cells in order to form one or more shift chains.</div></div>
+      <div class="row"><div class="term">Shift Mode</div><div class="desc">Scan chain operating mode where test data moves serially through cells.</div></div>
+      <div class="row"><div class="term">Capture Mode</div><div class="desc">Mode where the functional clock latches the circuit's real response for observation.</div></div>
+      <div class="row"><div class="term">Random Access Scan (RAS)</div><div class="desc">Scan variant giving direct, addressable access to any single scan cell.</div></div>
+      <div class="row"><div class="term">RTL DFT Guidelines</div><div class="desc">Coding rules at RTL stage that prevent testability problems before synthesis.</div></div>
+    </div>
+  </section>
+
+  <!-- Q&A -->
+  <section id="qna">
+    <div class="section-tag">SECTION 12</div>
+    <h2 class="h-main">5-Mark Questions &amp; Model Answers</h2>
+
+    <div class="qa">
+      <div class="q">Q1. What is testability analysis? Explain SCOAP with its basic controllability rules. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Definition:</b> Testability analysis heuristically estimates how hard it is to control/observe circuit nodes, without running full ATPG.</li>
+        <li><b>SCOAP:</b> Sandia Controllability/Observability Analysis Program — computes CC0, CC1 (combinational controllability to 0/1) and CO (combinational observability) per node.</li>
+        <li><b>Primary input rule:</b> CC0 = CC1 = 1 for all primary inputs.</li>
+        <li><b>AND gate:</b> CC1(out) = CC1(a)+CC1(b)+1; CC0(out) = min(CC0(a),CC0(b))+1.</li>
+        <li><b>Interpretation:</b> Higher values mean harder to control/observe; used to flag weak nodes for ad-hoc test-point insertion.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q2. Differentiate between ad-hoc DFT and structured DFT (scan-based) approaches. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Ad-hoc DFT:</b> Manual, localized fixes at specific hard-to-test nodes identified through testability analysis; not easily automated.</li>
+        <li><b>Structured DFT:</b> Uniform, systematic technique (scan) applied to every flip-flop; fully automatable by EDA tools.</li>
+        <li><b>Coverage:</b> Ad-hoc has no formal coverage guarantee; structured DFT gives near-complete, provable fault coverage.</li>
+        <li><b>Overhead:</b> Ad-hoc adds small, localized overhead; structured DFT adds larger but predictable, uniform overhead (commonly a few percent area).</li>
+        <li><b>Industry preference:</b> Structured (scan-based) DFT is the default for large SoC designs due to its automation and coverage guarantees.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q3. Explain the working of a Mux-D scan cell with a diagram. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Structure:</b> A 2:1 multiplexer is placed in front of a standard D flip-flop.</li>
+        <li><b>Inputs to mux:</b> Functional data (D) and scan-in data (SI); selected by the Scan-Enable (SE) control signal.</li>
+        <li><b>Normal mode (SE=0):</b> Functional data D passes through to the flip-flop as usual.</li>
+        <li><b>Scan mode (SE=1):</b> Scan-in data SI is loaded instead, so the flip-flop becomes part of a shift-register chain.</li>
+        <li><b>Advantage:</b> Minimal extra hardware (just one mux per flip-flop), so it is the most widely used scan cell in industry ASIC flows.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q4. Compare full scan and partial scan architectures. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Full scan:</b> Every flip-flop in the design is converted into a scan cell.</li>
+        <li><b>Partial scan:</b> Only a selected subset of flip-flops (chosen via testability analysis) is converted.</li>
+        <li><b>Fault coverage:</b> Full scan achieves near-100% coverage; partial scan achieves lower coverage depending on selection quality.</li>
+        <li><b>Overhead:</b> Full scan has higher area/power/timing overhead; partial scan reduces this overhead by scanning fewer cells.</li>
+        <li><b>ATPG complexity:</b> Full scan makes ATPG simpler (circuit behaves combinationally for test); partial scan retains some sequential complexity in ATPG.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q5. List and explain any five scan design rules that must be followed during scan insertion. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Single clock-edge type per chain:</b> Avoid mixing positive-edge and negative-edge scan cells in the same chain to prevent race conditions.</li>
+        <li><b>No combinational feedback loops:</b> These can hold unknown (X) values or oscillate, corrupting shift/capture behavior.</li>
+        <li><b>Control internal tri-state buses:</b> Add test-mode decoding to ensure only one driver is enabled during scan, avoiding bus contention.</li>
+        <li><b>Handle cross-clock-domain scan cells:</b> Insert lock-up latches between cells from different clock domains to prevent timing races.</li>
+        <li><b>Avoid internally-gated clocks in scan mode:</b> Use a dedicated test clock or bypass mux so the clock reliably toggles during shift.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q6. Describe the scan design flow from RTL to fault simulation. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>RTL design:</b> Functional design is coded and functionally verified.</li>
+        <li><b>DFT rule checking:</b> Tools verify the design against scan design rules and flag violations.</li>
+        <li><b>Scan cell insertion:</b> Flip-flops are automatically replaced with scan-cell equivalents (commonly Mux-D).</li>
+        <li><b>Scan stitching:</b> Scan cells are connected in order into one or more shift chains, routed to scan-in/out pins.</li>
+        <li><b>ATPG and fault simulation:</b> Test patterns are automatically generated for target faults, then simulated to confirm actual fault coverage before use on the ATE.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q7. What is boundary scan? Explain its purpose and structure. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Definition:</b> Boundary scan (IEEE 1149.1 / JTAG) places scan cells at every I/O pin of a chip, forming a ring around its boundary.</li>
+        <li><b>Purpose:</b> Tests the interconnections between chips on a printed circuit board without needing physical bed-of-nails probes.</li>
+        <li><b>Control:</b> Managed by a Test Access Port (TAP) controller, a standardized state machine.</li>
+        <li><b>Operation:</b> Data can be shifted into boundary cells to drive output pins, or captured from input pins, checking board-level connectivity.</li>
+        <li><b>Advantage:</b> Standardized across the industry, enabling board test even for densely packed, hard-to-probe modern PCBs.</li>
+      </ul>
+    </div>
+
+    <div class="qa">
+      <div class="q">Q8. Explain the important RTL-level guidelines for design for testability. <span class="marks">5 Marks</span></div>
+      <ul>
+        <li><b>Avoid combinational feedback loops</b> in RTL code, since they later cause unresolvable scan-rule violations.</li>
+        <li><b>Avoid internally-generated (gated) clocks;</b> use clock-enable logic instead, so scan clocks toggle reliably.</li>
+        <li><b>Prefer synchronous resets</b> (or test-mode-controllable async resets) to avoid unpredictable interference during scan capture.</li>
+        <li><b>Avoid multiple/mixed clock edges</b> triggering the same register within one domain, to prevent shift-time races.</li>
+        <li><b>Add synchronizers at clock-domain boundaries</b> and avoid internal tri-state buses, preventing metastability and bus-contention issues respectively.</li>
+        <li><b>Benefit:</b> Fixing these at RTL stage is far cheaper than fixing them after synthesis or layout.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CONCLUSION -->
+  <section id="conclusion">
+    <div class="conclusion">
+      <h2>Exam-Oriented Conclusion</h2>
+      <p>Unit 2 takes the testing problem introduced in Unit 1 and answers it constructively: testability can be measured (SCOAP), engineered (ad-hoc or structured DFT), and standardized through scan — from the individual Mux-D or LSSD scan cell, up through full/partial/boundary scan architectures, governed by strict scan design rules, executed via an automated insertion-to-fault-simulation flow, extended by special variants like random access and boundary scan, and ultimately made cheapest to achieve by following DFT guidelines right at the RTL coding stage. Together these nine topics form the practical backbone of modern chip testability, and directly set up Unit 3's logic and fault simulation, where the patterns generated through this scan infrastructure are actually evaluated against fault models.</p>
+    </div>
+
+    <h3 class="h-sub" style="margin-top:28px;">Reference Books (as per syllabus)</h3>
+    <ol class="refs">
+      <li>Wang, Wu, Wen — <i>VLSI Test Principles and Architectures</i>, Morgan Kaufmann Publishers</li>
+      <li>M. Bushnell and V. D. Agrawal — <i>Essentials of Electronic Testing for Digital, Memory and Mixed-Signal VLSI Circuits</i>, Kluwer Academic Publishers, 2000</li>
+      <li>M. Abramovici, M. A. Breuer and A. D. Friedman — <i>Digital Systems Testing and Testable Design</i>, IEEE Press, 1990</li>
+      <li>T. Kropf — <i>Introduction to Formal Hardware Verification</i>, Springer Verlag, 2000</li>
+      <li>P. Rashinkar, Paterson and L. Singh — <i>System-on-a-Chip Verification: Methodology and Techniques</i>, Kluwer Academic Publishers, 2001</li>
+      <li>Janick Bergeron — <i>Writing Testbenches: Functional Verification of HDL Models</i>, Springer</li>
+      <li>Janick Bergeron — <i>Writing Testbenches using SystemVerilog</i>, Springer</li>
+    </ol>
+  </section>
+
+  <footer>GTU · B.E. Semester VII · 3171111 — Testing &amp; Verification · Unit 2 Concept Notes</footer>
+</div>
+</body>
+</html>
